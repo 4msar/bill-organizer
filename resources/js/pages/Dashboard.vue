@@ -131,7 +131,14 @@ const userName = props.auth.user.name || 'User';
 </script>
 
 <template>
-    <AppLayout>
+    <AppLayout
+        :breadcrumbs="[
+            {
+                title: 'Dashboard',
+                href: route('dashboard'),
+            },
+        ]"
+    >
         <Head title="Dashboard" />
 
         <div class="py-6">

@@ -73,7 +73,18 @@ function onFormCancel(): void {
 </script>
 
 <template>
-    <AppLayout>
+    <AppLayout
+        :breadcrumbs="[
+            {
+                title: 'Bills',
+                href: route('bills.index'),
+            },
+            {
+                title: `Pay Bill (${bill.title})`,
+                href: route('bills.pay', bill.id),
+            },
+        ]"
+    >
         <Head :title="`Pay Bill - ${bill.title}`" />
 
         <div class="py-6">

@@ -112,7 +112,14 @@ function getIconComponent(iconName: string | null) {
 </script>
 
 <template>
-    <AppLayout>
+    <AppLayout
+        :breadcrumbs="[
+            {
+                title: 'Categories',
+                href: route('categories.index'),
+            },
+        ]"
+    >
         <Head title="Categories" />
 
         <div class="py-6">

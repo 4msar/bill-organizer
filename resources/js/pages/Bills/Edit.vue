@@ -32,7 +32,18 @@ defineProps<Props>();
 </script>
 
 <template>
-    <AppLayout>
+    <AppLayout
+        :breadcrumbs="[
+            {
+                title: 'Bills',
+                href: route('bills.index'),
+            },
+            {
+                title: `Edit Bill (${bill.title})`,
+                href: route('bills.edit', bill.id),
+            },
+        ]"
+    >
         <Head title="Edit Bill" />
 
         <div class="py-6">

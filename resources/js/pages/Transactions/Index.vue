@@ -151,7 +151,14 @@ const paymentMethods = {
 </script>
 
 <template>
-    <AppLayout>
+    <AppLayout
+        :breadcrumbs="[
+            {
+                title: 'Transactions',
+                href: route('transactions.index'),
+            },
+        ]"
+    >
         <Head title="Transactions" />
 
         <div class="py-6">

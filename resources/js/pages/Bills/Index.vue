@@ -41,7 +41,14 @@ function markAsPaid(id: string) {
 </script>
 
 <template>
-    <AppLayout>
+    <AppLayout
+        :breadcrumbs="[
+            {
+                title: 'Bills',
+                href: route('bills.index'),
+            },
+        ]"
+    >
         <Head title="Bills" />
 
         <div class="py-6">

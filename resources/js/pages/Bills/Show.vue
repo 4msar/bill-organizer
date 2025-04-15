@@ -91,7 +91,18 @@ function onPaymentComplete(): void {
 </script>
 
 <template>
-    <AppLayout>
+    <AppLayout
+        :breadcrumbs="[
+            {
+                title: 'Bills',
+                href: route('bills.index'),
+            },
+            {
+                title: `Bill Details (${bill.title})`,
+                href: route('bills.show', bill.id),
+            },
+        ]"
+    >
         <Head :title="bill.title" />
 
         <div class="py-6">
