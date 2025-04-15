@@ -383,33 +383,6 @@ const userName = props.auth.user.name || 'User';
                                     <!-- This is a placeholder for ApexCharts -->
                                     <!-- In a real implementation, you would use: -->
                                     <apexchart type="bar" height="300" :options="chartOptions" :series="chartSeries"></apexchart>
-
-                                    <!-- Simplified chart representation -->
-                                    <div class="flex h-full flex-col">
-                                        <div class="text-muted-foreground mb-2 flex justify-between text-xs">
-                                            <div v-for="(month, index) in chartData.months" :key="index">
-                                                {{ month }}
-                                            </div>
-                                        </div>
-                                        <div class="flex h-full">
-                                            <div
-                                                v-for="(series, seriesIndex) in chartData.series"
-                                                :key="seriesIndex"
-                                                class="flex flex-1 flex-col justify-end"
-                                            >
-                                                <div class="mb-1 text-center text-xs">{{ series.category }}</div>
-                                                <div
-                                                    v-for="(value, valueIndex) in series.data"
-                                                    :key="valueIndex"
-                                                    class="bg-primary/80 mx-1"
-                                                    :style="{
-                                                        height: `${Math.min((value / 1000) * 100, 100)}%`,
-                                                        opacity: 0.6 + valueIndex * 0.05,
-                                                    }"
-                                                ></div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                                 <div v-else class="text-muted-foreground text-center">Not enough data to display chart</div>
                             </div>
