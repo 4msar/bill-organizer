@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use App\Models\Scopes\UserScope;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[ScopedBy([UserScope::class])]
 final class Bill extends Model
@@ -48,11 +50,39 @@ final class Bill extends Model
     }
 
     /**
+     * Get the transactions for the bill.
+     */
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    /**
      * Get the category associated with the bill.
      */
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+
+    /**
+     * Calculate next due date based on recurrence period.
+     */
+    public function calculateNextDueDate(): ?string
+    {
+        if (!$this->is_recurring || !$this->recurrence_period) {
+            return null;
+        }
+
+        $currentDueDate = Carbon::parse($this->due_date);
+
+        return match ($this->recurrence_period) {
+            'weekly' => $currentDueDate->addWeek()->format('Y-m-d'),
+            'monthly' => $currentDueDate->addMonth()->format('Y-m-d'),
+            'yearly' => $currentDueDate->addYear()->format('Y-m-d'),
+            default => null,
+        };
     }
 
     /**

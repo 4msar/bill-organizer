@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import PaymentDialog from '@/components/bills/PaymentDialog.vue';
+import TransactionList from '@/components/transactions/TransactionList.vue';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -6,12 +8,24 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { CalendarIcon, Clock, Edit, RotateCcw, Trash2 } from 'lucide-vue-next';
+import axios from 'axios';
+import { CalendarIcon, Clock, Edit, Receipt, RotateCcw, Trash2 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 interface Category {
     id: number;
     name: string;
+}
+
+interface Transaction {
+    id: number;
+    bill_id: number;
+    amount: number;
+    payment_date: string;
+    payment_method: string | null;
+    attachment: string | null;
+    notes: string | null;
+    created_at: string;
 }
 
 interface Bill {
@@ -27,6 +41,7 @@ interface Bill {
     category?: Category;
     created_at: string;
     updated_at: string;
+    transactions?: Transaction[];
 }
 
 interface Props {
@@ -36,9 +51,17 @@ interface Props {
 const props = defineProps<Props>();
 
 const bill = ref<Bill>(props.bill);
+const isPaymentDialogOpen = ref(false);
+const paymentMethods = ref<Record<string, string>>({});
+const nextDueDate = ref<string | null>(null);
+const isLoading = ref(false);
 
 const isPastDue = computed((): boolean => {
     return new Date(bill.value.due_date) < new Date() && bill.value.status === 'unpaid';
+});
+
+const hasTransactions = computed((): boolean => {
+    return bill.value.transactions && bill.value.transactions.length > 0;
 });
 
 function deleteBill(): void {
@@ -47,8 +70,23 @@ function deleteBill(): void {
     }
 }
 
-function markAsPaid(): void {
-    router.patch(route('bills.pay', bill.value.id));
+async function openPaymentDialog(): Promise<void> {
+    isLoading.value = true;
+    try {
+        const response = await axios.get(route('bills.payment-details', bill.value.id));
+        paymentMethods.value = response.data.paymentMethods;
+        nextDueDate.value = response.data.nextDueDate;
+        isPaymentDialogOpen.value = true;
+    } catch (error) {
+        console.error('Error fetching payment details:', error);
+    } finally {
+        isLoading.value = false;
+    }
+}
+
+function onPaymentComplete(): void {
+    // Refresh the page to show updated bill status
+    router.reload();
 }
 </script>
 
@@ -94,7 +132,7 @@ function markAsPaid(): void {
                                 <CardTitle class="flex items-center gap-2">
                                     {{ bill.title }}
                                     <Badge v-if="bill.is_recurring" variant="outline">Recurring</Badge>
-                                    <Badge :variant="bill.status === 'paid' ? 'success' : 'default'">
+                                    <Badge :variant="bill.status === 'paid' ? 'secondary' : 'default'">
                                         {{ bill.status === 'paid' ? 'Paid' : 'Unpaid' }}
                                     </Badge>
                                 </CardTitle>
@@ -142,9 +180,26 @@ function markAsPaid(): void {
                     </CardContent>
 
                     <CardFooter v-if="bill.status === 'unpaid'" class="flex justify-end">
-                        <Button @click="markAsPaid">Mark as Paid</Button>
+                        <Button @click="openPaymentDialog" :disabled="isLoading">
+                            <Receipt class="mr-2 h-4 w-4" />
+                            {{ isLoading ? 'Loading...' : 'Record Payment' }}
+                        </Button>
                     </CardFooter>
                 </Card>
+
+                <!-- Payment History -->
+                <div class="mt-8">
+                    <TransactionList :transactions="bill.transactions || []" :showBillLink="false" />
+                </div>
+
+                <!-- Payment Dialog -->
+                <PaymentDialog
+                    v-model:isOpen="isPaymentDialogOpen"
+                    :bill="bill"
+                    :payment-methods="paymentMethods"
+                    :next-due-date="nextDueDate"
+                    @payment-complete="onPaymentComplete"
+                />
             </div>
         </div>
     </AppLayout>

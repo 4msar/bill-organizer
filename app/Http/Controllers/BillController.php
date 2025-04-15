@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Bill;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 
 final class BillController extends Controller
 {
@@ -52,6 +53,14 @@ final class BillController extends Controller
 
     public function show(Bill $bill)
     {
+        // Load the bill with its category and transactions
+        $bill->load([
+            'category',
+            'transactions' => function ($query) {
+                $query->latest('payment_date');
+            }
+        ]);
+
         return inertia('Bills/Show', ['bill' => $bill]);
     }
 
@@ -85,5 +94,54 @@ final class BillController extends Controller
         $bill->markAsPaid();
 
         return redirect()->route('bills.index')->with('success', 'Bill marked as paid successfully.');
+    }
+
+    /**
+     * Display bill payment form.
+     */
+    public function showPaymentForm(Bill $bill)
+    {
+        if ($bill->status === 'paid') {
+            return Redirect::route('bills.show', $bill)->with('error', 'This bill is already paid.');
+        }
+
+        $paymentMethods = [
+            'cash' => 'Cash',
+            'credit_card' => 'Credit Card',
+            'debit_card' => 'Debit Card',
+            'bank_transfer' => 'Bank Transfer',
+            'paypal' => 'PayPal',
+            'crypto' => 'Cryptocurrency',
+            'check' => 'Check',
+            'other' => 'Other',
+        ];
+
+        return inertia('Bills/Pay', [
+            'bill' => $bill->load('category'),
+            'paymentMethods' => $paymentMethods,
+        ]);
+    }
+
+    /**
+     * Get bill details for payment dialog.
+     */
+    public function getPaymentDetails(Bill $bill)
+    {
+        $paymentMethods = [
+            'cash' => 'Cash',
+            'credit_card' => 'Credit Card',
+            'debit_card' => 'Debit Card',
+            'bank_transfer' => 'Bank Transfer',
+            'paypal' => 'PayPal',
+            'crypto' => 'Cryptocurrency',
+            'check' => 'Check',
+            'other' => 'Other',
+        ];
+
+        return response()->json([
+            'bill' => $bill->load('category'),
+            'paymentMethods' => $paymentMethods,
+            'nextDueDate' => $bill->is_recurring ? $bill->calculateNextDueDate() : null,
+        ]);
     }
 }
