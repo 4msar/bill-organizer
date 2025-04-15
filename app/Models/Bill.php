@@ -2,17 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\UserScope;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-use App\Models\Scopes\UserScope;
-
-#
-class Bill extends Model
+#[ScopedBy([UserScope::class])]
+final class Bill extends Model
 {
     use HasFactory;
 
@@ -67,5 +63,38 @@ class Bill extends Model
     public function isPaid()
     {
         return $this->status === 'paid';
+    }
+
+    /**
+     * Scope a query to only include unpaid bills.
+     */
+    public function scopeUnpaid($query)
+    {
+        return $query->where('status', 'unpaid');
+    }
+
+    /**
+     * Scope a query to only include paid bills.
+     */
+    public function scopePaid($query)
+    {
+        return $query->where('status', 'paid');
+    }
+
+    /**
+     * Scope a query to only include upcoming bills.
+     */
+    public function scopeUpcoming($query, $days = 7)
+    {
+        $now = now();
+
+        return $query->where('due_date', '>=', $now)
+            ->where('due_date', '<=', $now->copy()->addDays($days))
+            ->where('status', 'unpaid');
+    }
+
+    function markAsPaid()
+    {
+        $this->update(['status' => 'paid']);
     }
 }

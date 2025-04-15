@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class EmailVerificationPromptController extends Controller
+final class EmailVerificationPromptController extends Controller
 {
     /**
      * Show the email verification prompt page.

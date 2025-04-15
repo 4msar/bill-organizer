@@ -1,0 +1,193 @@
+<script setup lang="ts">
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { formatCurrency, formatDate } from '@/lib/utils';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { Calendar, CheckCheck, Clock, DollarSign, Edit, Eye, MoreHorizontal, PlusCircle, Trash2 } from 'lucide-vue-next';
+import { ref } from 'vue';
+
+defineProps<{
+    bills: Array<{
+        id: string;
+        title: string;
+        category: { name: string } | null;
+        amount: number;
+        due_date: string;
+        status: 'unpaid' | 'paid';
+        is_recurring: boolean;
+    }>;
+    total_unpaid: number;
+    unpaid_count: number;
+    upcoming_count: number;
+    paid_count: number;
+}>();
+
+const activeTab = ref('all');
+
+function deleteBill(id: string) {
+    if (confirm('Are you sure you want to delete this bill?')) {
+        router.delete(route('bills.destroy', id));
+    }
+}
+
+function markAsPaid(id: string) {
+    router.patch(route('bills.pay', id));
+}
+</script>
+
+<template>
+    <AppLayout>
+        <Head title="Bills" />
+
+        <div class="py-6">
+            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <!-- Summary Cards -->
+                <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-3">
+                    <Card>
+                        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle class="text-sm font-medium"> Total Unpaid Bills </CardTitle>
+                            <DollarSign class="text-muted-foreground h-4 w-4" />
+                        </CardHeader>
+                        <CardContent>
+                            <div class="text-2xl font-bold">{{ formatCurrency(total_unpaid) }}</div>
+                            <p class="text-muted-foreground text-xs">{{ unpaid_count }} unpaid bill{{ unpaid_count !== 1 ? 's' : '' }}</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle class="text-sm font-medium"> Upcoming Bills </CardTitle>
+                            <Calendar class="text-muted-foreground h-4 w-4" />
+                        </CardHeader>
+                        <CardContent>
+                            <div class="text-2xl font-bold">{{ upcoming_count }}</div>
+                            <p class="text-muted-foreground text-xs">Due in the next 7 days</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle class="text-sm font-medium"> Paid Bills </CardTitle>
+                            <Clock class="text-muted-foreground h-4 w-4" />
+                        </CardHeader>
+                        <CardContent>
+                            <div class="text-2xl font-bold">{{ paid_count }}</div>
+                            <p class="text-muted-foreground text-xs">Previously paid bills</p>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                <!-- Bills Header with New Bill Button -->
+                <div class="mb-6 flex items-center justify-between">
+                    <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Bills</h2>
+                    <Link :href="route('bills.create')">
+                        <Button>
+                            <PlusCircle class="mr-2 h-4 w-4" />
+                            Add New Bill
+                        </Button>
+                    </Link>
+                </div>
+
+                <!-- Bills Tabs and Table -->
+                <Card>
+                    <CardHeader>
+                        <Tabs v-model="activeTab" class="w-full">
+                            <TabsList class="grid w-full max-w-md grid-cols-3">
+                                <TabsTrigger value="all">All Bills</TabsTrigger>
+                                <TabsTrigger value="unpaid">Unpaid</TabsTrigger>
+                                <TabsTrigger value="paid">Paid</TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableCaption v-if="bills.length === 0">You don't have any bills yet.</TableCaption>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Title</TableHead>
+                                    <TableHead>Category</TableHead>
+                                    <TableHead>Amount</TableHead>
+                                    <TableHead>Due Date</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead class="text-right">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow
+                                    v-for="bill in bills.filter((bill) => {
+                                        if (activeTab === 'all') return true;
+                                        if (activeTab === 'unpaid') return bill.status === 'unpaid';
+                                        if (activeTab === 'paid') return bill.status === 'paid';
+                                    })"
+                                    :key="bill.id"
+                                    class="hover:bg-muted/50 cursor-pointer"
+                                >
+                                    <TableCell class="font-medium">
+                                        {{ bill.title }}
+                                        <span v-if="bill.is_recurring" class="ml-2">
+                                            <Badge variant="outline">Recurring</Badge>
+                                        </span>
+                                    </TableCell>
+                                    <TableCell>{{ bill.category?.name || 'Uncategorized' }}</TableCell>
+                                    <TableCell>{{ formatCurrency(bill.amount) }}</TableCell>
+                                    <TableCell>
+                                        <span :class="{ 'text-destructive': new Date(bill.due_date) < new Date() && bill.status === 'unpaid' }">
+                                            {{ formatDate(bill.due_date) }}
+                                        </span>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge :variant="bill.status === 'paid' ? 'secondary' : 'default'">
+                                            {{ bill.status === 'paid' ? 'Paid' : 'Unpaid' }}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell class="text-right">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger as="button" @click.stop>
+                                                <span class="sr-only">Open menu</span>
+                                                <MoreHorizontal class="h-4 w-4" />
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuItem>
+                                                    <Link :href="route('bills.show', bill.id)" class="flex items-center gap-2">
+                                                        <Eye class="mr-2 h-4 w-4" />
+                                                        View details
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem class="flex items-center">
+                                                    <Link :href="route('bills.edit', bill.id)" class="flex items-center gap-2"
+                                                        ><Edit class="mr-2 h-4 w-4" />
+                                                        Edit
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    v-if="bill.status === 'unpaid'"
+                                                    @click.stop="markAsPaid(bill.id)"
+                                                    class="flex items-center"
+                                                >
+                                                    <CheckCheck class="mr-2 h-4 w-4" />
+                                                    Mark as paid
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    class="text-destructive focus:text-destructive flex items-center"
+                                                    @click.stop="deleteBill(bill.id)"
+                                                >
+                                                    <Trash2 class="mr-2 h-4 w-4" />
+                                                    Delete
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    </AppLayout>
+</template>

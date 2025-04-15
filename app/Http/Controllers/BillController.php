@@ -3,19 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bill;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
-class BillController extends Controller
+final class BillController extends Controller
 {
     public function index()
     {
         $bills = Bill::with('category')->where('user_id', auth()->id())->get();
-        return inertia('Bills/Index', ['bills' => $bills]);
+
+        return inertia('Bills/Index', [
+            'bills' => $bills,
+            'total_unpaid' => $bills->where('is_paid', false)->sum('amount'),
+            'unpaid_count' => $bills->where('is_paid', false)->count(),
+            'upcoming_count' => $bills->where('due_date', '>=', now())->count(),
+            'paid_count' => $bills->where('is_paid', true)->count(),
+        ]);
     }
 
     public function create()
     {
-        return inertia('Bills/Create');
+        return inertia('Bills/Create', [
+            'categories' => Category::all(),
+        ]);
     }
 
     public function store(Request $request)
@@ -68,5 +78,12 @@ class BillController extends Controller
         $bill->delete();
 
         return redirect()->route('bills.index')->with('success', 'Bill deleted successfully.');
+    }
+
+    public function markAsPaid(Bill $bill)
+    {
+        $bill->markAsPaid();
+
+        return redirect()->route('bills.index')->with('success', 'Bill marked as paid successfully.');
     }
 }

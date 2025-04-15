@@ -1,35 +1,443 @@
 <script setup lang="ts">
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/vue3';
-import PlaceholderPattern from '../components/PlaceholderPattern.vue';
+import { formatCurrency, formatDate } from '@/lib/utils';
+import { SharedData } from '@/types';
+import { Head, Link } from '@inertiajs/vue3';
+import { ArrowRightCircle, CalendarDays, CreditCard, DollarSign, Landmark, Plus, Wallet } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/dashboard',
+interface Category {
+    id: number;
+    name: string;
+    paid_bills_count: number;
+    unpaid_bills_count: number;
+    total_amount: number;
+}
+
+interface Bill {
+    id: number;
+    title: string;
+    amount: number;
+    due_date: string;
+    status: 'paid' | 'unpaid';
+    is_recurring: boolean;
+    category_id: number | null;
+    category?: {
+        id: number;
+        name: string;
+    };
+}
+
+interface ChartData {
+    months: string[];
+    series: {
+        category: string;
+        data: number[];
+    }[];
+}
+
+interface Stats {
+    totalBills: number;
+    paidBills: number;
+    unpaidBills: number;
+    upcomingBills: number;
+    totalPaidAmount: number;
+    totalUnpaidAmount: number;
+    amountDueThisMonth: number;
+}
+
+interface Props {
+    stats: Stats;
+    categories: Category[];
+    recentBills: Bill[];
+    upcomingBills: Bill[];
+    chartData: ChartData;
+}
+
+const props = defineProps<Props & SharedData>();
+
+// Get current date for greeting
+const currentHour = new Date().getHours();
+const greeting = computed((): string => {
+    if (currentHour < 12) return 'Good morning';
+    if (currentHour < 18) return 'Good afternoon';
+    return 'Good evening';
+});
+
+// Date formatting for due dates
+const getDueStatus = (dueDate: string): string => {
+    const today = new Date();
+    const due = new Date(dueDate);
+    const diffTime = due.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) return 'overdue';
+    if (diffDays === 0) return 'today';
+    if (diffDays === 1) return 'tomorrow';
+    if (diffDays < 7) return `in ${diffDays} days`;
+    return formatDate(dueDate);
+};
+
+// Chart setup
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const chartOptions = ref({
+    chart: {
+        type: 'bar',
+        stacked: true,
+        toolbar: {
+            show: false,
+        },
     },
-];
+    plotOptions: {
+        bar: {
+            horizontal: false,
+        },
+    },
+    stroke: {
+        width: 1,
+        colors: ['#fff'],
+    },
+    xaxis: {
+        categories: props.chartData.months,
+    },
+    legend: {
+        position: 'top',
+    },
+    fill: {
+        opacity: 1,
+    },
+});
+
+const chartSeries = computed(() => {
+    return props.chartData.series.map((item) => ({
+        name: item.category,
+        data: item.data,
+    }));
+});
+
+// Calculate payment progress
+const paymentProgress = computed((): number => {
+    const totalBills = props.stats.totalBills;
+    return totalBills > 0 ? Math.round((props.stats.paidBills / totalBills) * 100) : 0;
+});
+
+// Get user from session for greeting
+const userName = props.auth.user.name || 'User';
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <AppLayout>
+        <Head title="Dashboard" />
 
-    <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-            <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-                <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                    <PlaceholderPattern />
+        <div class="py-6">
+            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <!-- Welcome Header -->
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold tracking-tight">{{ greeting }}, {{ userName }}</h1>
+                    <p class="text-muted-foreground">
+                        Here's an overview of your bills for {{ new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) }}
+                    </p>
                 </div>
-                <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                    <PlaceholderPattern />
+
+                <!-- Stats Cards -->
+                <div class="mb-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <!-- Total Bills -->
+                    <Card>
+                        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle class="text-sm font-medium">Total Bills</CardTitle>
+                            <CreditCard class="text-muted-foreground h-4 w-4" />
+                        </CardHeader>
+                        <CardContent>
+                            <div class="text-2xl font-bold">{{ stats.totalBills }}</div>
+                            <div class="text-muted-foreground mt-1 text-xs">{{ stats.paidBills }} paid, {{ stats.unpaidBills }} unpaid</div>
+                            <div class="bg-muted mt-3 h-2 w-full overflow-hidden rounded-full">
+                                <div class="bg-primary h-full" :style="{ width: `${paymentProgress}%` }" />
+                            </div>
+                            <div class="text-muted-foreground mt-1 text-xs">{{ paymentProgress }}% paid</div>
+                        </CardContent>
+                    </Card>
+
+                    <!-- Total Due -->
+                    <Card>
+                        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle class="text-sm font-medium">Total Due</CardTitle>
+                            <DollarSign class="text-muted-foreground h-4 w-4" />
+                        </CardHeader>
+                        <CardContent>
+                            <div class="text-destructive text-2xl font-bold">
+                                {{ formatCurrency(stats.totalUnpaidAmount) }}
+                            </div>
+                            <div class="text-muted-foreground mt-1 text-xs">{{ stats.unpaidBills }} unpaid bills</div>
+                        </CardContent>
+                    </Card>
+
+                    <!-- Due This Month -->
+                    <Card>
+                        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle class="text-sm font-medium">Due This Month</CardTitle>
+                            <CalendarDays class="text-muted-foreground h-4 w-4" />
+                        </CardHeader>
+                        <CardContent>
+                            <div class="text-2xl font-bold">
+                                {{ formatCurrency(stats.amountDueThisMonth) }}
+                            </div>
+                            <div class="text-muted-foreground mt-1 text-xs">
+                                {{ new Date().toLocaleDateString('en-US', { month: 'long' }) }}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <!-- Paid Amount -->
+                    <Card>
+                        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle class="text-sm font-medium">Total Paid</CardTitle>
+                            <Wallet class="text-muted-foreground h-4 w-4" />
+                        </CardHeader>
+                        <CardContent>
+                            <div class="text-success text-2xl font-bold">
+                                {{ formatCurrency(stats.totalPaidAmount) }}
+                            </div>
+                            <div class="text-muted-foreground mt-1 text-xs">{{ stats.paidBills }} paid bills</div>
+                        </CardContent>
+                    </Card>
                 </div>
-                <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                    <PlaceholderPattern />
+
+                <!-- Bills and Categories Tabs -->
+                <Tabs defaultValue="upcoming" class="mb-8">
+                    <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="upcoming">Upcoming Bills</TabsTrigger>
+                        <TabsTrigger value="recent">Recent Bills</TabsTrigger>
+                    </TabsList>
+
+                    <!-- Upcoming Bills Tab -->
+                    <TabsContent value="upcoming">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Upcoming Bills</CardTitle>
+                                <CardDescription> Bills that are due soon </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Title</TableHead>
+                                            <TableHead>Amount</TableHead>
+                                            <TableHead>Due Date</TableHead>
+                                            <TableHead>Category</TableHead>
+                                            <TableHead className="text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        <TableRow v-for="bill in upcomingBills" :key="bill.id">
+                                            <TableCell className="font-medium">
+                                                {{ bill.title }}
+                                                <Badge v-if="bill.is_recurring" variant="outline" className="ml-2"> Recurring </Badge>
+                                            </TableCell>
+                                            <TableCell>{{ formatCurrency(bill.amount) }}</TableCell>
+                                            <TableCell>
+                                                <span
+                                                    :class="{
+                                                        'text-destructive': getDueStatus(bill.due_date) === 'overdue',
+                                                        'font-medium':
+                                                            getDueStatus(bill.due_date) === 'today' || getDueStatus(bill.due_date) === 'tomorrow',
+                                                    }"
+                                                >
+                                                    {{ getDueStatus(bill.due_date) }}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell>{{ bill.category?.name || 'Uncategorized' }}</TableCell>
+                                            <TableCell className="text-right">
+                                                <Button variant="ghost" size="sm" asChild>
+                                                    <Link :href="route('bills.show', bill.id)">
+                                                        <ArrowRightCircle class="h-4 w-4" />
+                                                        <span class="sr-only">View</span>
+                                                    </Link>
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow v-if="upcomingBills.length === 0">
+                                            <TableCell colspan="5" class="text-muted-foreground py-4 text-center"> No upcoming bills </TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                            <CardFooter>
+                                <Button variant="outline" asChild class="w-full">
+                                    <Link :href="route('bills.index')"> View All Bills </Link>
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </TabsContent>
+
+                    <!-- Recent Bills Tab -->
+                    <TabsContent value="recent">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Recent Bills</CardTitle>
+                                <CardDescription> Your most recently added bills </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Title</TableHead>
+                                            <TableHead>Amount</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Category</TableHead>
+                                            <TableHead className="text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        <TableRow v-for="bill in recentBills" :key="bill.id">
+                                            <TableCell className="font-medium">{{ bill.title }}</TableCell>
+                                            <TableCell>{{ formatCurrency(bill.amount) }}</TableCell>
+                                            <TableCell>
+                                                <Badge :variant="bill.status === 'paid' ? 'secondary' : 'default'">
+                                                    {{ bill.status === 'paid' ? 'Paid' : 'Unpaid' }}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell>{{ bill.category?.name || 'Uncategorized' }}</TableCell>
+                                            <TableCell className="text-right">
+                                                <Button variant="ghost" size="sm" asChild>
+                                                    <Link :href="route('bills.show', bill.id)">
+                                                        <ArrowRightCircle class="h-4 w-4" />
+                                                        <span class="sr-only">View</span>
+                                                    </Link>
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow v-if="recentBills.length === 0">
+                                            <TableCell colspan="5" class="text-muted-foreground py-4 text-center"> No bills yet </TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                            <CardFooter>
+                                <Button variant="outline" asChild class="w-full">
+                                    <Link :href="route('bills.create')">
+                                        <Plus class="mr-2 h-4 w-4" />
+                                        Add New Bill
+                                    </Link>
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </TabsContent>
+                </Tabs>
+
+                <!-- Categories Overview -->
+                <div class="mb-8 grid gap-4 md:grid-cols-2">
+                    <!-- Categories Card -->
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Categories</CardTitle>
+                            <CardDescription> Overview of your spending categories </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Category</TableHead>
+                                        <TableHead>Bills</TableHead>
+                                        <TableHead className="text-right">Amount Due</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    <TableRow v-for="category in categories" :key="category.id">
+                                        <TableCell className="font-medium">{{ category.name }}</TableCell>
+                                        <TableCell>
+                                            {{ category.paid_bills_count + category.unpaid_bills_count }}
+                                            <span class="text-muted-foreground"> ({{ category.unpaid_bills_count }} unpaid) </span>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            {{ formatCurrency(category.total_amount) }}
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow v-if="categories.length === 0">
+                                        <TableCell colspan="3" class="text-muted-foreground py-4 text-center"> No categories yet </TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                        <CardFooter>
+                            <Button variant="outline" asChild class="w-full">
+                                <Link :href="route('categories.index')"> Manage Categories </Link>
+                            </Button>
+                        </CardFooter>
+                    </Card>
+
+                    <!-- Spending Chart -->
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Monthly Spending</CardTitle>
+                            <CardDescription> Your spending trends over the last 6 months </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <!-- For ApexCharts, we need to add the library to the project -->
+                            <div class="flex h-[300px] items-center justify-center">
+                                <div v-if="chartSeries.length > 0" class="h-full w-full">
+                                    <!-- This is a placeholder for ApexCharts -->
+                                    <!-- In a real implementation, you would use: -->
+                                    <apexchart type="bar" height="300" :options="chartOptions" :series="chartSeries"></apexchart>
+
+                                    <!-- Simplified chart representation -->
+                                    <div class="flex h-full flex-col">
+                                        <div class="text-muted-foreground mb-2 flex justify-between text-xs">
+                                            <div v-for="(month, index) in chartData.months" :key="index">
+                                                {{ month }}
+                                            </div>
+                                        </div>
+                                        <div class="flex h-full">
+                                            <div
+                                                v-for="(series, seriesIndex) in chartData.series"
+                                                :key="seriesIndex"
+                                                class="flex flex-1 flex-col justify-end"
+                                            >
+                                                <div class="mb-1 text-center text-xs">{{ series.category }}</div>
+                                                <div
+                                                    v-for="(value, valueIndex) in series.data"
+                                                    :key="valueIndex"
+                                                    class="bg-primary/80 mx-1"
+                                                    :style="{
+                                                        height: `${Math.min((value / 1000) * 100, 100)}%`,
+                                                        opacity: 0.6 + valueIndex * 0.05,
+                                                    }"
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-else class="text-muted-foreground text-center">Not enough data to display chart</div>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
-            </div>
-            <div class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 dark:border-sidebar-border md:min-h-min">
-                <PlaceholderPattern />
+
+                <!-- Quick Actions -->
+                <div class="flex flex-wrap gap-4">
+                    <Button asChild>
+                        <Link :href="route('bills.create')">
+                            <Plus class="mr-2 h-4 w-4" />
+                            Add New Bill
+                        </Link>
+                    </Button>
+                    <Button variant="outline" asChild>
+                        <Link :href="route('bills.index')">
+                            <CreditCard class="mr-2 h-4 w-4" />
+                            View All Bills
+                        </Link>
+                    </Button>
+                    <Button variant="outline" asChild>
+                        <Link :href="route('categories.create')">
+                            <Landmark class="mr-2 h-4 w-4" />
+                            Add Category
+                        </Link>
+                    </Button>
+                </div>
             </div>
         </div>
     </AppLayout>
