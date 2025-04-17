@@ -7,20 +7,13 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency, formatDate } from '@/lib/utils';
+import { Bill } from '@/types/model';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Calendar, CheckCheck, Clock, DollarSign, Edit, Eye, MoreHorizontal, PlusCircle, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 defineProps<{
-    bills: Array<{
-        id: string;
-        title: string;
-        category: { name: string } | null;
-        amount: number;
-        due_date: string;
-        status: 'unpaid' | 'paid';
-        is_recurring: boolean;
-    }>;
+    bills: Array<Bill>;
     total_unpaid: number;
     unpaid_count: number;
     upcoming_count: number;
@@ -29,13 +22,13 @@ defineProps<{
 
 const activeTab = ref('all');
 
-function deleteBill(id: string) {
+function deleteBill(id: string | number) {
     if (confirm('Are you sure you want to delete this bill?')) {
         router.delete(route('bills.destroy', id));
     }
 }
 
-function markAsPaid(id: string) {
+function markAsPaid(id: string | number) {
     router.patch(route('bills.pay', id));
 }
 </script>

@@ -7,31 +7,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { SharedData } from '@/types';
+import { Bill, Category } from '@/types/model';
 import { Head, Link } from '@inertiajs/vue3';
 import { ArrowRightCircle, CalendarDays, CreditCard, DollarSign, Landmark, Plus, Wallet } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-
-interface Category {
-    id: number;
-    name: string;
-    paid_bills_count: number;
-    unpaid_bills_count: number;
-    total_amount: number;
-}
-
-interface Bill {
-    id: number;
-    title: string;
-    amount: number;
-    due_date: string;
-    status: 'paid' | 'unpaid';
-    is_recurring: boolean;
-    category_id: number | null;
-    category?: {
-        id: number;
-        name: string;
-    };
-}
 
 interface ChartData {
     months: string[];
@@ -53,13 +32,19 @@ interface Stats {
 
 interface Props {
     stats: Stats;
-    categories: Category[];
+    categories: (Category & {
+        total_bills_count: number;
+        unpaid_bills_count: number;
+        total_amount: number;
+        unpaid_amount: number;
+        paid_bills_count: number;
+    })[];
     recentBills: Bill[];
     upcomingBills: Bill[];
     chartData: ChartData;
 }
 
-const props = defineProps<Props & SharedData>();
+const { stats, categories, recentBills, upcomingBills, ...props } = defineProps<Props & SharedData>();
 
 // Get current date for greeting
 const currentHour = new Date().getHours();
@@ -122,8 +107,8 @@ const chartSeries = computed(() => {
 
 // Calculate payment progress
 const paymentProgress = computed((): number => {
-    const totalBills = props.stats.totalBills;
-    return totalBills > 0 ? Math.round((props.stats.paidBills / totalBills) * 100) : 0;
+    const totalBills = stats.totalBills;
+    return totalBills > 0 ? Math.round((stats.paidBills / totalBills) * 100) : 0;
 });
 
 // Get user from session for greeting

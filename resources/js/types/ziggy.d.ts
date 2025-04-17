@@ -1,4 +1,6 @@
+import { Page } from '@inertiajs/core';
 import { RouteParams, Router } from 'ziggy-js';
+import { SharedData } from '.';
 
 declare global {
     function route(): Router;
@@ -8,5 +10,6 @@ declare global {
 declare module '@vue/runtime-core' {
     interface ComponentCustomProperties {
         route: typeof route;
+        $page: Page<SharedData>;
     }
 }

@@ -2,26 +2,8 @@
 import BillForm from '@/components/bills/BillForm.vue';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { Bill, Category } from '@/types/model';
 import { Head } from '@inertiajs/vue3';
-
-interface Category {
-    id: number;
-    name: string;
-}
-
-interface Bill {
-    id: number;
-    title: string;
-    description: string | null;
-    amount: number;
-    due_date: string;
-    status: 'paid' | 'unpaid';
-    is_recurring: boolean;
-    recurrence_period: 'weekly' | 'monthly' | 'yearly' | null;
-    category_id: number | null;
-    created_at: string;
-    updated_at: string;
-}
 
 interface Props {
     bill: Bill;

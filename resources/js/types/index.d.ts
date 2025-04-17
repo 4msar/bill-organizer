@@ -1,6 +1,7 @@
 import type { PageProps } from '@inertiajs/core';
 import type { LucideIcon } from 'lucide-vue-next';
 import type { Config } from 'ziggy-js';
+import { User } from './model';
 
 export interface Auth {
     user: User;
@@ -26,14 +27,32 @@ export interface SharedData extends PageProps {
     sidebarOpen: boolean;
 }
 
-export interface User {
-    id: number;
-    name: string;
-    email: string;
-    avatar?: string;
-    email_verified_at: string | null;
-    created_at: string;
-    updated_at: string;
+export type BreadcrumbItemType = BreadcrumbItem;
+
+export interface PaginationLinks {
+    first: string | null;
+    last: string | null;
+    prev: string | null;
+    next: string | null;
 }
 
-export type BreadcrumbItemType = BreadcrumbItem;
+export interface PaginationMeta {
+    current_page: number;
+    from: number;
+    last_page: number;
+    links: Array<{
+        url: string | null;
+        label: string;
+        active: boolean;
+    }>;
+    path: string;
+    per_page: number;
+    to: number;
+    total: number;
+}
+
+export interface PaginatedData<T> {
+    data: T[];
+    links: PaginationLinks;
+    meta: PaginationMeta;
+}

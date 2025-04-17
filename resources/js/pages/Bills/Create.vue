@@ -2,12 +2,8 @@
 import BillForm from '@/components/bills/BillForm.vue';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { Category } from '@/types/model';
 import { Head } from '@inertiajs/vue3';
-
-interface Category {
-    id: number;
-    name: string;
-}
 
 interface Props {
     categories: Category[];

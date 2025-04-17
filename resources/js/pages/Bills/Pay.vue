@@ -5,27 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatDate } from '@/lib/utils';
+import { Bill } from '@/types/model';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { AlertCircle, ArrowLeft, Receipt } from 'lucide-vue-next';
 import { computed } from 'vue';
-
-interface Category {
-    id: number;
-    name: string;
-}
-
-interface Bill {
-    id: number;
-    title: string;
-    description: string | null;
-    amount: number;
-    due_date: string;
-    status: 'paid' | 'unpaid';
-    is_recurring: boolean;
-    recurrence_period: 'weekly' | 'monthly' | 'yearly' | null;
-    category_id: number | null;
-    category?: Category;
-}
 
 interface Props {
     bill: Bill;

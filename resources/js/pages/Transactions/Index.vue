@@ -7,54 +7,13 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatDate } from '@/lib/utils';
+import { PaginatedData } from '@/types';
+import { Bill, Transaction } from '@/types/model';
 import { Head, router } from '@inertiajs/vue3';
 import { CalendarIcon, Filter, RefreshCw } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
-interface Bill {
-    id: number;
-    title: string;
-}
-
-interface Transaction {
-    id: number;
-    bill_id: number;
-    amount: number;
-    payment_date: string;
-    payment_method: string | null;
-    attachment: string | null;
-    notes: string | null;
-    created_at: string;
-    bill?: Bill;
-}
-
-interface PaginationLinks {
-    first: string | null;
-    last: string | null;
-    prev: string | null;
-    next: string | null;
-}
-
-interface PaginationMeta {
-    current_page: number;
-    from: number;
-    last_page: number;
-    links: Array<{
-        url: string | null;
-        label: string;
-        active: boolean;
-    }>;
-    path: string;
-    per_page: number;
-    to: number;
-    total: number;
-}
-
-interface Transactions {
-    data: Transaction[];
-    links: PaginationLinks;
-    meta: PaginationMeta;
-}
+type Transactions = PaginatedData<Transaction>;
 
 interface Filters {
     bill_id?: string | null;
@@ -183,7 +142,7 @@ const paymentMethods = {
                             <div class="space-y-2">
                                 <label class="text-sm font-medium">Bill</label>
                                 <Select v-model="filters.bill_id">
-                                    <SelectTrigger>
+                                    <SelectTrigger class="w-full">
                                         <SelectValue placeholder="All Bills" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -239,7 +198,7 @@ const paymentMethods = {
                             <div class="space-y-2">
                                 <label class="text-sm font-medium">Payment Method</label>
                                 <Select v-model="filters.payment_method">
-                                    <SelectTrigger>
+                                    <SelectTrigger class="w-full">
                                         <SelectValue placeholder="All Methods" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -271,7 +230,12 @@ const paymentMethods = {
                 <!-- Pagination -->
                 <div v-if="hasTransactions && transactions?.meta?.last_page > 1" class="mt-6 flex justify-center">
                     <div class="flex items-center space-x-2">
-                        <Button variant="outline" size="sm" :disabled="!transactions.links.prev" @click="router.get(transactions?.links?.prev)">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            :disabled="!transactions.links.prev"
+                            @click="transactions?.links?.prev ? router.get(transactions?.links?.prev) : 0"
+                        >
                             Previous
                         </Button>
 
@@ -279,7 +243,12 @@ const paymentMethods = {
                             Page {{ transactions.meta.current_page }} of {{ transactions.meta.last_page }}
                         </span>
 
-                        <Button variant="outline" size="sm" :disabled="!transactions.links.next" @click="router.get(transactions?.links?.next)">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            :disabled="!transactions.links.next"
+                            @click="transactions?.links?.next ? router.get(transactions?.links?.next) : 0"
+                        >
                             Next
                         </Button>
                     </div>

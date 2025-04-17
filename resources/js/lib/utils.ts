@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from 'clsx';
+import * as LucideIcons from 'lucide-vue-next';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -19,4 +20,15 @@ export function formatCurrency(value: number) {
         style: 'currency',
         currency: 'USD',
     }).format(value);
+}
+
+export function getIconComponent(iconName: string | null): LucideIcons.LucideIcon {
+    if (!iconName) return LucideIcons.CircleDot;
+
+    const pascalCase = iconName
+        .split('-')
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join('');
+
+    return (LucideIcons[pascalCase as keyof typeof LucideIcons] as LucideIcons.LucideIcon) || LucideIcons.CircleDot;
 }

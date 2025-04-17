@@ -7,42 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency, formatDate } from '@/lib/utils';
+import { Bill } from '@/types/model';
 import { Head, Link, router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { CalendarIcon, Clock, Edit, Receipt, RotateCcw, Trash2 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-
-interface Category {
-    id: number;
-    name: string;
-}
-
-interface Transaction {
-    id: number;
-    bill_id: number;
-    amount: number;
-    payment_date: string;
-    payment_method: string | null;
-    attachment: string | null;
-    notes: string | null;
-    created_at: string;
-}
-
-interface Bill {
-    id: number;
-    title: string;
-    description: string | null;
-    amount: number;
-    due_date: string;
-    status: 'paid' | 'unpaid';
-    is_recurring: boolean;
-    recurrence_period: 'weekly' | 'monthly' | 'yearly' | null;
-    category_id: number | null;
-    category?: Category;
-    created_at: string;
-    updated_at: string;
-    transactions?: Transaction[];
-}
 
 interface Props {
     bill: Bill;
@@ -58,10 +27,6 @@ const isLoading = ref(false);
 
 const isPastDue = computed((): boolean => {
     return new Date(bill.value.due_date) < new Date() && bill.value.status === 'unpaid';
-});
-
-const hasTransactions = computed((): boolean => {
-    return bill.value.transactions && bill.value.transactions.length > 0;
 });
 
 function deleteBill(): void {
