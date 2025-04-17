@@ -4,15 +4,12 @@ import CategoryTable from '@/components/CategoryTable.vue';
 import NoCategoriesWarning from '@/components/NoCategoriesWarning.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { Category as BaseCategory } from '@/types/model';
 import { Head, router } from '@inertiajs/vue3';
 import { Plus } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 
-interface Category {
-    id: number;
-    name: string;
-    description: string | null;
-    icon: string | null;
+type Category = BaseCategory & {
     total_bills_count: number;
     unpaid_bills_count: number;
     total_amount: number | null;
@@ -89,6 +86,7 @@ function deleteCategory(id: number) {
                     :dialogTitle="isEditMode ? 'Edit Category' : 'Create New Category'"
                     :dialogDescription="isEditMode ? 'Update the details of this category.' : 'Add a new category to organize your bills.'"
                     :availableIcons="props.availableIcons"
+                    :category="selectedCategory"
                     v-on:update:open="isOpen=$event"
                 />
 

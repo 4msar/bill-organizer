@@ -7,16 +7,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import * as LucideIcons from 'lucide-vue-next';
-import { defineProps, defineEmits } from 'vue';
+import { defineProps, defineEmits, onMounted, watchEffect } from 'vue';
 import { useForm } from '@inertiajs/vue3';
+import { Category } from '@/types/model';
 
-interface FormState {
-  id: number | null;
-  name: string;
-  description: string;
-  icon: string | null;
-  processing?: boolean;
-}
+const props = defineProps<{
+  isOpen: boolean;
+  isEditMode: boolean;
+  dialogTitle: string;
+  dialogDescription: string;
+  category: Category | null;
+  availableIcons: Record<string, string>;
+}>();
+
+const emit = defineEmits<{
+  'update:open': [value: boolean];
+}>();
 
 const form = useForm({
     id: null as number | null,
@@ -25,19 +31,17 @@ const form = useForm({
     icon: null as string | null,
 });
 
-const emit = defineEmits<{
-  'update:open': [value: boolean];
-}>();
-
-const props = defineProps<{
-  isOpen: boolean;
-  isEditMode: boolean;
-  dialogTitle: string;
-  dialogDescription: string;
-  availableIcons: Record<string, string>;
-}>();
+watchEffect(() => {
+    if (props.isEditMode && props.category) {
+        form.id = props.category.id;
+        form.name = props.category.name;
+        form.description = props.category.description ?? '';
+        form.icon = props.category.icon;
+    }
+})
 
 function handleClose(value: boolean) {
+  if(value === false) form.reset();
   emit('update:open', value);
 }
 
