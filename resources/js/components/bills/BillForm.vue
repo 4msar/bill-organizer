@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { formatDate } from '@/lib/utils';
 import { useForm } from '@inertiajs/vue3';
+import { CalendarDate, parseDate } from '@internationalized/date';
 import { CalendarIcon } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
 
@@ -22,10 +23,11 @@ interface BillData {
     title: string;
     description: string | null;
     amount: number | string;
-    due_date: string | null;
+    due_date: string | null | CalendarDate;
     category_id: number | null;
     is_recurring: boolean;
     recurrence_period: 'weekly' | 'monthly' | 'yearly' | null;
+    [key: string]: any;
 }
 
 interface Props {
@@ -37,7 +39,7 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const form = useForm({
+const form = useForm<BillData>({
     title: props.bill.title,
     description: props.bill.description,
     amount: props.bill.amount,
@@ -48,7 +50,7 @@ const form = useForm({
 });
 
 const today = new Date();
-const dueDate = ref<Date | null>(props.bill.due_date ? new Date(props.bill.due_date) : today);
+const dueDate = ref<Date | null>(props.bill.due_date ? new Date(props.bill.due_date as string) : today);
 
 const formattedDate = computed((): string => {
     if (!dueDate.value) return '';
@@ -62,7 +64,9 @@ function updateDueDate(date: Date): void {
 
 onMounted(() => {
     if (props.bill.due_date) {
-        form.due_date = props.bill.due_date;
+        form.due_date = parseDate(props.bill.due_date as string);
+    } else {
+        form.due_date = parseDate(today.toISOString());
     }
 });
 
@@ -118,7 +122,7 @@ function submit(): void {
                                 </FormControl>
                             </PopoverTrigger>
                             <PopoverContent class="w-auto p-0" align="start">
-                                <Calendar :selected-date="dueDate" @update:selected-date="updateDueDate" :min-date="today" />
+                                <Calendar :model-value="form.due_date" @update:selected-date="updateDueDate" :min-date="today" />
                             </PopoverContent>
                         </Popover>
                         <FormMessage />
