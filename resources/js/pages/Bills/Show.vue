@@ -71,7 +71,7 @@ function onPaymentComplete(): void {
         <Head :title="bill.title" />
 
         <div class="py-6">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <!-- Back Button and Title -->
                 <div class="mb-6 flex items-center justify-between">
                     <div>

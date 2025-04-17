@@ -28,7 +28,7 @@ defineProps<Props>();
         <Head title="Add New Bill" />
 
         <div class="py-6">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="mb-6">
                     <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Add New Bill</h2>
                 </div>

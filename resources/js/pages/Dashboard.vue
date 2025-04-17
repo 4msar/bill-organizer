@@ -69,7 +69,6 @@ const getDueStatus = (dueDate: string): string => {
 };
 
 // Chart setup
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const chartOptions = ref({
     chart: {
         type: 'bar',
@@ -127,7 +126,7 @@ const userName = props.auth.user.name || 'User';
         <Head title="Dashboard" />
 
         <div class="py-6">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <!-- Welcome Header -->
                 <div class="mb-8">
                     <h1 class="text-3xl font-bold tracking-tight">{{ greeting }}, {{ userName }}</h1>
@@ -370,7 +369,7 @@ const userName = props.auth.user.name || 'User';
                         </CardHeader>
                         <CardContent>
                             <!-- For ApexCharts, we need to add the library to the project -->
-                            <div class="flex h-[300px] items-center justify-center">
+                            <div class="flex h-[300px] w-full items-center justify-center">
                                 <div v-if="chartSeries.length > 0" class="h-full w-full">
                                     <!-- This is a placeholder for ApexCharts -->
                                     <!-- In a real implementation, you would use: -->
@@ -397,7 +396,7 @@ const userName = props.auth.user.name || 'User';
                         </Link>
                     </Button>
                     <Button variant="outline" asChild>
-                        <Link :href="route('categories.create')">
+                        <Link :href="route('categories.index', { action: 'create' })">
                             <Landmark class="mr-2 h-4 w-4" />
                             Add Category
                         </Link>

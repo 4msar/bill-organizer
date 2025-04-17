@@ -7,14 +7,14 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Category as BaseCategory } from '@/types/model';
 import { Head, router } from '@inertiajs/vue3';
 import { Plus } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 type Category = BaseCategory & {
     total_bills_count: number;
     unpaid_bills_count: number;
     total_amount: number | null;
     unpaid_amount: number | null;
-}
+};
 
 interface Props {
     categories: Category[];
@@ -48,6 +48,14 @@ function deleteCategory(id: number) {
         router.delete(route('categories.destroy', id));
     }
 }
+
+onMounted(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const action = searchParams.get('action');
+    if (action === 'create') {
+        openCreateDialog();
+    }
+});
 </script>
 
 <template>
@@ -62,7 +70,7 @@ function deleteCategory(id: number) {
         <Head title="Categories" />
 
         <div class="py-6">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <!-- Header with Add New Button -->
                 <div class="mb-6 flex items-center justify-between">
                     <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Categories</h2>
@@ -73,11 +81,7 @@ function deleteCategory(id: number) {
                 </div>
 
                 <!-- Category Table -->
-                <CategoryTable
-                    :categories="props.categories"
-                    @openEditDialog="openEditDialog"
-                    @deleteCategory="deleteCategory"
-                />
+                <CategoryTable :categories="props.categories" @openEditDialog="openEditDialog" @deleteCategory="deleteCategory" />
 
                 <!-- Category Form Dialog -->
                 <CategoryFormDialog
@@ -87,7 +91,7 @@ function deleteCategory(id: number) {
                     :dialogDescription="isEditMode ? 'Update the details of this category.' : 'Add a new category to organize your bills.'"
                     :availableIcons="props.availableIcons"
                     :category="selectedCategory"
-                    v-on:update:open="isOpen=$event"
+                    v-on:update:open="isOpen = $event"
                 />
 
                 <!-- Warning for users with no categories -->

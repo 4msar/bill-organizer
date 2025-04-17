@@ -45,7 +45,7 @@ function markAsPaid(id: string | number) {
         <Head title="Bills" />
 
         <div class="py-6">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <!-- Summary Cards -->
                 <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-3">
                     <Card>
