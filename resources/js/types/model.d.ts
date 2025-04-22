@@ -4,21 +4,23 @@ export interface Model {
     updated_at: string;
 }
 
+type DataType = string | number | boolean | null;
 export interface User extends Model {
     name: string;
     email: string;
     avatar?: string;
     email_verified_at: string | null;
+    metas: Record<string, DataType | DataType[]>;
 }
 
-export interface Category extends Model  {
+export interface Category extends Model {
     user_id: number;
     name: string;
     description: string | null;
     icon: string | null;
 }
 
-export interface Bill extends Model  {
+export interface Bill extends Model {
     user_id: number;
     title: string;
     description: string | null;

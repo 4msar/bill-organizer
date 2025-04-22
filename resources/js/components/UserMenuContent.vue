@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import UserInfo from '@/components/UserInfo.vue';
 import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import type { User } from '@/types';
+import type { User } from '@/types/model';
 import { Link } from '@inertiajs/vue3';
-import { LogOut, Settings } from 'lucide-vue-next';
+import { Bell, LogOut, Settings } from 'lucide-vue-next';
+import { Badge } from './ui/badge';
 
 interface Props {
     user: User;
@@ -21,9 +22,20 @@ defineProps<Props>();
     <DropdownMenuSeparator />
     <DropdownMenuGroup>
         <DropdownMenuItem :as-child="true">
-            <Link class="block w-full" :href="route('profile.edit')" as="button">
+            <Link class="block w-full cursor-pointer" :href="route('profile.edit')">
                 <Settings class="mr-2 h-4 w-4" />
                 Settings
+            </Link>
+        </DropdownMenuItem>
+    </DropdownMenuGroup>
+    <DropdownMenuGroup>
+        <DropdownMenuItem :as-child="true">
+            <Link class="block w-full cursor-pointer" :href="route('notifications.index')">
+                <Bell class="mr-2 h-4 w-4" />
+                <div class="flex w-full items-center justify-between">
+                    <span>Notifications</span>
+                    <Badge v-if="$page.props.notifications.unread > 0">{{ $page.props.notifications.unread }}</Badge>
+                </div>
             </Link>
         </DropdownMenuItem>
     </DropdownMenuGroup>

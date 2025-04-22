@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Bill;
 use App\Models\Category;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class DashboardController extends Controller

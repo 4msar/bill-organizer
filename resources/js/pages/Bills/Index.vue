@@ -47,6 +47,7 @@ function markAsPaid(id: string | number) {
         <div class="py-6">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <!-- Summary Cards -->
+                <h2 class="col-span-1 mb-2 text-lg text-gray-500 dark:text-gray-200">Current Month Stats</h2>
                 <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-3">
                     <Card>
                         <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -97,9 +98,10 @@ function markAsPaid(id: string | number) {
                 <Card>
                     <CardHeader>
                         <Tabs v-model="activeTab" class="w-full">
-                            <TabsList class="grid w-full max-w-md grid-cols-3">
+                            <TabsList class="grid w-full max-w-md grid-cols-4">
                                 <TabsTrigger value="all">All Bills</TabsTrigger>
                                 <TabsTrigger value="unpaid">Unpaid</TabsTrigger>
+                                <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
                                 <TabsTrigger value="paid">Paid</TabsTrigger>
                             </TabsList>
                         </Tabs>
@@ -120,6 +122,7 @@ function markAsPaid(id: string | number) {
                             <TableBody>
                                 <TableRow
                                     v-for="bill in bills.filter((bill) => {
+                                        if (activeTab === 'upcoming') return new Date(bill.due_date) > new Date() && bill.status === 'unpaid';
                                         if (activeTab === 'all') return true;
                                         if (activeTab === 'unpaid') return bill.status === 'unpaid';
                                         if (activeTab === 'paid') return bill.status === 'paid';

@@ -76,13 +76,24 @@ trait HasMetaData
         return $value;
     }
 
+
     /**
      * Get the all meta by their key => value
      *
      * @return array|mixed
      */
-    public function getSerializedMeta()
+    public function metaToArray()
     {
-        return $this->meta->pluck('value', 'name');
+        return $this->meta->pluck('value', 'name')->toArray();
+    }
+
+    /**
+     * Get meta as array
+     *
+     * @return array
+     */
+    function getMetasAttribute()
+    {
+        return $this->metaToArray();
     }
 }

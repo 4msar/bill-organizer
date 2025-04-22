@@ -44,13 +44,46 @@ final class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user()->append('metas'),
             ],
             'ziggy' => [
                 ...(new Ziggy())->toArray(),
                 'location' => $request->url(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'notifications' => $this->getNotifications($request),
+            'flash' => [
+                'success' => $request->session()->get('success'),
+                'error' => $request->session()->get('error'),
+                'warning' => $request->session()->get('warning'),
+                'info' => $request->session()->get('info'),
+            ],
+        ];
+    }
+
+    /**
+     * Get the notifications for the user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    protected function getNotifications(Request $request): array
+    {
+        /**
+         * @var \App\Models\User $user
+         */
+        $user = $request->user();
+
+        if (! $user) {
+            return [];
+        }
+
+        return [
+            'unread' => $user->unreadNotifications->count(),
+            'notification' => $user->notifications()
+                ->latest()
+                ->unread()
+                ->first(),
         ];
     }
 }

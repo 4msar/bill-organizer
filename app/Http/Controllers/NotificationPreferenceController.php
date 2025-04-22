@@ -15,7 +15,7 @@ class NotificationPreferenceController extends Controller
     {
         $user = Auth::user();
 
-        return Inertia::render('Profile/NotificationPreferences', [
+        return Inertia::render('settings/NotificationPreferences', [
             'preferences' => $user->notification_preferences ? json_decode($user->notification_preferences, true) : [],
         ]);
     }
@@ -26,13 +26,19 @@ class NotificationPreferenceController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'preferences' => 'required|array',
-            'preferences.*' => 'integer|in:1,3,7', // Only allow 1, 3, or 7 days before
+            'email_notification' => ['nullable', 'boolean'],
+            'web_notification' => ['nullable', 'boolean'],
+            'early_reminder_days' => ['array'],
         ]);
 
-        $user = Auth::user();
-        $user->notification_preferences = json_encode($request->preferences);
-        $user->save();
+        /**
+         * @var \App\Models\User $user
+         */
+        $user = $request->user();
+
+        $user->setMeta('email_notification', $request->input('email_notification', false));
+        $user->setMeta('web_notification', $request->input('web_notification', false));
+        $user->setMeta('early_reminder_days', $request->input('early_reminder_days', []));
 
         return redirect()->back()->with('success', 'Notification preferences updated successfully.');
     }

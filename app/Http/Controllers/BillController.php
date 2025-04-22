@@ -13,12 +13,21 @@ final class BillController extends Controller
     {
         $bills = Bill::with('category')->where('user_id', auth()->id())->get();
 
+        $unpaidBills = $bills->where('status', 'unpaid')->filter(
+            fn($item) => $item->due_date->isCurrentMonth()
+        );
+
         return inertia('Bills/Index', [
             'bills' => $bills,
-            'total_unpaid' => $bills->where('is_paid', false)->sum('amount'),
-            'unpaid_count' => $bills->where('is_paid', false)->count(),
-            'upcoming_count' => $bills->where('due_date', '>=', now())->count(),
-            'paid_count' => $bills->where('is_paid', true)->count(),
+            'total_unpaid' => $unpaidBills->sum('amount'),
+            'unpaid_count' => $unpaidBills->count(),
+            'upcoming_count' => $bills
+                ->filter(fn($item) => $item->isUpcoming())
+                ->count(),
+            'paid_count' => $bills
+                ->where('status', 'paid')
+                ->filter(fn($item) => $item->due_date->isCurrentMonth())
+                ->count(),
         ]);
     }
 

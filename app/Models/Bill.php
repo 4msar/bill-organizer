@@ -96,6 +96,27 @@ final class Bill extends Model
     }
 
     /**
+     * Check if the due date is upcoming.
+     *
+     * @return boolean
+     */
+    function isUpcoming()
+    {
+        return $this->isUpcomingIn(7);
+    }
+
+    /**
+     * Check if the due date is upcoming.
+     *
+     * @return boolean
+     */
+    function isUpcomingIn($days = 1)
+    {
+        return $this->due_date->lte(now()->addDays($days)) &&
+            $this->status === 'unpaid';
+    }
+
+    /**
      * Scope a query to only include unpaid bills.
      */
     public function scopeUnpaid($query)

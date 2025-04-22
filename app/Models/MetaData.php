@@ -38,7 +38,24 @@ class MetaData extends Model
 
     function getValueAttribute($value)
     {
-        return filterValue($value);
+        if (is_null($value)) {
+            return $value;
+        }
+
+        // Check if value is boolean
+        $boolean = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+
+        if ($boolean !== null) {
+            return $boolean;
+        }
+
+        // Check if value is valid JSON
+        if (is_string($value) && json_validate($value)) {
+            $decoded = json_decode($value, true);
+            return array_map(fn($item) => is_string($item) ? trim($item) : $item, $decoded);
+        }
+
+        return $value;
     }
 
     public function metaable()
