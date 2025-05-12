@@ -23,7 +23,7 @@ interface Props {
     showBillLink?: boolean;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
 const methods = {
     cash: 'Cash',
@@ -42,7 +42,10 @@ function getPaymentMethodName(method: string | null): string {
 }
 
 function getPaymentMethodIcon(method: string | null) {
-    // This is a simplified version. You could have different icons for different methods
+    if(method){
+        return CreditCard;
+    }
+    
     return CreditCard;
 }
 
