@@ -4,6 +4,9 @@
 
 An open-source application to manage bill effectively. Built using the latest Laravel framework and Vue.js, it provides a seamless and modern user experience.
 
+
+[![tests](https://github.com/4msar/bill-organizer/actions/workflows/tests.yml/badge.svg)](https://github.com/4msar/bill-organizer/actions/workflows/tests.yml)
+[![lint](https://github.com/4msar/bill-organizer/actions/workflows/lint.yml/badge.svg)](https://github.com/4msar/bill-organizer/actions/workflows/lint.yml)
 ---
 
 ## Features
