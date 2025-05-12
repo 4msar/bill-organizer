@@ -1,18 +1,14 @@
-Here is the completed README with additional details and proper formatting:
-
----
-
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-# Trade License App
+# Bill Manager App
 
-An open-source application to manage trade licenses effectively. Built using the latest Laravel framework and Vue.js, it provides a seamless and modern user experience.
+An open-source application to manage bill effectively. Built using the latest Laravel framework and Vue.js, it provides a seamless and modern user experience.
 
 ---
 
 ## Features
 
-- Manage trade licenses efficiently.
+- Manage bill and subscriptions efficiently.
 - Modern front-end built with Vue.js.
 - Backend powered by Laravel 12.
 - Docker support for easy deployment.
