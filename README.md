@@ -129,6 +129,3 @@ Contributions are welcome! Please follow these steps to contribute:
 
 This project is open-source and available under the [GNU GENERAL PUBLIC LICENSE](LICENSE).
 
----
-
-Feel free to replace placeholders (e.g., "Trade License App") with the actual app's name if it differs. Let me know if you need further refinements!
