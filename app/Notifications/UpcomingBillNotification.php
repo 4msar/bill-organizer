@@ -5,10 +5,10 @@ namespace App\Notifications;
 use App\Models\Bill;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
-class UpcomingBillNotification extends Notification
+final class UpcomingBillNotification extends Notification
 {
     use Queueable;
 
@@ -35,8 +35,8 @@ class UpcomingBillNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
-            ->subject("Reminder: Upcoming Bill Due")
+        return (new MailMessage())
+            ->subject('Reminder: Upcoming Bill Due')
             ->greeting("Hello {$notifiable->name},")
             ->line("This is a reminder that your bill, {$this->bill->title}, is due on {$this->bill->due_date->format('M d, Y')}.")
             ->line("Amount: {$this->bill->amount}")

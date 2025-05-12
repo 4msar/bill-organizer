@@ -44,7 +44,7 @@ final class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
-                'user' => $request->user()->append('metas'),
+                'user' => $request->user()?->append('metas'),
             ],
             'ziggy' => [
                 ...(new Ziggy())->toArray(),
@@ -63,9 +63,6 @@ final class HandleInertiaRequests extends Middleware
 
     /**
      * Get the notifications for the user.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
      */
     protected function getNotifications(Request $request): array
     {

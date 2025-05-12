@@ -6,12 +6,12 @@ use App\Models\User;
 use App\Notifications\UpcomingBillNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Database\Eloquent\Builder;
 
-class SendUpcomingBillNotifications implements ShouldQueue
+final class SendUpcomingBillNotifications implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -23,7 +23,7 @@ class SendUpcomingBillNotifications implements ShouldQueue
         // Get all users with notification preferences
         $users = User::query()->whereHas(
             'meta',
-            fn(Builder $query) => $query
+            fn (Builder $query) => $query
                 ->where('email_notification', true)
                 ->orWhere('web_notification', true),
         )
@@ -37,7 +37,7 @@ class SendUpcomingBillNotifications implements ShouldQueue
                 // Get bills for the user due on the target date
                 $bills = $user->bills
                     ->where('status', 'unpaid')
-                    ->filter(fn($bill) => $bill->isUpcomingIn($daysBefore))
+                    ->filter(fn ($bill) => $bill->isUpcomingIn($daysBefore))
                     ->all();
 
                 foreach ($bills as $bill) {

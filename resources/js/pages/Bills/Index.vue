@@ -128,6 +128,7 @@ function markAsPaid(id: string | number) {
                                         if (activeTab === 'paid') return bill.status === 'paid';
                                     })"
                                     :key="bill.id"
+                                    @click.stop="router.visit(route('bills.show', bill.id))"
                                     class="hover:bg-muted/50 cursor-pointer"
                                 >
                                     <TableCell class="font-medium">

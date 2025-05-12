@@ -44,5 +44,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/bills/{bill}/payment-details', [BillController::class, 'getPaymentDetails'])->name('bills.payment-details');
 });
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/auth.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
-class NotificationPreferenceController extends Controller
+final class NotificationPreferenceController extends Controller
 {
     /**
      * Show the notification preferences form.

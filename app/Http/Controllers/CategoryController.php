@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class CategoryController extends Controller
+final class CategoryController extends Controller
 {
     /**
      * Display a listing of the categories.
@@ -32,7 +32,7 @@ class CategoryController extends Controller
 
         return Inertia::render('Categories/Index', [
             'categories' => $categories,
-            'availableIcons' => $availableIcons
+            'availableIcons' => $availableIcons,
         ]);
     }
 

@@ -14,7 +14,7 @@ final class BillController extends Controller
         $bills = Bill::with('category')->where('user_id', auth()->id())->get();
 
         $unpaidBills = $bills->where('status', 'unpaid')->filter(
-            fn($item) => $item->due_date->isCurrentMonth()
+            fn ($item) => $item->due_date->isCurrentMonth()
         );
 
         return inertia('Bills/Index', [
@@ -22,11 +22,11 @@ final class BillController extends Controller
             'total_unpaid' => $unpaidBills->sum('amount'),
             'unpaid_count' => $unpaidBills->count(),
             'upcoming_count' => $bills
-                ->filter(fn($item) => $item->isUpcoming())
+                ->filter(fn ($item) => $item->isUpcoming())
                 ->count(),
             'paid_count' => $bills
                 ->where('status', 'paid')
-                ->filter(fn($item) => $item->due_date->isCurrentMonth())
+                ->filter(fn ($item) => $item->due_date->isCurrentMonth())
                 ->count(),
         ]);
     }
@@ -67,7 +67,7 @@ final class BillController extends Controller
             'category',
             'transactions' => function ($query) {
                 $query->latest('payment_date');
-            }
+            },
         ]);
 
         return inertia('Bills/Show', ['bill' => $bill]);

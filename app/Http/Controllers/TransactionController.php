@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Transaction;
 use App\Models\Bill;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
-use Carbon\Carbon;
 
-class TransactionController extends Controller
+final class TransactionController extends Controller
 {
     /**
      * Display a listing of the transactions.
@@ -70,7 +69,6 @@ class TransactionController extends Controller
 
         $bill = Bill::findOrFail($validated['bill_id']);
 
-
         // Handle file upload if present
         $attachmentPath = null;
         if ($request->hasFile('attachment')) {
@@ -117,7 +115,6 @@ class TransactionController extends Controller
     public function show(Transaction $transaction)
     {
 
-
         $transaction->load(['bill', 'bill.category']);
 
         return Inertia::render('Transactions/Show', [
@@ -130,7 +127,6 @@ class TransactionController extends Controller
      */
     public function destroy(Transaction $transaction)
     {
-
 
         // Delete attachment if exists
         if ($transaction->attachment) {

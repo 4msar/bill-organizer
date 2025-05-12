@@ -20,9 +20,9 @@ trait HasMetaData
     /**
      * Get the meta value by key
      *
-     * @param string $key
-     * @param string|mixed $fallback
-     * @param boolean $toArray if json
+     * @param  string  $key
+     * @param  string|mixed  $fallback
+     * @param  bool  $toArray  if json
      * @return string|mixed
      */
     public function getMeta($key, $fallback = null, $refresh = false)
@@ -36,8 +36,8 @@ trait HasMetaData
     /**
      * Check the meta is available or not
      *
-     * @param string $key
-     * @return boolean
+     * @param  string  $key
+     * @return bool
      */
     public function hasMeta($name)
     {
@@ -47,8 +47,8 @@ trait HasMetaData
     /**
      * Remove meta from meta table
      *
-     * @param string|array $name
-     * @return boolean
+     * @param  string|array  $name
+     * @return bool
      */
     public function removeMeta($name)
     {
@@ -58,16 +58,16 @@ trait HasMetaData
     /**
      * Set the meta value by key
      *
-     * @param string|array $name
-     * @param string|mixed $value
+     * @param  string|array  $name
+     * @param  string|mixed  $value
      * @return string|mixed
      */
     public function setMeta($name, $value = null)
     {
-        if (!$this->meta()->where('name', $name)->exists()) {
+        if (! $this->meta()->where('name', $name)->exists()) {
             $this->meta()->create([
                 'name' => $name,
-                'value' => $value
+                'value' => $value,
             ]);
         } else {
             $this->meta()->where('name', $name)->update(['value' => $value]);
@@ -75,7 +75,6 @@ trait HasMetaData
 
         return $value;
     }
-
 
     /**
      * Get the all meta by their key => value
@@ -92,7 +91,7 @@ trait HasMetaData
      *
      * @return array
      */
-    function getMetasAttribute()
+    public function getMetasAttribute()
     {
         return $this->metaToArray();
     }

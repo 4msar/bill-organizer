@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Notifications\DatabaseNotification;
 
-class NotificationResource extends JsonResource
+final class NotificationResource extends JsonResource
 {
     /**
      * The resource that this resource collects.
@@ -28,14 +28,12 @@ class NotificationResource extends JsonResource
             'title' => $this->getTitle(),
             'description' => $this->getDescription(),
             'created_time' => $this->created_at->diffForHumans(),
-            'url' => $this->getLink()
+            'url' => $this->getLink(),
         ];
     }
 
     /**
      * Get the title of the notification.
-     *
-     * @return string
      */
     public function getTitle(): string
     {
@@ -47,8 +45,6 @@ class NotificationResource extends JsonResource
 
     /**
      * Get the description of the notification.
-     *
-     * @return string
      */
     public function getDescription(): string
     {
@@ -60,8 +56,6 @@ class NotificationResource extends JsonResource
 
     /**
      * Get the link of the notification.
-     *
-     * @return string
      */
     public function getLink(): string
     {

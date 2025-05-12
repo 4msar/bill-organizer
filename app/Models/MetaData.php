@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MetaData extends Model
+final class MetaData extends Model
 {
     use HasFactory;
 
@@ -13,6 +13,7 @@ class MetaData extends Model
      * Disable the primary key
      */
     public $incrementing = false;
+
     protected $primaryKey = null;
 
     /**
@@ -29,14 +30,14 @@ class MetaData extends Model
     {
         parent::boot();
 
-        static::creating(function ($item) {
+        self::creating(function ($item) {
             if (is_array($item->value)) {
                 $item->value = json_encode($item->value);
             }
         });
     }
 
-    function getValueAttribute($value)
+    public function getValueAttribute($value)
     {
         if (is_null($value)) {
             return $value;
@@ -52,7 +53,8 @@ class MetaData extends Model
         // Check if value is valid JSON
         if (is_string($value) && json_validate($value)) {
             $decoded = json_decode($value, true);
-            return array_map(fn($item) => is_string($item) ? trim($item) : $item, $decoded);
+
+            return array_map(fn ($item) => is_string($item) ? trim($item) : $item, $decoded);
         }
 
         return $value;

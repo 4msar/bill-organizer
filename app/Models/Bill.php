@@ -65,13 +65,12 @@ final class Bill extends Model
         return $this->belongsTo(Category::class);
     }
 
-
     /**
      * Calculate next due date based on recurrence period.
      */
     public function calculateNextDueDate(): ?string
     {
-        if (!$this->is_recurring || !$this->recurrence_period) {
+        if (! $this->is_recurring || ! $this->recurrence_period) {
             return null;
         }
 
@@ -98,9 +97,9 @@ final class Bill extends Model
     /**
      * Check if the due date is upcoming.
      *
-     * @return boolean
+     * @return bool
      */
-    function isUpcoming()
+    public function isUpcoming()
     {
         return $this->isUpcomingIn(7);
     }
@@ -108,9 +107,9 @@ final class Bill extends Model
     /**
      * Check if the due date is upcoming.
      *
-     * @return boolean
+     * @return bool
      */
-    function isUpcomingIn($days = 1)
+    public function isUpcomingIn($days = 1)
     {
         return $this->due_date->lte(now()->addDays($days)) &&
             $this->status === 'unpaid';
@@ -144,7 +143,7 @@ final class Bill extends Model
             ->where('status', 'unpaid');
     }
 
-    function markAsPaid()
+    public function markAsPaid()
     {
         $this->update(['status' => 'paid']);
     }

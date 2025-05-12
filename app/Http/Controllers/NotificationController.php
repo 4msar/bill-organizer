@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\NotificationResource;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
-class NotificationController extends Controller
+final class NotificationController extends Controller
 {
     /**
      * Display a list of the user's notifications.

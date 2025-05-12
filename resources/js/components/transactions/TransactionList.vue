@@ -42,10 +42,10 @@ function getPaymentMethodName(method: string | null): string {
 }
 
 function getPaymentMethodIcon(method: string | null) {
-    if(method){
+    if (method) {
         return CreditCard;
     }
-    
+
     return CreditCard;
 }
 
