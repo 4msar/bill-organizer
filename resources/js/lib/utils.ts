@@ -15,10 +15,12 @@ export function formatDate(date: string | number | Date) {
     return new Date(date).toLocaleDateString('en-US', options);
 }
 
-export function formatCurrency(value: number) {
+export function formatCurrency(value: number, currency: string = 'USD') {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
-        currency: 'USD',
+        currency: currency,
+        maximumFractionDigits: 2,
+        currencyDisplay: 'narrowSymbol',
     }).format(value);
 }
 

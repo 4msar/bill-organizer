@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Confirm from '@/components/Confirm.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,12 +22,6 @@ defineProps<{
 }>();
 
 const activeTab = ref('all');
-
-function deleteBill(id: string | number) {
-    if (confirm('Are you sure you want to delete this bill?')) {
-        router.delete(route('bills.destroy', id));
-    }
-}
 
 function markAsPaid(id: string | number) {
     router.patch(route('bills.pay', id));
@@ -55,7 +50,9 @@ function markAsPaid(id: string | number) {
                             <DollarSign class="text-muted-foreground h-4 w-4" />
                         </CardHeader>
                         <CardContent>
-                            <div class="text-2xl font-bold">{{ formatCurrency(total_unpaid) }}</div>
+                            <div class="text-2xl font-bold">
+                                {{ formatCurrency(total_unpaid, $page.props?.auth?.user?.metas?.currency as string) }}
+                            </div>
                             <p class="text-muted-foreground text-xs">{{ unpaid_count }} unpaid bill{{ unpaid_count !== 1 ? 's' : '' }}</p>
                         </CardContent>
                     </Card>
@@ -122,7 +119,8 @@ function markAsPaid(id: string | number) {
                             <TableBody>
                                 <TableRow
                                     v-for="bill in bills.filter((bill) => {
-                                        if (activeTab === 'upcoming') return new Date(bill.due_date) > new Date() && bill.status === 'unpaid';
+                                        if (activeTab === 'upcoming')
+                                            return new Date(bill.due_date as string) > new Date() && bill.status === 'unpaid';
                                         if (activeTab === 'all') return true;
                                         if (activeTab === 'unpaid') return bill.status === 'unpaid';
                                         if (activeTab === 'paid') return bill.status === 'paid';
@@ -138,10 +136,14 @@ function markAsPaid(id: string | number) {
                                         </span>
                                     </TableCell>
                                     <TableCell>{{ bill.category?.name || 'Uncategorized' }}</TableCell>
-                                    <TableCell>{{ formatCurrency(bill.amount) }}</TableCell>
+                                    <TableCell>{{ formatCurrency(bill.amount, $page.props?.auth?.user?.metas?.currency as string) }}</TableCell>
                                     <TableCell>
-                                        <span :class="{ 'text-destructive': new Date(bill.due_date) < new Date() && bill.status === 'unpaid' }">
-                                            {{ formatDate(bill.due_date) }}
+                                        <span
+                                            :class="{
+                                                'text-destructive': new Date(bill.due_date as string) < new Date() && bill.status === 'unpaid',
+                                            }"
+                                        >
+                                            {{ formatDate(bill.due_date as string) }}
                                         </span>
                                     </TableCell>
                                     <TableCell>
@@ -176,13 +178,12 @@ function markAsPaid(id: string | number) {
                                                     <CheckCheck class="mr-2 h-4 w-4" />
                                                     Mark as paid
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem
-                                                    class="text-destructive focus:text-destructive flex items-center"
-                                                    @click.stop="deleteBill(bill.id)"
-                                                >
-                                                    <Trash2 class="mr-2 h-4 w-4" />
-                                                    Delete
-                                                </DropdownMenuItem>
+                                                <Confirm :modal="true" title="Are you sure?" :url="route('bills.destroy', bill.id)">
+                                                    <DropdownMenuItem standalone class="text-destructive hover:text-destructive flex items-center">
+                                                        <Trash2 class="mr-2 h-4 w-4" />
+                                                        Delete
+                                                    </DropdownMenuItem>
+                                                </Confirm>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

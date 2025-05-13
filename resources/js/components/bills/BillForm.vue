@@ -93,7 +93,9 @@ function submit(): void {
                         <FormLabel>Amount</FormLabel>
                         <FormControl>
                             <div class="relative">
-                                <span class="text-muted-foreground absolute inset-y-0 left-0 flex items-center pl-3">$</span>
+                                <span class="text-muted-foreground absolute inset-y-0 left-0 flex items-center pl-3">{{
+                                    $page.props?.auth?.user?.metas?.currency_symbol as string
+                                }}</span>
                                 <Input v-model="form.amount" type="number" min="0" step="0.01" placeholder="0.00" class="pl-8" />
                             </div>
                         </FormControl>

@@ -4,10 +4,10 @@ import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 
 import HeadingSmall from '@/components/HeadingSmall.vue';
+import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SharedData, type BreadcrumbItem } from '@/types';
 
 const breadcrumbItems: BreadcrumbItem[] = [
@@ -17,46 +17,25 @@ const breadcrumbItems: BreadcrumbItem[] = [
     },
 ];
 
-const days = {
-    due_day: 'Same day',
-    1: '1 day before due date',
-    3: '3 days before due date',
-    7: '7 days before due date',
-    15: '15 days before due date',
-    30: '30 days before due date',
-};
-
 const {
     props: {
         auth: { user },
     },
 } = usePage<SharedData>();
 
-interface NotificationSettings {
-    email_notification: boolean;
-    web_notification: boolean;
-    early_reminder_days: (number | string)[];
+interface SettingsForm {
+    currency: string;
+    currency_symbol: string;
     [key: string]: any;
 }
 
-const form = useForm<NotificationSettings>({
-    email_notification: Boolean(user.metas?.email_notification ?? true),
-    web_notification: Boolean(user.metas?.web_notification ?? true),
-
-    /**
-     * early reminder days
-     *
-     * 1 day before due date
-     * 3 days before due date
-     * 7 days before due date
-     * 15 days before due date
-     * 30 days before due date
-     */
-    early_reminder_days: user.metas?.early_reminder_days ? [...((user.metas.early_reminder_days as number[]) ?? [])] : [],
+const form = useForm<SettingsForm>({
+    currency: (user.metas.currency as string) || 'USD',
+    currency_symbol: (user.metas.currency_symbol as string) || '$',
 });
 
 const submit = () => {
-    form.put(route('notifications.update'), {
+    form.put(route('application.update'), {
         preserveScroll: true,
     });
 };
@@ -64,40 +43,37 @@ const submit = () => {
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
-        <Head title="Notification settings" />
+        <Head title="Application settings" />
 
         <SettingsLayout>
             <div class="space-y-6">
-                <HeadingSmall title="Notification settings" description="User notification preferences." />
+                <HeadingSmall title="Application specific settings" description="User specific application preferences." />
 
                 <form @submit.prevent="submit" class="space-y-6">
-                    <div class="flex items-center justify-between">
-                        <Label for="email" class="flex items-center space-x-3">
-                            <Checkbox id="email" v-model="form.email_notification" />
-                            <span>Email Notification</span>
-                        </Label>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <Label for="web" class="flex items-center space-x-3">
-                            <Checkbox id="web" v-model="form.web_notification" />
-                            <span>Web Notification</span>
-                        </Label>
-                    </div>
-
                     <div class="grid gap-2">
-                        <Label for="reminder" class="flex items-center space-x-3"> Notification Reminder </Label>
-                        <Select v-model="form.early_reminder_days" multiple>
-                            <SelectTrigger class="w-full">
-                                <SelectValue placeholder="Select" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem v-for="(label, value) in days" :key="value" :value="value">
-                                    <span>{{ label }}</span>
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <Label for="currency">Currency</Label>
+                        <Input
+                            id="currency"
+                            class="mt-1 block w-full"
+                            v-model="form.currency"
+                            required
+                            autocomplete="currency"
+                            placeholder="Currency Code. Ex: USD"
+                        />
+                        <InputError class="mt-2" :message="form.errors.currency" />
                     </div>
-
+                    <div class="grid gap-2">
+                        <Label for="currency_symbol">Currency Symbol</Label>
+                        <Input
+                            id="currency_symbol"
+                            class="mt-1 block w-full"
+                            v-model="form.currency_symbol"
+                            required
+                            autocomplete="currency_symbol"
+                            placeholder="Currency Code. Ex: $"
+                        />
+                        <InputError class="mt-2" :message="form.errors.currency_symbol" />
+                    </div>
                     <div class="flex items-center gap-4">
                         <Button :disabled="form.processing">Save</Button>
 

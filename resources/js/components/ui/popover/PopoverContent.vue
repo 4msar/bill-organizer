@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { cn } from '@/lib/utils'
 import {
+  PopoverArrow,
   PopoverContent,
   type PopoverContentEmits,
   type PopoverContentProps,
@@ -14,10 +15,11 @@ defineOptions({
 })
 
 const props = withDefaults(
-  defineProps<PopoverContentProps & { class?: HTMLAttributes['class'] }>(),
+  defineProps<PopoverContentProps & { class?: HTMLAttributes['class'], arrow?:boolean }>(),
   {
     align: 'center',
     sideOffset: 4,
+    arrow: false
   },
 )
 const emits = defineEmits<PopoverContentEmits>()
@@ -44,6 +46,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
       "
     >
       <slot />
+      <PopoverArrow v-if="arrow" />
     </PopoverContent>
   </PopoverPortal>
 </template>

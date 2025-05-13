@@ -5,7 +5,7 @@ import NoCategoriesWarning from '@/components/NoCategoriesWarning.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Category as BaseCategory } from '@/types/model';
-import { Head, router } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 import { Plus } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
 
@@ -42,13 +42,6 @@ function openEditDialog(category: Category) {
     isOpen.value = true;
 }
 
-// Delete a category
-function deleteCategory(id: number) {
-    if (confirm('Are you sure you want to delete this category?')) {
-        router.delete(route('categories.destroy', id));
-    }
-}
-
 onMounted(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const action = searchParams.get('action');
@@ -81,7 +74,7 @@ onMounted(() => {
                 </div>
 
                 <!-- Category Table -->
-                <CategoryTable :categories="props.categories" @openEditDialog="openEditDialog" @deleteCategory="deleteCategory" />
+                <CategoryTable :categories="props.categories" @openEditDialog="openEditDialog" />
 
                 <!-- Category Form Dialog -->
                 <CategoryFormDialog

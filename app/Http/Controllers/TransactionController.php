@@ -143,6 +143,6 @@ final class TransactionController extends Controller
             $bill->save();
         }
 
-        return Redirect::back()->with('success', 'Transaction deleted successfully.');
+        return back()->with('success', 'Transaction deleted successfully.');
     }
 }

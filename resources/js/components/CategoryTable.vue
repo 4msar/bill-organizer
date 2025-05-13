@@ -7,6 +7,7 @@ import { formatCurrency, getIconComponent } from '@/lib/utils';
 import { Category as BaseCategory } from '@/types/model';
 import { Pencil, Trash2 } from 'lucide-vue-next';
 import { defineProps } from 'vue';
+import Confirm from './Confirm.vue';
 
 interface Category extends BaseCategory {
     total_bills_count: number;
@@ -21,7 +22,6 @@ defineProps<{
 
 defineEmits<{
     (e: 'openEditDialog', category: Category): void;
-    (e: 'deleteCategory', categoryId: number): void;
 }>();
 </script>
 
@@ -56,9 +56,11 @@ defineEmits<{
                         </TableCell>
                         <TableCell>
                             <span v-if="category.unpaid_amount" class="font-medium">
-                                {{ formatCurrency(category.unpaid_amount) }}
+                                {{ formatCurrency(category.unpaid_amount, $page.props?.auth?.user?.metas?.currency as string) }}
                             </span>
-                            <span v-else class="text-muted-foreground">$0.00</span>
+                            <span v-else class="text-muted-foreground">{{
+                                formatCurrency(0, $page.props?.auth?.user?.metas?.currency as string)
+                            }}</span>
                         </TableCell>
                         <TableCell class="max-w-[200px] truncate">
                             {{ category.description || '-' }}
@@ -69,16 +71,17 @@ defineEmits<{
                                     <Pencil class="h-4 w-4" />
                                     <span class="sr-only">Edit</span>
                                 </Button>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    @click="$emit('deleteCategory', category.id)"
-                                    :disabled="category.total_bills_count > 0"
-                                    :title="category.total_bills_count > 0 ? 'Cannot delete categories with bills' : ''"
-                                >
-                                    <Trash2 class="h-4 w-4" />
-                                    <span class="sr-only">Delete</span>
-                                </Button>
+                                <Confirm title="Are you sure?" :url="route('categories.destroy', category.id)">
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        :disabled="category.total_bills_count > 0"
+                                        :title="category.total_bills_count > 0 ? 'Cannot delete categories with bills' : ''"
+                                    >
+                                        <Trash2 class="h-4 w-4" />
+                                        <span class="sr-only">Delete</span>
+                                    </Button>
+                                </Confirm>
                             </div>
                         </TableCell>
                     </TableRow>

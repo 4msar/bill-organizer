@@ -4,19 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import { router } from '@inertiajs/vue3';
+import { Transaction } from '@/types/model';
 import { Calendar, CreditCard, Download, ExternalLink, FileText, Receipt, Trash2 } from 'lucide-vue-next';
-
-interface Transaction {
-    id: number;
-    bill_id: number;
-    amount: number;
-    payment_date: string;
-    payment_method: string | null;
-    attachment: string | null;
-    notes: string | null;
-    created_at: string;
-}
+import Confirm from '../Confirm.vue';
 
 interface Props {
     transactions: Transaction[];
@@ -47,12 +37,6 @@ function getPaymentMethodIcon(method: string | null) {
     }
 
     return CreditCard;
-}
-
-function deleteTransaction(id: number) {
-    if (confirm('Are you sure you want to delete this transaction?')) {
-        router.delete(route('transactions.destroy', id));
-    }
 }
 
 function getFileExtension(path: string): string {
@@ -122,7 +106,7 @@ function getDocumentType(path: string): string {
                                 </div>
                             </TableCell>
                             <TableCell class="font-medium">
-                                {{ formatCurrency(transaction.amount) }}
+                                {{ formatCurrency(transaction.amount, $page.props?.auth?.user?.metas?.currency as string) }}
                             </TableCell>
                             <TableCell>
                                 <div class="flex items-center">
@@ -205,10 +189,12 @@ function getDocumentType(path: string): string {
                                         <ExternalLink class="h-4 w-4" />
                                         <span class="sr-only">View Bill</span>
                                     </Button>
-                                    <Button variant="ghost" size="icon" class="text-destructive h-8 w-8" @click="deleteTransaction(transaction.id)">
-                                        <Trash2 class="h-4 w-4" />
-                                        <span class="sr-only">Delete</span>
-                                    </Button>
+                                    <Confirm :url="route('transactions.destroy', transaction.id)">
+                                        <Button variant="ghost" size="icon" class="text-destructive h-8 w-8">
+                                            <Trash2 class="h-4 w-4" />
+                                            <span class="sr-only">Delete</span>
+                                        </Button>
+                                    </Confirm>
                                 </div>
                             </TableCell>
                         </TableRow>

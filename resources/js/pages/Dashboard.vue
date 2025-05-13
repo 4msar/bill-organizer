@@ -161,7 +161,7 @@ const userName = props.auth.user.name || 'User';
                         </CardHeader>
                         <CardContent>
                             <div class="text-destructive text-2xl font-bold">
-                                {{ formatCurrency(stats.totalUnpaidAmount) }}
+                                {{ formatCurrency(stats.totalUnpaidAmount, $page.props?.auth?.user?.metas?.currency as string) }}
                             </div>
                             <div class="text-muted-foreground mt-1 text-xs">{{ stats.unpaidBills }} unpaid bills</div>
                         </CardContent>
@@ -175,7 +175,7 @@ const userName = props.auth.user.name || 'User';
                         </CardHeader>
                         <CardContent>
                             <div class="text-2xl font-bold">
-                                {{ formatCurrency(stats.amountDueThisMonth) }}
+                                {{ formatCurrency(stats.amountDueThisMonth, $page.props?.auth?.user?.metas?.currency as string) }}
                             </div>
                             <div class="text-muted-foreground mt-1 text-xs">
                                 {{ new Date().toLocaleDateString('en-US', { month: 'long' }) }}
@@ -191,7 +191,7 @@ const userName = props.auth.user.name || 'User';
                         </CardHeader>
                         <CardContent>
                             <div class="text-success text-2xl font-bold">
-                                {{ formatCurrency(stats.totalPaidAmount) }}
+                                {{ formatCurrency(stats.totalPaidAmount, $page.props?.auth?.user?.metas?.currency as string) }}
                             </div>
                             <div class="text-muted-foreground mt-1 text-xs">{{ stats.paidBills }} paid bills</div>
                         </CardContent>
@@ -229,16 +229,19 @@ const userName = props.auth.user.name || 'User';
                                                 {{ bill.title }}
                                                 <Badge v-if="bill.is_recurring" variant="outline" className="ml-2"> Recurring </Badge>
                                             </TableCell>
-                                            <TableCell>{{ formatCurrency(bill.amount) }}</TableCell>
+                                            <TableCell>{{
+                                                formatCurrency(bill.amount, $page.props?.auth?.user?.metas?.currency as string)
+                                            }}</TableCell>
                                             <TableCell>
                                                 <span
                                                     :class="{
-                                                        'text-destructive': getDueStatus(bill.due_date) === 'overdue',
+                                                        'text-destructive': getDueStatus(bill.due_date as string) === 'overdue',
                                                         'font-medium':
-                                                            getDueStatus(bill.due_date) === 'today' || getDueStatus(bill.due_date) === 'tomorrow',
+                                                            getDueStatus(bill.due_date as string) === 'today' ||
+                                                            getDueStatus(bill.due_date as string) === 'tomorrow',
                                                     }"
                                                 >
-                                                    {{ getDueStatus(bill.due_date) }}
+                                                    {{ getDueStatus(bill.due_date as string) }}
                                                 </span>
                                             </TableCell>
                                             <TableCell>{{ bill.category?.name || 'Uncategorized' }}</TableCell>
@@ -286,7 +289,9 @@ const userName = props.auth.user.name || 'User';
                                     <TableBody>
                                         <TableRow v-for="bill in recentBills" :key="bill.id">
                                             <TableCell className="font-medium">{{ bill.title }}</TableCell>
-                                            <TableCell>{{ formatCurrency(bill.amount) }}</TableCell>
+                                            <TableCell>{{
+                                                formatCurrency(bill.amount, $page.props?.auth?.user?.metas?.currency as string)
+                                            }}</TableCell>
                                             <TableCell>
                                                 <Badge :variant="bill.status === 'paid' ? 'secondary' : 'default'">
                                                     {{ bill.status === 'paid' ? 'Paid' : 'Unpaid' }}
@@ -345,7 +350,7 @@ const userName = props.auth.user.name || 'User';
                                             <span class="text-muted-foreground"> ({{ category.unpaid_bills_count }} unpaid) </span>
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            {{ formatCurrency(category.total_amount) }}
+                                            {{ formatCurrency(category.total_amount, $page.props?.auth?.user?.metas?.currency as string) }}
                                         </TableCell>
                                     </TableRow>
                                     <TableRow v-if="categories.length === 0">

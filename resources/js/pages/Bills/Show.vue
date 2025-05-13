@@ -26,7 +26,7 @@ const nextDueDate = ref<string | null>(null);
 const isLoading = ref(false);
 
 const isPastDue = computed((): boolean => {
-    return new Date(bill.value.due_date) < new Date() && bill.value.status === 'unpaid';
+    return new Date(bill.value.due_date as string) < new Date() && bill.value.status === 'unpaid';
 });
 
 function deleteBill(): void {
@@ -97,7 +97,7 @@ function onPaymentComplete(): void {
                 <!-- Past Due Alert -->
                 <Alert v-if="isPastDue" variant="destructive" class="mb-6">
                     <AlertTitle>Past Due!</AlertTitle>
-                    <AlertDescription> This bill was due on {{ formatDate(bill.due_date) }} and is still unpaid. </AlertDescription>
+                    <AlertDescription> This bill was due on {{ formatDate(bill.due_date as string) }} and is still unpaid. </AlertDescription>
                 </Alert>
 
                 <!-- Bill Details Card -->
@@ -115,7 +115,7 @@ function onPaymentComplete(): void {
                                 <CardDescription v-if="bill.category"> Category: {{ bill.category.name }} </CardDescription>
                             </div>
                             <div class="text-2xl font-bold">
-                                {{ formatCurrency(bill.amount) }}
+                                {{ formatCurrency(bill.amount, $page.props?.auth?.user?.metas?.currency as string) }}
                             </div>
                         </div>
                     </CardHeader>
@@ -126,7 +126,7 @@ function onPaymentComplete(): void {
                                 <h3 class="text-muted-foreground mb-1 text-sm font-medium">Due Date</h3>
                                 <p class="flex items-center" :class="{ 'text-destructive': isPastDue }">
                                     <CalendarIcon class="mr-2 h-4 w-4" />
-                                    {{ formatDate(bill.due_date) }}
+                                    {{ formatDate(bill.due_date as string) }}
                                 </p>
                             </div>
 

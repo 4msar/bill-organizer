@@ -1,24 +1,7 @@
 <script setup lang="ts">
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Bill } from '@/types/model';
 import PaymentForm from './PaymentForm.vue';
-
-interface Category {
-    id: number;
-    name: string;
-}
-
-interface Bill {
-    id: number;
-    title: string;
-    description: string | null;
-    amount: number;
-    due_date: string;
-    status: 'paid' | 'unpaid';
-    is_recurring: boolean;
-    recurrence_period: 'weekly' | 'monthly' | 'yearly' | null;
-    category_id: number | null;
-    category?: Category;
-}
 
 interface Props {
     isOpen: boolean;

@@ -94,7 +94,7 @@ const payment_date = computed({
                         <p class="text-muted-foreground text-sm">Due: {{ formatDate(bill.due_date as string) }}</p>
                     </div>
                     <div class="text-xl font-bold">
-                        {{ formatCurrency(bill.amount) }}
+                        {{ formatCurrency(bill.amount, $page.props?.auth?.user?.metas?.currency as string) }}
                     </div>
                 </div>
             </div>
@@ -105,7 +105,9 @@ const payment_date = computed({
                     <FormLabel>Payment Amount</FormLabel>
                     <FormControl>
                         <div class="relative">
-                            <span class="text-muted-foreground absolute inset-y-0 left-0 flex items-center pl-3">$</span>
+                            <span class="text-muted-foreground absolute inset-y-0 left-0 flex items-center pl-3">{{
+                                $page.props?.auth?.user?.metas?.currency_symbol as string
+                            }}</span>
                             <Input v-model="form.amount" type="number" min="0.01" step="0.01" class="pl-8" />
                         </div>
                     </FormControl>
