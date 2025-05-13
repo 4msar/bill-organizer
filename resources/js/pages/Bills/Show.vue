@@ -17,28 +17,27 @@ interface Props {
     bill: Bill;
 }
 
-const props = defineProps<Props>();
+const { bill } = defineProps<Props>();
 
-const bill = ref<Bill>(props.bill);
 const isPaymentDialogOpen = ref(false);
 const paymentMethods = ref<Record<string, string>>({});
 const nextDueDate = ref<string | null>(null);
 const isLoading = ref(false);
 
 const isPastDue = computed((): boolean => {
-    return new Date(bill.value.due_date as string) < new Date() && bill.value.status === 'unpaid';
+    return new Date(bill.due_date as string) < new Date() && bill.status === 'unpaid';
 });
 
 function deleteBill(): void {
     if (confirm('Are you sure you want to delete this bill?')) {
-        router.delete(route('bills.destroy', bill.value.id));
+        router.delete(route('bills.destroy', bill.id));
     }
 }
 
 async function openPaymentDialog(): Promise<void> {
     isLoading.value = true;
     try {
-        const response = await axios.get(route('bills.payment-details', bill.value.id));
+        const response = await axios.get(route('bills.payment-details', bill.id));
         paymentMethods.value = response.data.paymentMethods;
         nextDueDate.value = response.data.nextDueDate;
         isPaymentDialogOpen.value = true;

@@ -102,7 +102,7 @@ final class TransactionController extends Controller
             }
         } else {
             // If it's not a recurring bill, set the due date to null
-            $bill->due_date = null;
+            $bill->status = 'paid';
             $bill->save();
         }
 

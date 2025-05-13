@@ -23,13 +23,7 @@ const {
     },
 } = usePage<SharedData>();
 
-interface SettingsForm {
-    currency: string;
-    currency_symbol: string;
-    [key: string]: any;
-}
-
-const form = useForm<SettingsForm>({
+const form = useForm({
     currency: (user.metas.currency as string) || 'USD',
     currency_symbol: (user.metas.currency_symbol as string) || '$',
 });
