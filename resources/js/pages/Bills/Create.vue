@@ -43,9 +43,9 @@ defineProps<Props>();
                             :categories="categories"
                             :bill="{
                                 title: '',
-                                description: null,
-                                amount: '',
-                                due_date: null,
+                                description: '',
+                                amount: 0,
+                                due_date: undefined,
                                 category_id: null,
                                 is_recurring: false,
                                 recurrence_period: null,

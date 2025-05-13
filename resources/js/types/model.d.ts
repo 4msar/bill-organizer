@@ -23,9 +23,9 @@ export interface Category extends Model {
 export interface Bill extends Model {
     user_id: number;
     title: string;
-    description: string | null;
+    description: string;
     amount: number;
-    due_date: string;
+    due_date?: string;
     status: 'paid' | 'unpaid';
     is_recurring: boolean;
     recurrence_period: 'weekly' | 'monthly' | 'yearly' | null;

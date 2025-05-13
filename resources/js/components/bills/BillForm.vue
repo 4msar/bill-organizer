@@ -8,27 +8,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { formatDate } from '@/lib/utils';
+import { Bill } from '@/types/model';
 import { useForm } from '@inertiajs/vue3';
-import { CalendarDate, parseDate } from '@internationalized/date';
+import { DateValue, getLocalTimeZone, parseDate, today } from '@internationalized/date';
 import { CalendarIcon } from 'lucide-vue-next';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted } from 'vue';
 
 interface Category {
     id: number;
     name: string;
 }
 
-interface BillData {
+type BillData = Pick<Bill, 'title' | 'description' | 'amount' | 'due_date' | 'category_id' | 'is_recurring' | 'recurrence_period'> & {
     id?: number;
-    title: string;
-    description: string | null;
-    amount: number | string;
-    due_date: string | null | CalendarDate;
-    category_id: number | null;
-    is_recurring: boolean;
-    recurrence_period: 'weekly' | 'monthly' | 'yearly' | null;
-    [key: string]: any;
-}
+};
 
 interface Props {
     categories: Category[];
@@ -49,24 +42,28 @@ const form = useForm<BillData>({
     recurrence_period: props.bill.recurrence_period,
 });
 
-const today = new Date();
-const dueDate = ref<Date | null>(props.bill.due_date ? new Date(props.bill.due_date as string) : today);
-
 const formattedDate = computed((): string => {
-    if (!dueDate.value) return '';
-    return formatDate(dueDate.value);
+    return formatDate(form.due_date?.toString() || '');
 });
 
-function updateDueDate(date: Date): void {
-    dueDate.value = date;
-    form.due_date = date.toISOString().split('T')[0];
+function updateDueDate(date?: DateValue): void {
+    if (date) {
+        form.due_date = date.toString();
+    } else {
+        form.due_date = undefined;
+    }
 }
+
+const date = computed({
+    get: () => (form.due_date ? parseDate(form.due_date) : undefined),
+    set: (val) => val,
+});
 
 onMounted(() => {
     if (props.bill.due_date) {
-        form.due_date = parseDate(props.bill.due_date as string);
+        form.due_date = props.bill.due_date;
     } else {
-        form.due_date = parseDate(today.toISOString());
+        form.due_date = today(getLocalTimeZone()).toString();
     }
 });
 
@@ -79,7 +76,7 @@ function submit(): void {
     <Form @submit="submit">
         <div class="grid gap-6">
             <!-- Title -->
-            <FormField v-model="form.title" name="title" :validate="(v) => !!v || 'Title is required'">
+            <FormField v-model="form.title" name="title">
                 <FormItem>
                     <FormLabel>Title</FormLabel>
                     <FormControl>
@@ -91,7 +88,7 @@ function submit(): void {
 
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <!-- Amount -->
-                <FormField v-model="form.amount" name="amount" :validate="(v) => !!v || 'Amount is required'">
+                <FormField v-model="form.amount" name="amount">
                     <FormItem>
                         <FormLabel>Amount</FormLabel>
                         <FormControl>
@@ -114,7 +111,7 @@ function submit(): void {
                                     <Button
                                         variant="outline"
                                         class="w-full pl-3 text-left font-normal"
-                                        :class="!dueDate ? 'text-muted-foreground' : ''"
+                                        :class="!form.due_date ? 'text-muted-foreground' : ''"
                                     >
                                         <CalendarIcon class="mr-2 h-4 w-4" />
                                         {{ formattedDate || 'Select date' }}
@@ -122,7 +119,13 @@ function submit(): void {
                                 </FormControl>
                             </PopoverTrigger>
                             <PopoverContent class="w-auto p-0" align="start">
-                                <Calendar :model-value="form.due_date" @update:selected-date="updateDueDate" :min-date="today" />
+                                <Calendar
+                                    v-model="date"
+                                    calendar-label="Due Date"
+                                    initial-focus
+                                    :min-value="today(getLocalTimeZone())"
+                                    @update:model-value="updateDueDate"
+                                />
                             </PopoverContent>
                         </Popover>
                         <FormMessage />

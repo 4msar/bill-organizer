@@ -9,27 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { formatCurrency, formatDate } from '@/lib/utils';
+import { Bill } from '@/types/model';
 import { useForm } from '@inertiajs/vue3';
+import { parseDate } from '@internationalized/date';
 import { CalendarIcon, FileText, Receipt } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
-
-interface Category {
-    id: number;
-    name: string;
-}
-
-interface Bill {
-    id: number;
-    title: string;
-    description: string | null;
-    amount: number;
-    due_date: string;
-    status: 'paid' | 'unpaid';
-    is_recurring: boolean;
-    recurrence_period: 'weekly' | 'monthly' | 'yearly' | null;
-    category_id: number | null;
-    category?: Category;
-}
+import { DateValue } from 'reka-ui';
+import { computed } from 'vue';
 
 interface Props {
     bill: Bill;
@@ -48,8 +33,6 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
-const selectedDate = ref<Date>(new Date());
-
 const form = useForm({
     bill_id: props.bill.id,
     amount: props.bill.amount,
@@ -60,16 +43,9 @@ const form = useForm({
     update_due_date: true,
 });
 
-// Format the payment date
-const formattedDate = computed((): string => {
-    if (!selectedDate.value) return '';
-    return formatDate(selectedDate.value);
-});
-
 // Set payment date when calendar date changes
-function updatePaymentDate(date: Date): void {
-    selectedDate.value = date;
-    form.payment_date = date.toISOString().split('T')[0];
+function updatePaymentDate(date?: DateValue): void {
+    form.payment_date = date ? date.toString() : new Date().toISOString().split('T')[0];
 }
 
 // Handle file upload
@@ -100,6 +76,11 @@ const nextDueDateFormatted = computed((): string => {
     if (!props.nextDueDate) return '';
     return formatDate(props.nextDueDate);
 });
+
+const payment_date = computed({
+    get: () => (form.payment_date ? parseDate(form.payment_date) : undefined),
+    set: (val) => val,
+});
 </script>
 
 <template>
@@ -110,7 +91,7 @@ const nextDueDateFormatted = computed((): string => {
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="font-medium">{{ bill.title }}</h3>
-                        <p class="text-muted-foreground text-sm">Due: {{ formatDate(bill.due_date) }}</p>
+                        <p class="text-muted-foreground text-sm">Due: {{ formatDate(bill.due_date as string) }}</p>
                     </div>
                     <div class="text-xl font-bold">
                         {{ formatCurrency(bill.amount) }}
@@ -119,7 +100,7 @@ const nextDueDateFormatted = computed((): string => {
             </div>
 
             <!-- Amount -->
-            <FormField v-model="form.amount" name="amount" :validate="(v) => (!!v && v > 0) || 'Amount is required'">
+            <FormField v-model="form.amount" name="amount">
                 <FormItem>
                     <FormLabel>Payment Amount</FormLabel>
                     <FormControl>
@@ -141,12 +122,12 @@ const nextDueDateFormatted = computed((): string => {
                             <FormControl>
                                 <Button variant="outline" class="w-full pl-3 text-left font-normal">
                                     <CalendarIcon class="mr-2 h-4 w-4" />
-                                    {{ formattedDate }}
+                                    {{ formatDate(form.payment_date) || 'Select payment date' }}
                                 </Button>
                             </FormControl>
                         </PopoverTrigger>
                         <PopoverContent class="w-auto p-0" align="start">
-                            <Calendar :selected-date="selectedDate" @update:selected-date="updatePaymentDate" />
+                            <Calendar v-model="payment_date" calendar-label="Payment Date" initial-focus @update:model-value="updatePaymentDate" />
                         </PopoverContent>
                     </Popover>
                     <FormMessage />
@@ -157,9 +138,9 @@ const nextDueDateFormatted = computed((): string => {
             <FormField v-model="form.payment_method" name="payment_method">
                 <FormItem>
                     <FormLabel>Payment Method</FormLabel>
-                    <Select v-model="form.payment_method">
+                    <Select v-model="form.payment_method" class="w-full">
                         <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger class="w-full">
                                 <SelectValue placeholder="Select payment method" />
                             </SelectTrigger>
                         </FormControl>

@@ -18,7 +18,7 @@ return new class() extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->decimal('amount', 10, 2);
-            $table->date('due_date');
+            $table->date('due_date')->nullable();
             $table->enum('status', ['unpaid', 'paid'])->default('unpaid');
             $table->boolean('is_recurring')->default(false);
             $table->enum('recurrence_period', ['weekly', 'monthly', 'yearly'])->nullable();
