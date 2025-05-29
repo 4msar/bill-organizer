@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Confirm from '@/components/Confirm.vue';
+import Confirm from '@/components/shared/Confirm.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

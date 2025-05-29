@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import UserInfo from '@/components/UserInfo.vue';
+import UserInfo from '@/components/shared/UserInfo.vue';
 import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import type { User } from '@/types/model';
 import { Link } from '@inertiajs/vue3';
 import { Bell, LogOut, Settings } from 'lucide-vue-next';
-import { Badge } from './ui/badge';
+import { Badge } from '../ui/badge';
 
 interface Props {
     user: User;

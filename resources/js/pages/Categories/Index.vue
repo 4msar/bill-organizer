@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import CategoryFormDialog from '@/components/CategoryFormDialog.vue';
-import CategoryTable from '@/components/CategoryTable.vue';
-import NoCategoriesWarning from '@/components/NoCategoriesWarning.vue';
+import CategoryFormDialog from '@/components/shared/CategoryFormDialog.vue';
+import CategoryTable from '@/components/shared/CategoryTable.vue';
+import NoCategoriesWarning from '@/components/shared/NoCategoriesWarning.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Category as BaseCategory } from '@/types/model';

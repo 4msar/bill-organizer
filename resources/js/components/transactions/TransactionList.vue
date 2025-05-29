@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { Transaction } from '@/types/model';
 import { Calendar, CreditCard, Download, ExternalLink, FileText, Receipt, Trash2 } from 'lucide-vue-next';
-import Confirm from '../Confirm.vue';
+import Confirm from '../shared/Confirm.vue';
 
 interface Props {
     transactions: Transaction[];
