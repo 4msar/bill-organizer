@@ -3,5 +3,9 @@
 use App\Jobs\SendUpcomingBillNotifications;
 use Illuminate\Support\Facades\Schedule;
 
-Schedule::job(SendUpcomingBillNotifications::class)
-    ->everyFiveSeconds();
+/**
+ * Send upcoming bill notifications to users.
+ * 
+ * Run the job every minute.
+ */
+Schedule::job(SendUpcomingBillNotifications::class)->everyMinute();

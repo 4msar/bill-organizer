@@ -27,7 +27,17 @@ final class UpcomingBillNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail', 'database']; // You can add 'database' or other channels here
+        $channels = [];
+
+        if ($notifiable?->getMeta('email_notification', false)) {
+            $channels[] = 'mail';
+        }
+
+        if ($notifiable?->setMeta('web_notification', false)) {
+            $channels[] = 'database';
+        }
+
+        return $channels;
     }
 
     /**

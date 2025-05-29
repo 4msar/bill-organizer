@@ -45,6 +45,8 @@ const handlePaginationLinkClick = (direction: 'prev' | 'next') => {
 const extractType = (notification: NotificationData) => {
     return notification.type.split('\\').pop();
 };
+
+console.log({ notifications });
 </script>
 
 <template>
@@ -59,7 +61,7 @@ const extractType = (notification: NotificationData) => {
         <Head title="Notifications" />
         <div class="space-y-6 px-4 py-6">
             <HeadingSmall title="Notifications" description="Latest notifications" class="flex items-center justify-between">
-                <Button @click="markAllAsRead" class="flex items-center">
+                <Button @click="markAllAsRead" class="flex items-center" v-if="notifications.data.length > 0">
                     <Inbox class="mr-2 h-4 w-4" />
                     Mark All as Read
                 </Button>
@@ -71,7 +73,7 @@ const extractType = (notification: NotificationData) => {
             </Alert>
 
             <!-- Notifications List -->
-            <div class="space-y-4">
+            <div class="space-y-4" v-if="notifications.data.length > 0">
                 <div
                     v-for="notification in notifications.data"
                     :key="notification.id"
@@ -91,6 +93,10 @@ const extractType = (notification: NotificationData) => {
                     <p v-if="notification.description" class="text-muted-foreground text-sm">{{ notification.description }}</p>
                     <p class="text-muted-foreground mt-1 text-sm">{{ notification.created_time }}</p>
                 </div>
+            </div>
+            <!-- No Notifications Message -->
+            <div v-else class="text-muted-foreground text-center">
+                <p class="text-lg">No notifications found.</p>
             </div>
 
             <!-- Pagination -->
