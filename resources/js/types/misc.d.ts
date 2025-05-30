@@ -41,6 +41,12 @@ export interface SharedData extends PageProps {
         unread: number;
         items: NotificationData[];
     };
+    flash: {
+        success: string | null;
+        error: string | null;
+        warning: string | null;
+        info: string | null;
+    };
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;
