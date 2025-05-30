@@ -53,10 +53,10 @@ final class HandleInertiaRequests extends Middleware
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'notifications' => $this->getNotifications($request),
             'flash' => [
-                'success' => $request->session()->flash('success'),
-                'error' => $request->session()->flash('error'),
-                'warning' => $request->session()->flash('warning'),
-                'info' => $request->session()->flash('info'),
+                'success' => $request->session()->pull('success'),
+                'error' => $request->session()->pull('error'),
+                'warning' => $request->session()->pull('warning'),
+                'info' => $request->session()->pull('info'),
             ],
         ];
     }

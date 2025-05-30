@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AlertNotification from '@/components/shared/AlertNotification.vue';
 import AppLogoIcon from '@/components/shared/AppLogoIcon.vue';
 import { Link } from '@inertiajs/vue3';
 
@@ -28,4 +29,5 @@ defineProps<{
             </div>
         </div>
     </div>
+    <AlertNotification />
 </template>

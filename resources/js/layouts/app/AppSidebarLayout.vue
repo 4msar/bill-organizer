@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AlertNotification from '@/components/shared/AlertNotification.vue';
 import AppContent from '@/components/shared/AppContent.vue';
 import AppShell from '@/components/shared/AppShell.vue';
 import AppSidebar from '@/components/shared/AppSidebar.vue';
@@ -21,5 +22,6 @@ withDefaults(defineProps<Props>(), {
             <AppSidebarHeader :breadcrumbs="breadcrumbs" />
             <slot />
         </AppContent>
+        <AlertNotification />
     </AppShell>
 </template>
