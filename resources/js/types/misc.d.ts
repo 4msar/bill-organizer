@@ -39,7 +39,7 @@ export interface SharedData extends PageProps {
     sidebarOpen: boolean;
     notifications: {
         unread: number;
-        items: NotificationData[];
+        last: NotificationData;
     };
     flash: {
         success: string | null;
