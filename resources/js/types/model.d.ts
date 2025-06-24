@@ -11,10 +11,12 @@ export interface User extends Model {
     avatar?: string;
     email_verified_at: string | null;
     metas: Record<string, DataType | DataType[]>;
+    active_team_id: number | null;
 }
 
 export interface Category extends Model {
     user_id: number;
+    team_id: number;
     name: string;
     description: string | null;
     icon: string | null;
@@ -22,6 +24,7 @@ export interface Category extends Model {
 
 export interface Bill extends Model {
     user_id: number;
+    team_id: number;
     title: string;
     description: string;
     amount: number;
@@ -37,6 +40,7 @@ export interface Bill extends Model {
 
 export interface Transaction extends Model {
     user_id: number;
+    team_id: number;
     bill_id: number;
     amount: number;
     payment_date: string;

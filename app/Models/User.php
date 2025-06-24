@@ -23,6 +23,7 @@ final class User extends Authenticatable
         'name',
         'email',
         'password',
+        'active_team_id'
     ];
 
     /**
@@ -62,5 +63,28 @@ final class User extends Authenticatable
     public function categories()
     {
         return $this->hasMany(Category::class);
+    }
+
+    /**
+     * Get the active team for the user.
+     */
+    function activeTeam() {
+        return $this->belongsTo(Team::class, 'active_team_id', 'id');
+    }
+
+    /**
+     * Get the teams for the user.
+     */
+    function teams() {
+        return $this->belongsToMany(Team::class, Team::PivotTableName);
+    }
+
+    /**
+     * Switch the active team for the user.
+     */
+    public function switchTeam(Team $team) {
+        $this->update([
+            'active_team_id' => $team->id,
+        ]);
     }
 }

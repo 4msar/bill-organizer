@@ -11,7 +11,7 @@ final class BillController extends Controller
 {
     public function index()
     {
-        $bills = Bill::with('category')->where('user_id', auth()->id())->get();
+        $bills = Bill::with('category')->get();
 
         $unpaidBills = $bills->where('status', 'unpaid')->filter(
             fn ($item) => $item->due_date->isCurrentMonth()
@@ -47,7 +47,7 @@ final class BillController extends Controller
         ]);
 
         Bill::create([
-            'user_id' => auth()->id(),
+            'team_id' => active_team_id(),
             'title' => $request->title,
             'amount' => $request->amount,
             'due_date' => $request->due_date,

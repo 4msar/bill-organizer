@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\UserScope;
+use App\Models\Scopes\TeamScope;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[ScopedBy([UserScope::class])]
+#[ScopedBy([TeamScope::class])]
 final class Bill extends Model
 {
     use HasFactory;
@@ -20,6 +20,7 @@ final class Bill extends Model
      * @var array
      */
     protected $fillable = [
+        'team_id',
         'user_id',
         'category_id',
         'title',

@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\UserScope;
+use App\Models\Scopes\TeamScope;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-#[ScopedBy([UserScope::class])]
+#[ScopedBy([TeamScope::class])]
 final class Category extends Model
 {
     use HasFactory;
@@ -17,7 +17,7 @@ final class Category extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'name', 'description', 'icon'];
+    protected $fillable = ['team_id', 'user_id', 'name', 'description', 'icon'];
 
     /**
      * Get the user that owns the category.

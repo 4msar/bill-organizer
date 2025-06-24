@@ -77,7 +77,7 @@ final class TransactionController extends Controller
 
         // Create transaction
         $transaction = new Transaction([
-            'user_id' => auth()->id(),
+            'team_id' => active_team_id(),
             'bill_id' => $bill->id,
             'amount' => $validated['amount'],
             'payment_date' => $validated['payment_date'],

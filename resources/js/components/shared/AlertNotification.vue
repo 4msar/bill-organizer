@@ -13,7 +13,7 @@ type FlashType = 'success' | 'info' | 'warning' | 'error';
 
 onMounted(() => {
     if (Object.values(flash.value).filter(Boolean).length > 0) {
-        Object.entries(flash).forEach(([key, value]) => {
+        Object.entries(flash.value).forEach(([key, value]) => {
             if (value) {
                 const toast = notify[key as FlashType] ?? notify;
 

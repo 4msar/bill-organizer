@@ -48,7 +48,7 @@ final class CategoryController extends Controller
         ]);
 
         $category = new Category($validated);
-        $category->user_id = auth()->id();
+        $category->team_id = active_team_id();
         $category->save();
 
         return Redirect::route('categories.index')->with('success', 'Category created successfully.');
