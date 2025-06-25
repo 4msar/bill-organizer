@@ -4,7 +4,7 @@ import NavMain from '@/components/shared/NavMain.vue';
 import NavUser from '@/components/shared/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
-import { Currency, LayoutGrid, Receipt, SunMoon, Tags } from 'lucide-vue-next';
+import { Currency, LayoutGrid, Receipt, Settings2, SunMoon, Tags } from 'lucide-vue-next';
 import TeamSwitcher from './TeamSwitcher.vue';
 
 const mainNavItems: NavItem[] = [
@@ -36,6 +36,11 @@ const footerNavItems: NavItem[] = [
         href: '/settings/appearance',
         icon: SunMoon,
     },
+    {
+        title: 'Team settings',
+        href: '/team/settings',
+        icon: Settings2,
+    },
 ];
 </script>
 
@@ -45,7 +50,7 @@ const footerNavItems: NavItem[] = [
             <TeamSwitcher :teams="[{
                 name: 'Abc',
                 plan: 'Test'
-            }]"/>
+            }]" />
         </SidebarHeader>
 
         <SidebarContent>

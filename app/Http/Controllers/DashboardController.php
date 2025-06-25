@@ -17,14 +17,14 @@ final class DashboardController extends Controller
         $now = Carbon::now();
 
         // Bills statistics
-        $totalBillsCount = Bill::count();
-        $paidBillsCount = Bill::paid()->count();
-        $unpaidBillsCount = Bill::unpaid()->count();
-        $upcomingBillsCount = Bill::upcoming(7)->count();
+        $totalBillsCount = Bill::whereYear('due_date', date('Y'))->count();
+        $paidBillsCount = Bill::whereYear('due_date', date('Y'))->paid()->count();
+        $unpaidBillsCount = Bill::whereYear('due_date', date('Y'))->unpaid()->count();
+        $upcomingBillsCount = Bill::whereYear('due_date', date('Y'))->upcoming(7)->count();
 
         // Financial statistics
-        $totalPaidAmount = Bill::paid()->sum('amount');
-        $totalUnpaidAmount = Bill::unpaid()->sum('amount');
+        $totalPaidAmount = Bill::whereYear('due_date', date('Y'))->paid()->sum('amount');
+        $totalUnpaidAmount = Bill::whereYear('due_date', date('Y'))->unpaid()->sum('amount');
 
         // Due this month
         $startOfMonth = $now->copy()->startOfMonth();
@@ -47,15 +47,18 @@ final class DashboardController extends Controller
             ->get();
 
         // Recent bills
-        $recentBills = Bill::with('category')
+        $recentBills = Bill::whereYear('due_date', date('Y'))
+            ->with('category')
             ->latest()
             ->take(5)
             ->get();
 
         // Upcoming bills
-        $upcomingBills = Bill::with('category')
+        $upcomingBills = Bill::whereYear('due_date', date('Y'))
+            ->with('category')
             ->unpaid()
             ->where('due_date', '>=', $now)
+            ->whereYear('due_date', '<=', $now->year)
             ->orderBy('due_date')
             ->take(5)
             ->get();

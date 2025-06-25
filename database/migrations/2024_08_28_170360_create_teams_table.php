@@ -20,6 +20,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('icon')->nullable();
             $table->string('status')->default(Status::Active->value);
+            $table->string('currency')->default('USD');
+            $table->string('currency_symbol')->default('$');
             $table->timestamps();
         });
 

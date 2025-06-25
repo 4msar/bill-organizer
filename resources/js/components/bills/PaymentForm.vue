@@ -94,7 +94,7 @@ const payment_date = computed({
                         <p class="text-muted-foreground text-sm">Due: {{ formatDate(bill.due_date as string) }}</p>
                     </div>
                     <div class="text-xl font-bold">
-                        {{ formatCurrency(bill.amount, $page.props?.auth?.user?.metas?.currency as string) }}
+                        {{ formatCurrency(bill.amount, $page.props?.team?.current?.currency as string) }}
                     </div>
                 </div>
             </div>
@@ -106,7 +106,7 @@ const payment_date = computed({
                     <FormControl>
                         <div class="relative">
                             <span class="text-muted-foreground absolute inset-y-0 left-0 flex items-center pl-3">{{
-                                $page.props?.auth?.user?.metas?.currency_symbol as string
+                                $page.props?.team?.current?.currency_symbol as string
                             }}</span>
                             <Input v-model="form.amount" type="number" min="0.01" step="0.01" class="pl-8" />
                         </div>
@@ -129,7 +129,8 @@ const payment_date = computed({
                             </FormControl>
                         </PopoverTrigger>
                         <PopoverContent class="w-auto p-0" align="start">
-                            <Calendar v-model="payment_date" calendar-label="Payment Date" initial-focus @update:model-value="updatePaymentDate" />
+                            <Calendar v-model="payment_date" calendar-label="Payment Date" initial-focus
+                                @update:model-value="updatePaymentDate" />
                         </PopoverContent>
                     </Popover>
                     <FormMessage />
@@ -187,7 +188,8 @@ const payment_date = computed({
                     <FileText class="h-4 w-4" />
                     <AlertTitle>Recurring Bill</AlertTitle>
                     <AlertDescription>
-                        This is a {{ bill.recurrence_period }} recurring bill. Would you like to automatically create the next bill?
+                        This is a {{ bill.recurrence_period }} recurring bill. Would you like to automatically create
+                        the next bill?
                     </AlertDescription>
                 </Alert>
 
@@ -195,7 +197,8 @@ const payment_date = computed({
                     <FormItem class="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div class="space-y-0.5">
                             <FormLabel>Create Next Bill</FormLabel>
-                            <FormDescription v-if="nextDueDate"> Next due date will be {{ nextDueDateFormatted }} </FormDescription>
+                            <FormDescription v-if="nextDueDate"> Next due date will be {{ nextDueDateFormatted }}
+                            </FormDescription>
                         </div>
                         <FormControl>
                             <Switch v-model="form.update_due_date" />

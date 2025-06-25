@@ -11,10 +11,10 @@ final class BillController extends Controller
 {
     public function index()
     {
-        $bills = Bill::with('category')->get();
+        $bills = Bill::with('category')->orderBy('due_date', 'asc')->get();
 
         $unpaidBills = $bills->where('status', 'unpaid')->filter(
-            fn ($item) => $item->due_date->isCurrentMonth()
+            fn($item) => $item->due_date->isCurrentMonth()
         );
 
         return inertia('Bills/Index', [
@@ -22,11 +22,11 @@ final class BillController extends Controller
             'total_unpaid' => $unpaidBills->sum('amount'),
             'unpaid_count' => $unpaidBills->count(),
             'upcoming_count' => $bills
-                ->filter(fn ($item) => $item->isUpcoming())
+                ->filter(fn($item) => $item->isUpcoming())
                 ->count(),
             'paid_count' => $bills
                 ->where('status', 'paid')
-                ->filter(fn ($item) => $item->due_date->isCurrentMonth())
+                ->filter(fn($item) => $item->due_date->isCurrentMonth())
                 ->count(),
         ]);
     }

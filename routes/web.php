@@ -4,6 +4,7 @@ use App\Http\Controllers\BillController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -13,7 +14,17 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/team/create', [TeamController::class, 'create'])->name('team.create');
+    Route::post('/team/store', [TeamController::class, 'store'])->name('team.store');
+    Route::get('/team/switch/{team}', [TeamController::class, 'switch'])->name('team.switch');
+});
+
+Route::middleware(['auth', 'verified', 'team'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('team/settings', [TeamController::class, 'index'])->name('team.settings');
+    Route::put('team/settings', [TeamController::class, 'update']);
+    Route::delete('team/delete', [TeamController::class, 'destroy'])->name('team.delete');
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
@@ -44,5 +55,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/bills/{bill}/payment-details', [BillController::class, 'getPaymentDetails'])->name('bills.payment-details');
 });
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';

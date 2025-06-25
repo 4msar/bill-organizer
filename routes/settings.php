@@ -23,7 +23,4 @@ Route::middleware('auth')->group(function () {
 
     Route::get('settings/notifications', [NotificationPreferenceController::class, 'edit'])->name('notifications.edit');
     Route::put('settings/notifications', [NotificationPreferenceController::class, 'update'])->name('notifications.update');
-
-    Route::get('settings/application', [ApplicationController::class, 'edit'])->name('application.edit');
-    Route::put('settings/application', [ApplicationController::class, 'update'])->name('application.update');
 });

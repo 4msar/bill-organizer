@@ -25,7 +25,7 @@ final class DatabaseSeeder extends Seeder
             'user_id' => $user->id,
             'name' => 'Test Team',
             'description' => 'Test Team Description',
-            'icon' => 'test-icon',
+            'icon' => '/logo.svg',
             'status' => 'active',
         ]);
 

@@ -56,11 +56,12 @@ defineEmits<{
                         </TableCell>
                         <TableCell>
                             <span v-if="category.unpaid_amount" class="font-medium">
-                                {{ formatCurrency(category.unpaid_amount, $page.props?.auth?.user?.metas?.currency as string) }}
+                                {{ formatCurrency(category.unpaid_amount, $page.props?.team?.current?.currency as
+                                string) }}
                             </span>
                             <span v-else class="text-muted-foreground">{{
-                                formatCurrency(0, $page.props?.auth?.user?.metas?.currency as string)
-                            }}</span>
+                                formatCurrency(0, $page.props?.team?.current?.currency as string)
+                                }}</span>
                         </TableCell>
                         <TableCell class="max-w-[200px] truncate">
                             {{ category.description || '-' }}
@@ -72,12 +73,8 @@ defineEmits<{
                                     <span class="sr-only">Edit</span>
                                 </Button>
                                 <Confirm title="Are you sure?" :url="route('categories.destroy', category.id)">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        :disabled="category.total_bills_count > 0"
-                                        :title="category.total_bills_count > 0 ? 'Cannot delete categories with bills' : ''"
-                                    >
+                                    <Button variant="ghost" size="icon" :disabled="category.total_bills_count > 0"
+                                        :title="category.total_bills_count > 0 ? 'Cannot delete categories with bills' : ''">
                                         <Trash2 class="h-4 w-4" />
                                         <span class="sr-only">Delete</span>
                                     </Button>

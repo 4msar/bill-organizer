@@ -48,3 +48,15 @@ export interface Transaction extends Model {
     attachment: string | null;
     notes: string | null;
 }
+
+
+export interface Team extends Model {
+    user_id: number;
+    name: string;
+    description: string;
+    icon: string;
+    icon_url: string;
+    status: string;
+    currency: string;
+    currency_symbol: string;
+}

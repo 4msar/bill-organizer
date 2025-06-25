@@ -68,23 +68,28 @@ final class User extends Authenticatable
     /**
      * Get the active team for the user.
      */
-    function activeTeam() {
+    function activeTeam()
+    {
         return $this->belongsTo(Team::class, 'active_team_id', 'id');
     }
 
     /**
      * Get the teams for the user.
      */
-    function teams() {
-        return $this->belongsToMany(Team::class, Team::PivotTableName);
+    function teams()
+    {
+        return $this->belongsToMany(Team::class, Team::PivotTableName)->distinct();
     }
 
     /**
      * Switch the active team for the user.
      */
-    public function switchTeam(Team $team) {
+    public function switchTeam(Team $team)
+    {
         $this->update([
             'active_team_id' => $team->id,
         ]);
+
+        $this->refresh();
     }
 }

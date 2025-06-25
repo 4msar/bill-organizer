@@ -1,7 +1,7 @@
 import type { PageProps } from '@inertiajs/core';
 import type { LucideIcon } from 'lucide-vue-next';
 import type { Config } from 'ziggy-js';
-import { User } from './model';
+import { Team, User } from './model';
 
 export interface Auth {
     user: User;
@@ -31,10 +31,16 @@ export type NotificationData = {
     read_at: string | null;
 };
 
+export type TeamData = {
+    current: Team;
+    items: Team[]
+}
+
 export interface SharedData extends PageProps {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
+    team: TeamData;
     ziggy: Config & { location: string };
     sidebarOpen: boolean;
     notifications: {

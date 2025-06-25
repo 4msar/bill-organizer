@@ -46,9 +46,9 @@ final class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
-                'team' => $user?->activeTeam,
                 'user' => $user?->append('metas'),
             ],
+            'team' => fn() => $this->getTeam($request),
             'ziggy' => [
                 ...(new Ziggy())->toArray(),
                 'location' => $request->url(),
@@ -84,6 +84,23 @@ final class HandleInertiaRequests extends Middleware
                 ->latest()
                 ->unread()
                 ->first(),
+        ];
+    }
+
+
+    /**
+     * Get the team of login user
+     */
+    protected function getTeam(Request $request): array
+    {
+        /**
+         * @var \App\Models\User $user
+         */
+        $user = $request->user();
+
+        return [
+            'current' => $user?->activeTeam,
+            'items' => $user?->teams ?? []
         ];
     }
 }

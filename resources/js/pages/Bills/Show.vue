@@ -55,18 +55,17 @@ function onPaymentComplete(): void {
 </script>
 
 <template>
-    <AppLayout
-        :breadcrumbs="[
-            {
-                title: 'Bills',
-                href: route('bills.index'),
-            },
-            {
-                title: `Bill Details (${bill.title})`,
-                href: route('bills.show', bill.id),
-            },
-        ]"
-    >
+    <AppLayout :breadcrumbs="[
+        {
+            title: 'Bills',
+            href: route('bills.index'),
+        },
+        {
+            title: `Bill Details (${bill.title})`,
+            href: route('bills.show', bill.id),
+        },
+    ]">
+
         <Head :title="bill.title" />
 
         <div class="py-6">
@@ -74,7 +73,8 @@ function onPaymentComplete(): void {
                 <!-- Back Button and Title -->
                 <div class="mb-6 flex items-center justify-between">
                     <div>
-                        <Link :href="route('bills.index')" class="text-muted-foreground text-sm hover:underline"> &larr; Back to Bills </Link>
+                        <Link :href="route('bills.index')" class="text-muted-foreground text-sm hover:underline"> &larr;
+                        Back to Bills </Link>
                         <h2 class="mt-1 text-xl font-semibold text-gray-800 dark:text-gray-200">
                             {{ bill.title }}
                         </h2>
@@ -82,8 +82,8 @@ function onPaymentComplete(): void {
                     <div class="flex gap-2">
                         <Button variant="outline" asChild>
                             <Link :href="route('bills.edit', bill.id)">
-                                <Edit class="mr-2 h-4 w-4" />
-                                Edit
+                            <Edit class="mr-2 h-4 w-4" />
+                            Edit
                             </Link>
                         </Button>
                         <Button variant="destructive" @click="deleteBill">
@@ -96,7 +96,8 @@ function onPaymentComplete(): void {
                 <!-- Past Due Alert -->
                 <Alert v-if="isPastDue" variant="destructive" class="mb-6">
                     <AlertTitle>Past Due!</AlertTitle>
-                    <AlertDescription> This bill was due on {{ formatDate(bill.due_date as string) }} and is still unpaid. </AlertDescription>
+                    <AlertDescription> This bill was due on {{ formatDate(bill.due_date as string) }} and is still
+                        unpaid. </AlertDescription>
                 </Alert>
 
                 <!-- Bill Details Card -->
@@ -111,10 +112,11 @@ function onPaymentComplete(): void {
                                         {{ bill.status === 'paid' ? 'Paid' : 'Unpaid' }}
                                     </Badge>
                                 </CardTitle>
-                                <CardDescription v-if="bill.category"> Category: {{ bill.category.name }} </CardDescription>
+                                <CardDescription v-if="bill.category"> Category: {{ bill.category.name }}
+                                </CardDescription>
                             </div>
                             <div class="text-2xl font-bold">
-                                {{ formatCurrency(bill.amount, $page.props?.auth?.user?.metas?.currency as string) }}
+                                {{ formatCurrency(bill.amount, $page.props?.team?.current?.currency as string) }}
                             </div>
                         </div>
                     </CardHeader>
@@ -134,7 +136,8 @@ function onPaymentComplete(): void {
                                 <p class="flex items-center">
                                     <RotateCcw class="mr-2 h-4 w-4" />
                                     {{
-                                        bill.recurrence_period ? bill.recurrence_period.charAt(0).toUpperCase() + bill.recurrence_period.slice(1) : ''
+                                        bill.recurrence_period ? bill.recurrence_period.charAt(0).toUpperCase() +
+                                            bill.recurrence_period.slice(1) : ''
                                     }}
                                 </p>
                             </div>
@@ -168,13 +171,8 @@ function onPaymentComplete(): void {
                 </div>
 
                 <!-- Payment Dialog -->
-                <PaymentDialog
-                    v-model:isOpen="isPaymentDialogOpen"
-                    :bill="bill"
-                    :payment-methods="paymentMethods"
-                    :next-due-date="nextDueDate"
-                    @payment-complete="onPaymentComplete"
-                />
+                <PaymentDialog v-model:isOpen="isPaymentDialogOpen" :bill="bill" :payment-methods="paymentMethods"
+                    :next-due-date="nextDueDate" @payment-complete="onPaymentComplete" />
             </div>
         </div>
     </AppLayout>

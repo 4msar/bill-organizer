@@ -86,7 +86,7 @@ function submit(): void {
                 </FormItem>
             </FormField>
 
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
                 <!-- Amount -->
                 <FormField v-model="form.amount" name="amount">
                     <FormItem>
@@ -94,9 +94,10 @@ function submit(): void {
                         <FormControl>
                             <div class="relative">
                                 <span class="text-muted-foreground absolute inset-y-0 left-0 flex items-center pl-3">{{
-                                    $page.props?.auth?.user?.metas?.currency_symbol as string
-                                }}</span>
-                                <Input v-model="form.amount" type="number" min="0" step="0.01" placeholder="0.00" class="pl-8" />
+                                    $page.props?.team.current?.currency_symbol as string
+                                    }}</span>
+                                <Input v-model="form.amount" type="number" min="0" step="0.01" placeholder="0.00"
+                                    class="pl-8" />
                             </div>
                         </FormControl>
                         <FormMessage />
@@ -110,91 +111,87 @@ function submit(): void {
                         <Popover>
                             <PopoverTrigger as-child>
                                 <FormControl>
-                                    <Button
-                                        variant="outline"
-                                        class="w-full pl-3 text-left font-normal"
-                                        :class="!form.due_date ? 'text-muted-foreground' : ''"
-                                    >
+                                    <Button variant="outline" class="w-full pl-3 text-left font-normal"
+                                        :class="!form.due_date ? 'text-muted-foreground' : ''">
                                         <CalendarIcon class="mr-2 h-4 w-4" />
                                         {{ formattedDate || 'Select date' }}
                                     </Button>
                                 </FormControl>
                             </PopoverTrigger>
                             <PopoverContent class="w-auto p-0" align="start">
-                                <Calendar
-                                    v-model="date"
-                                    calendar-label="Due Date"
-                                    initial-focus
-                                    :min-value="today(getLocalTimeZone())"
-                                    @update:model-value="updateDueDate"
-                                />
+                                <Calendar v-model="date" calendar-label="Due Date" initial-focus
+                                    :min-value="today(getLocalTimeZone())" @update:model-value="updateDueDate" />
                             </PopoverContent>
                         </Popover>
                         <FormMessage />
                     </FormItem>
                 </FormField>
+
+                <!-- Category -->
+                <FormField v-model="form.category_id" name="category_id">
+                    <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <Select v-model="form.category_id" class="w-full">
+                            <FormControl class="w-full">
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a category" />
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                <SelectItem :value="null">Uncategorized</SelectItem>
+                                <SelectItem v-for="category in categories" :key="category.id" :value="category.id">
+                                    {{ category.name }}
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                    </FormItem>
+                </FormField>
             </div>
 
-            <!-- Category -->
-            <FormField v-model="form.category_id" name="category_id">
-                <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <Select v-model="form.category_id">
-                        <FormControl>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select a category" />
-                            </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                            <SelectItem :value="null">Uncategorized</SelectItem>
-                            <SelectItem v-for="category in categories" :key="category.id" :value="category.id">
-                                {{ category.name }}
-                            </SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <FormMessage />
-                </FormItem>
-            </FormField>
 
-            <!-- Recurring Bill -->
-            <FormField v-model="form.is_recurring" name="is_recurring">
-                <FormItem class="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <div class="space-y-0.5">
-                        <FormLabel class="text-base">Recurring Bill</FormLabel>
-                        <FormDescription> Is this a recurring payment like a subscription? </FormDescription>
-                    </div>
-                    <FormControl>
-                        <Switch v-model="form.is_recurring" />
-                    </FormControl>
-                </FormItem>
-            </FormField>
-
-            <!-- Recurrence Period (conditional) -->
-            <FormField v-if="form.is_recurring" v-model="form.recurrence_period" name="recurrence_period">
-                <FormItem>
-                    <FormLabel>Recurrence Period</FormLabel>
-                    <Select v-model="form.recurrence_period">
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <!-- Recurring Bill -->
+                <FormField v-model="form.is_recurring" name="is_recurring">
+                    <FormItem class="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div class="space-y-0.5">
+                            <FormLabel class="text-base">Recurring Bill</FormLabel>
+                            <FormDescription> Is this a recurring payment like a subscription? </FormDescription>
+                        </div>
                         <FormControl>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select how often this bill repeats" />
-                            </SelectTrigger>
+                            <Switch v-model="form.is_recurring" />
                         </FormControl>
-                        <SelectContent>
-                            <SelectItem value="weekly">Weekly</SelectItem>
-                            <SelectItem value="monthly">Monthly</SelectItem>
-                            <SelectItem value="yearly">Yearly</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <FormMessage />
-                </FormItem>
-            </FormField>
+                    </FormItem>
+                </FormField>
+
+                <!-- Recurrence Period (conditional) -->
+                <FormField v-if="form.is_recurring" v-model="form.recurrence_period" name="recurrence_period">
+                    <FormItem>
+                        <FormLabel>Recurrence Period</FormLabel>
+                        <Select v-model="form.recurrence_period">
+                            <FormControl class="w-full">
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select how often this bill repeats" />
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                <SelectItem value="weekly">Weekly</SelectItem>
+                                <SelectItem value="monthly">Monthly</SelectItem>
+                                <SelectItem value="yearly">Yearly</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                    </FormItem>
+                </FormField>
+            </div>
 
             <!-- Description -->
             <FormField v-model="form.description" name="description">
                 <FormItem>
                     <FormLabel>Description (Optional)</FormLabel>
                     <FormControl>
-                        <Textarea v-model="form.description" placeholder="Add any additional details about this bill" rows="3" />
+                        <Textarea v-model="form.description" placeholder="Add any additional details about this bill"
+                            rows="3" />
                     </FormControl>
                 </FormItem>
             </FormField>

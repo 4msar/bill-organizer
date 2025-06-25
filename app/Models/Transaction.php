@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Scopes\TeamScope;
+use App\Traits\HasTeam;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 final class Transaction extends Model
 {
     use HasFactory;
+    use HasTeam;
 
     /**
      * The attributes that are mass assignable.

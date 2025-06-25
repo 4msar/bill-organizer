@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Traits\HasMetaData;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class Team extends Model
 {
@@ -16,6 +18,12 @@ class Team extends Model
         'description',
         'icon',
         'status',
+        'currency',
+        'currency_symbol',
+    ];
+
+    protected $appends = [
+        'icon_url',
     ];
 
     /**
@@ -23,20 +31,26 @@ class Team extends Model
      */
     protected static function booted(): void
     {
-        static::addGlobalScope(function (Builder $builder) {
+        static::addGlobalScope('user', function (Builder $builder) {
             // check if the user can access the model via pivot table
             $builder->whereHas('users', function (Builder $builder) {
                 $builder->where('user_id', Auth::id());
-            })
-            ->orWhere('owner_id', Auth::id());
+            })->orWhere('owner_id', Auth::id());
         });
     }
 
-    public function owner() {
+    function getIconUrlAttribute()
+    {
+        return Storage::url($this->icon);
+    }
+
+    public function owner()
+    {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function users() {
+    public function users()
+    {
         return $this->belongsToMany(User::class, self::PivotTableName);
     }
 }
