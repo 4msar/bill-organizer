@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 
 import HeadingSmall from '@/components/shared/HeadingSmall.vue';
 import TeamForm from '@/components/team/TeamForm.vue';
@@ -30,8 +30,12 @@ const submit = () => {
                 description="Enter your team details to create your team." />
 
             <TeamForm :form="form" @submit="submit">
-                <div class="flex items-center gap-4">
+                <div class="flex items-center justify-between gap-4">
                     <Button :disabled="form.processing">Create</Button>
+                    <span class="text-sm italic" v-if="$page.props.team.items.length < 1">
+                        or visit your
+                        <Link :href="route('profile.edit')">profile</Link>
+                    </span>
                 </div>
             </TeamForm>
         </div>
