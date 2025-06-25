@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 class Team extends Model
 {
     const PivotTableName = "team_user";
+    const TableName = "teams";
 
     protected $fillable = [
         'user_id', // Owner ID
@@ -32,11 +33,12 @@ class Team extends Model
     protected static function booted(): void
     {
         static::addGlobalScope('user', function (Builder $builder) {
+            $table = self::TableName;
             // check if the user can access the model via pivot table
             $builder->whereHas('users', function (Builder $query) {
                 // In the users relation
                 $query->where('user_id', Auth::id());
-            })->orWhere("{$builder->from}.user_id", Auth::id());
+            })->orWhere("{$table}.user_id", Auth::id());
         });
     }
 
