@@ -34,8 +34,9 @@ class Team extends Model
         static::addGlobalScope('user', function (Builder $builder) {
             // check if the user can access the model via pivot table
             $builder->whereHas('users', function (Builder $builder) {
+                // In the users relation
                 $builder->where('user_id', Auth::id());
-            })->orWhere('owner_id', Auth::id());
+            })->orWhere('user_id', Auth::id());
         });
     }
 
