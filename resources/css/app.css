@@ -69,6 +69,7 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
+
     *,
     ::after,
     ::before,
@@ -79,6 +80,7 @@
 }
 
 @layer utilities {
+
     body,
     html {
         --font-sans:
@@ -180,5 +182,9 @@
 
     body {
         @apply bg-background text-foreground;
+    }
+
+    .dark [data-sonner-toast][data-styled='true'] [data-description] {
+        color: grey !important;
     }
 }

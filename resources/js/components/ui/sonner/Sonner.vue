@@ -10,9 +10,8 @@ const props = defineProps<ToasterProps>()
     v-bind="props"
     :style="{
       '--normal-bg': 'var(--popover)',
-      '--normal-text': 'var(--popover-foreground)',
+      '--normal-text': 'var(--secondary-foreground)',
       '--normal-border': 'var(--border)',
-
     }"
   />
 </template>
