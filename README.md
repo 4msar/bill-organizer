@@ -7,6 +7,7 @@ An open-source application to manage bill effectively. Built using the latest La
 
 [![tests](https://github.com/4msar/bill-organizer/actions/workflows/tests.yml/badge.svg)](https://github.com/4msar/bill-organizer/actions/workflows/tests.yml)
 [![lint](https://github.com/4msar/bill-organizer/actions/workflows/lint.yml/badge.svg)](https://github.com/4msar/bill-organizer/actions/workflows/lint.yml)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/4msar/bill-organizer)
 ---
 
 ## Features
