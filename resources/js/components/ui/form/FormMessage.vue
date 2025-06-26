@@ -6,6 +6,7 @@ import { useFormField } from './useFormField'
 
 const props = defineProps<{
   class?: HTMLAttributes['class']
+  message?:string
 }>()
 
 const { name, formMessageId } = useFormField()
@@ -13,10 +14,12 @@ const { name, formMessageId } = useFormField()
 
 <template>
   <ErrorMessage
+    v-if="!props.message"
     :id="formMessageId"
     data-slot="form-message"
     as="p"
     :name="toValue(name)"
     :class="cn('text-destructive-foreground text-sm', props.class)"
   />
+  <span v-else class="text-red-500 italic text-xs">{{props.message}}</span>
 </template>

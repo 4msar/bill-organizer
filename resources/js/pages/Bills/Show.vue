@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Details from '@/components/bills/Details.vue';
 import PaymentDialog from '@/components/bills/PaymentDialog.vue';
 import TransactionList from '@/components/transactions/TransactionList.vue';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -55,18 +56,17 @@ function onPaymentComplete(): void {
 </script>
 
 <template>
-    <AppLayout
-        :breadcrumbs="[
-            {
-                title: 'Bills',
-                href: route('bills.index'),
-            },
-            {
-                title: `Bill Details (${bill.title})`,
-                href: route('bills.show', bill.id),
-            },
-        ]"
-    >
+    <AppLayout :breadcrumbs="[
+        {
+            title: 'Bills',
+            href: route('bills.index'),
+        },
+        {
+            title: `Bill Details (${bill.title})`,
+            href: route('bills.show', bill.id),
+        },
+    ]">
+
         <Head :title="bill.title" />
 
         <div class="py-6">
@@ -74,7 +74,8 @@ function onPaymentComplete(): void {
                 <!-- Back Button and Title -->
                 <div class="mb-6 flex items-center justify-between">
                     <div>
-                        <Link :href="route('bills.index')" class="text-muted-foreground text-sm hover:underline"> &larr; Back to Bills </Link>
+                        <Link :href="route('bills.index')" class="text-muted-foreground text-sm hover:underline"> &larr;
+                        Back to Bills </Link>
                         <h2 class="mt-1 text-xl font-semibold text-gray-800 dark:text-gray-200">
                             {{ bill.title }}
                         </h2>
@@ -82,8 +83,8 @@ function onPaymentComplete(): void {
                     <div class="flex gap-2">
                         <Button variant="outline" asChild>
                             <Link :href="route('bills.edit', bill.id)">
-                                <Edit class="mr-2 h-4 w-4" />
-                                Edit
+                            <Edit class="mr-2 h-4 w-4" />
+                            Edit
                             </Link>
                         </Button>
                         <Button variant="destructive" @click="deleteBill">
@@ -96,77 +97,19 @@ function onPaymentComplete(): void {
                 <!-- Past Due Alert -->
                 <Alert v-if="isPastDue" variant="destructive" class="mb-6">
                     <AlertTitle>Past Due!</AlertTitle>
-                    <AlertDescription> This bill was due on {{ formatDate(bill.due_date as string) }} and is still unpaid. </AlertDescription>
+                    <AlertDescription> This bill was due on {{ formatDate(bill.due_date as string) }} and is still
+                        unpaid. </AlertDescription>
                 </Alert>
 
                 <!-- Bill Details Card -->
-                <Card>
-                    <CardHeader>
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <CardTitle class="flex items-center gap-2">
-                                    {{ bill.title }}
-                                    <Badge v-if="bill.is_recurring" variant="outline">Recurring</Badge>
-                                    <Badge :variant="bill.status === 'paid' ? 'secondary' : 'default'">
-                                        {{ bill.status === 'paid' ? 'Paid' : 'Unpaid' }}
-                                    </Badge>
-                                </CardTitle>
-                                <CardDescription v-if="bill.category"> Category: {{ bill.category.name }} </CardDescription>
-                            </div>
-                            <div class="text-2xl font-bold">
-                                {{ formatCurrency(bill.amount, $page.props?.team?.current?.currency as string) }}
-                            </div>
-                        </div>
-                    </CardHeader>
-
-                    <CardContent>
-                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            <div>
-                                <h3 class="text-muted-foreground mb-1 text-sm font-medium">Due Date</h3>
-                                <p class="flex items-center" :class="{ 'text-destructive': isPastDue }">
-                                    <CalendarIcon class="mr-2 h-4 w-4" />
-                                    {{ formatDate(bill.due_date as string) }}
-                                </p>
-                            </div>
-
-                            <div v-if="bill.is_recurring">
-                                <h3 class="text-muted-foreground mb-1 text-sm font-medium">Recurrence</h3>
-                                <p class="flex items-center">
-                                    <RotateCcw class="mr-2 h-4 w-4" />
-                                    {{
-                                        bill.recurrence_period ? bill.recurrence_period.charAt(0).toUpperCase() + bill.recurrence_period.slice(1) : ''
-                                    }}
-                                </p>
-                            </div>
-
-                            <div v-if="bill.created_at">
-                                <h3 class="text-muted-foreground mb-1 text-sm font-medium">Created</h3>
-                                <p class="flex items-center">
-                                    <Clock class="mr-2 h-4 w-4" />
-                                    {{ formatDate(bill.created_at) }}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div v-if="bill.description" class="mt-6">
-                            <h3 class="text-muted-foreground mb-1 text-sm font-medium">Description</h3>
-                            <p class="text-sm">{{ bill.description }}</p>
-                        </div>
-                    </CardContent>
-
-                    <CardFooter v-if="bill.status === 'unpaid'" :class="cn('flex', bill.payment_url ? 'justify-between' : 'justify-end')">
-                        <a v-if="bill.payment_url" :href="bill.payment_url" target="_blank" rel="noopener noreferrer">
-                            <Button variant="secondary">
-                                <Link2 class="mr-2 h-4 w-4" />
-                                Go to Payment Page
-                            </Button>
-                        </a>
+                <Details :bill="bill">
+                    <template #footer>
                         <Button @click="openPaymentDialog" :disabled="isLoading">
                             <Receipt class="mr-2 h-4 w-4" />
                             {{ isLoading ? 'Loading...' : 'Record Payment' }}
                         </Button>
-                    </CardFooter>
-                </Card>
+                    </template>
+                </Details>
 
                 <!-- Payment History -->
                 <div class="mt-8">
@@ -174,13 +117,8 @@ function onPaymentComplete(): void {
                 </div>
 
                 <!-- Payment Dialog -->
-                <PaymentDialog
-                    v-model:isOpen="isPaymentDialogOpen"
-                    :bill="bill"
-                    :payment-methods="paymentMethods"
-                    :next-due-date="nextDueDate"
-                    @payment-complete="onPaymentComplete"
-                />
+                <PaymentDialog v-model:isOpen="isPaymentDialogOpen" :bill="bill" :payment-methods="paymentMethods"
+                    :next-due-date="nextDueDate" @payment-complete="onPaymentComplete" />
             </div>
         </div>
     </AppLayout>

@@ -48,7 +48,7 @@ const features = [
             <div class="container mx-auto flex items-center justify-between px-4 py-4">
                 <!-- Logo -->
                 <Link href="/" class="flex items-center space-x-2">
-                    <AppLogo />
+                    <AppLogo class="text-black dark:text-white" />
                 </Link>
 
                 <!-- Auth Links -->

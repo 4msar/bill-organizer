@@ -21,6 +21,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::middleware(['auth', 'verified', 'team'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/calendar', [DashboardController::class, 'calendar'])->name('calendar');
 
     Route::get('team/settings', [TeamController::class, 'index'])->name('team.settings');
     Route::put('team/settings', [TeamController::class, 'update']);
@@ -55,5 +56,5 @@ Route::middleware(['auth', 'verified', 'team'])->group(function () {
     Route::get('/bills/{bill}/payment-details', [BillController::class, 'getPaymentDetails'])->name('bills.payment-details');
 });
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';

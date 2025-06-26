@@ -11,7 +11,7 @@ final class BillController extends Controller
 {
     const ValidationRules = [
         'title' => ['required', 'string', 'max:255'],
-        'amount' => ['required', 'numeric'],
+        'amount' => ['required', 'numeric', 'min:1'],
         'due_date' => ['required', 'date'],
         'category_id' => ['integer', 'nullable'],
         'description' => ['string', 'nullable'],
@@ -25,7 +25,7 @@ final class BillController extends Controller
         $bills = Bill::with('category')->orderBy('due_date', 'asc')->get();
 
         $unpaidBills = $bills->where('status', 'unpaid')->filter(
-            fn ($item) => $item->due_date->isCurrentMonth()
+            fn($item) => $item->due_date->isCurrentMonth()
         );
 
         return inertia('Bills/Index', [
@@ -33,11 +33,11 @@ final class BillController extends Controller
             'total_unpaid' => $unpaidBills->sum('amount'),
             'unpaid_count' => $unpaidBills->count(),
             'upcoming_count' => $bills
-                ->filter(fn ($item) => $item->isUpcoming())
+                ->filter(fn($item) => $item->isUpcoming())
                 ->count(),
             'paid_count' => $bills
                 ->where('status', 'paid')
-                ->filter(fn ($item) => $item->due_date->isCurrentMonth())
+                ->filter(fn($item) => $item->due_date->isCurrentMonth())
                 ->count(),
         ]);
     }
@@ -57,7 +57,7 @@ final class BillController extends Controller
             'team_id' => active_team_id(),
         ]);
 
-        return redirect()->route('bills.index')->with('success', 'Bill created successfully.');
+        return redirect()->back()->with('success', 'Bill created successfully.');
     }
 
     public function show(Bill $bill)
@@ -75,7 +75,7 @@ final class BillController extends Controller
 
     public function edit(Bill $bill)
     {
-        return inertia('Bills/Edit', ['bill' => $bill]);
+        return inertia('Bills/Edit', ['bill' => $bill, 'categories' => Category::all()]);
     }
 
     public function update(Request $request, Bill $bill)
@@ -84,7 +84,7 @@ final class BillController extends Controller
 
         $bill->update($data);
 
-        return redirect()->route('bills.index')->with('success', 'Bill updated successfully.');
+        return redirect()->back()->with('success', 'Bill updated successfully.');
     }
 
     public function destroy(Bill $bill)
@@ -98,7 +98,7 @@ final class BillController extends Controller
     {
         $bill->markAsPaid();
 
-        return redirect()->route('bills.index')->with('success', 'Bill marked as paid successfully.');
+        return redirect()->back()->with('success', 'Bill marked as paid successfully.');
     }
 
     /**

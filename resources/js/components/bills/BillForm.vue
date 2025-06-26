@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { VisitOptions } from '@inertiajs/core';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -8,18 +9,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { formatDate } from '@/lib/utils';
-import { Bill } from '@/types/model';
+import { Bill, Category } from '@/types/model';
 import { useForm } from '@inertiajs/vue3';
 import { DateValue, getLocalTimeZone, parseDate, today } from '@internationalized/date';
 import { CalendarIcon } from 'lucide-vue-next';
 import { computed, onMounted } from 'vue';
 
-interface Category {
-    id: number;
-    name: string;
-}
-
-type BillData = Pick<Bill, 'title' | 'description' | 'amount' | 'payment_url' | 'due_date' | 'category_id' | 'is_recurring' | 'recurrence_period'> & {
+export type BillData = Pick<Bill, 'title' | 'description' | 'amount' | 'payment_url' | 'due_date' | 'category_id' | 'is_recurring' | 'recurrence_period'> & {
     id?: number;
 };
 
@@ -28,6 +24,7 @@ interface Props {
     bill: BillData;
     submitUrl: string;
     submitMethod: 'post' | 'put';
+    options?: Omit<VisitOptions, 'data'>;
 }
 
 const props = defineProps<Props>();
@@ -69,7 +66,7 @@ onMounted(() => {
 });
 
 function submit(): void {
-    form[props.submitMethod](props.submitUrl);
+    form[props.submitMethod](props.submitUrl, props.options);
 }
 </script>
 
@@ -83,7 +80,7 @@ function submit(): void {
                     <FormControl>
                         <Input v-model="form.title" placeholder="Enter bill title" />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage :message="form.errors.title" />
                 </FormItem>
             </FormField>
 
@@ -96,11 +93,12 @@ function submit(): void {
                             <div class="relative">
                                 <span class="text-muted-foreground absolute inset-y-0 left-0 flex items-center pl-3">{{
                                     $page.props?.team.current?.currency_symbol as string
-                                }}</span>
-                                <Input v-model="form.amount" type="number" min="0" step="0.01" placeholder="0.00" class="pl-8" />
+                                    }}</span>
+                                <Input v-model="form.amount" type="number" min="0" step="1" placeholder="0.00"
+                                    class="pl-8" />
                             </div>
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage :message="form.errors.amount" />
                     </FormItem>
                 </FormField>
 
@@ -111,27 +109,19 @@ function submit(): void {
                         <Popover>
                             <PopoverTrigger as-child>
                                 <FormControl>
-                                    <Button
-                                        variant="outline"
-                                        class="w-full pl-3 text-left font-normal"
-                                        :class="!form.due_date ? 'text-muted-foreground' : ''"
-                                    >
+                                    <Button variant="outline" class="w-full pl-3 text-left font-normal"
+                                        :class="!form.due_date ? 'text-muted-foreground' : ''">
                                         <CalendarIcon class="mr-2 h-4 w-4" />
                                         {{ formattedDate || 'Select date' }}
                                     </Button>
                                 </FormControl>
                             </PopoverTrigger>
                             <PopoverContent class="w-auto p-0" align="start">
-                                <Calendar
-                                    v-model="date"
-                                    calendar-label="Due Date"
-                                    initial-focus
-                                    :min-value="today(getLocalTimeZone())"
-                                    @update:model-value="updateDueDate"
-                                />
+                                <Calendar v-model="date" calendar-label="Due Date" initial-focus
+                                    :min-value="today(getLocalTimeZone())" @update:model-value="updateDueDate" />
                             </PopoverContent>
                         </Popover>
-                        <FormMessage />
+                        <FormMessage :message="form.errors.due_date" />
                     </FormItem>
                 </FormField>
 
@@ -152,7 +142,7 @@ function submit(): void {
                                 </SelectItem>
                             </SelectContent>
                         </Select>
-                        <FormMessage />
+                        <FormMessage :message="form.errors.category_id" />
                     </FormItem>
                 </FormField>
             </div>
@@ -164,6 +154,7 @@ function submit(): void {
                     <FormControl>
                         <Input type="url" v-model="form.payment_url" placeholder="Enter payment URL" />
                     </FormControl>
+                    <FormMessage :message="form.errors.payment_url" />
                 </FormItem>
             </FormField>
 
@@ -197,7 +188,7 @@ function submit(): void {
                                 <SelectItem value="yearly">Yearly</SelectItem>
                             </SelectContent>
                         </Select>
-                        <FormMessage />
+                        <FormMessage :message="form.errors.recurrence_period" />
                     </FormItem>
                 </FormField>
             </div>
@@ -207,8 +198,10 @@ function submit(): void {
                 <FormItem>
                     <FormLabel>Description (Optional)</FormLabel>
                     <FormControl>
-                        <Textarea v-model="form.description" placeholder="Add any additional details about this bill" rows="3" />
+                        <Textarea v-model="form.description" placeholder="Add any additional details about this bill"
+                            rows="3" />
                     </FormControl>
+                    <FormMessage :message="form.errors.description" />
                 </FormItem>
             </FormField>
 

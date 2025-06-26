@@ -32,7 +32,7 @@ const teams = computed(() => props.team.items);
                 <DropdownMenuTrigger as-child>
                     <SidebarMenuButton size="lg" class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
                         <div
-                            class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg"
+                            class="bg-sidebar-primary dark:bg-transparent dark:border dark:border-white text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg"
                         >
                             <AppLogoIcon class="size-4" />
                         </div>

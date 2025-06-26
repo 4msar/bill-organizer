@@ -119,4 +119,15 @@ final class DashboardController extends Controller
             ],
         ]);
     }
+
+    /**
+     * Show the calendar.
+     */
+    public function calendar()
+    {
+        return Inertia::render('Calendar', [
+            'bills' => Bill::with('category')->get(),
+            'categories' => Category::all(),
+        ]);
+    }
 }
