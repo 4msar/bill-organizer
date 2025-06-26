@@ -42,7 +42,7 @@ Route::middleware(['auth', 'verified', 'team'])->group(function () {
     });
 
     // Category routes
-    Route::resource('categories', CategoryController::class);
+    Route::resource('categories', CategoryController::class)->except('create', 'show', 'edit');
 
     // Transaction routes
     Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');

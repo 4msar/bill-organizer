@@ -36,6 +36,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 ]);
             }
 
+            if ($response->getStatusCode() === 404) {
+                return inertia('errors/404')
+                    ->toResponse(request())
+                    ->setStatusCode(404);
+            }
+
             return $response;
         });
     })->create();

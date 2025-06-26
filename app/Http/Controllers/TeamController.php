@@ -32,6 +32,14 @@ class TeamController extends Controller
     {
         $request->user()->switchTeam($team);
 
+        $refererUrlPath = parse_url(url()->previous(), PHP_URL_PATH);
+        if (
+            // If it's bill details page
+            preg_match('/^\/bills\/[0-9]+$/', $refererUrlPath)
+        ) {
+            return to_route('bills.index')->with('success', 'Team switched successfully.');
+        }
+
         return back()->with('success', 'Team switched successfully.');
     }
 
