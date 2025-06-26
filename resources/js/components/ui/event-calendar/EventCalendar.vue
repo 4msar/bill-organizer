@@ -206,13 +206,13 @@ const viewTitle = computed(() => {
     </div>
 
     <div class="flex flex-1 flex-col">
-      <MonthView v-if="view === 'month'" :current-date="currentDate" :events="events"
+      <MonthView v-if="view === 'month'" :current-date="currentDate" :events="props.events"
         @event-select="item => $emit('selectEvent', item)" @event-create="date => $emit('newEvent', date)" />
-      <WeekView v-else-if="view === 'week'" :current-date="currentDate" :events="events"
+      <WeekView v-else-if="view === 'week'" :current-date="currentDate" :events="props.events"
         @event-select="item => $emit('selectEvent', item)" @event-create="date => $emit('newEvent', date)" />
-      <DayView v-else-if="view === 'day'" :current-date="currentDate" :events="events"
+      <DayView v-else-if="view === 'day'" :current-date="currentDate" :events="props.events"
         @event-select="item => $emit('selectEvent', item)" @event-create="date => $emit('newEvent', date)" />
-      <AgendaView v-else-if="view === 'agenda'" :current-date="currentDate" :events="events"
+      <AgendaView v-else-if="view === 'agenda'" :current-date="currentDate" :events="props.events"
         @event-select="item => $emit('selectEvent', item)" />
     </div>
 

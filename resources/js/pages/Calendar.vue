@@ -9,7 +9,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Bill, Category, SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { Pen, ScanEye } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const { props } = usePage<SharedData & {
     bills: Bill[]
@@ -23,6 +23,17 @@ const openNewEventDialog = ref(false)
 
 const SevenDaysInMiliseconds = 7 * 24 * 60 * 60 * 1000;
 
+const eventMaper = (item: Bill): CalendarEvent => ({
+    id: item.id.toString(),
+    title: item.title,
+    description: item.description,
+    start: new Date(item.due_date as string),
+    end: new Date(item.due_date as string),
+    // get random color
+    color: getColorByItem(item),
+    location: item.payment_url
+})
+
 const getColorByItem = (item: Bill) => {
     if (item.status === 'paid') return 'emerald'
 
@@ -34,18 +45,11 @@ const getColorByItem = (item: Bill) => {
     return 'sky'
 }
 
-const events = computed<CalendarEvent[]>(() => props.bills.map(item => {
-    return {
-        id: item.id.toString(),
-        title: item.title,
-        description: item.description,
-        start: new Date(item.due_date as string),
-        end: new Date(item.due_date as string),
-        // get random color
-        color: getColorByItem(item),
-        location: item.payment_url
-    }
-}))
+const bills = ref(props.bills)
+
+watch(() => usePage<SharedData>().props.bills, (newBills) => {
+    bills.value = (newBills as Bill[])
+}, { deep: true });
 
 const handleEventSelect = (event: CalendarEvent) => {
     selectedEvent.value = event
@@ -57,7 +61,8 @@ const handleNewEventClick = (date: Date) => {
     selectedDate.value = date
 }
 
-const bill = computed(() => props.bills.find(item => item.id.toString() === selectedEvent.value?.id?.toString()))
+const bill = computed(() => bills.value.find(item => item.id.toString() === selectedEvent.value?.id?.toString()))
+
 const billItemFormData = computed<BillData>(() => {
 
     return selectedEvent.value && bill.value ? {
@@ -105,7 +110,8 @@ const handleDialogClose = () => {
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <HeadingSmall title="Calendar" description="View and manage your bills." class="mb-4" />
 
-                <EventCalendar :events="events" @new-event="handleNewEventClick" @select-event="handleEventSelect" />
+                <EventCalendar :events="bills.map(eventMaper)" @new-event="handleNewEventClick"
+                    @select-event="handleEventSelect" />
 
                 <Dialog :open="Boolean(openNewEventDialog)" @update:open="handleDialogClose">
                     <DialogContent class="sm:max-w-2xl">
@@ -138,9 +144,7 @@ const handleDialogClose = () => {
                         <BillForm v-else :categories="props.categories"
                             :submit-url="editSelectedEvent && bill ? route('bills.update', bill.id) : route('bills.store')"
                             :submit-method="editSelectedEvent && bill ? 'put' : 'post'" :options="{
-                                onSuccess: () => {
-                                    handleDialogClose();
-                                }
+                                onSuccess: () => handleDialogClose()
                             }" :bill="billItemFormData" />
                     </DialogContent>
                 </Dialog>
