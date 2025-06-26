@@ -18,8 +18,8 @@ const page = usePage<SharedData>();
             <SidebarMenuItem v-for="item in items" :key="item.title">
                 <SidebarMenuButton as-child :is-active="item.href === page.url" :tooltip="item.title">
                     <Link :href="item.href">
-                    <component :is="item.icon" />
-                    <span>{{ item.title }}</span>
+                        <component :is="item.icon" />
+                        <span>{{ item.title }}</span>
                     </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
@@ -31,8 +31,8 @@ const page = usePage<SharedData>();
             <SidebarMenuItem>
                 <SidebarMenuButton as-child tooltip="Create team">
                     <Link :href="route('team.create')">
-                    <PackagePlus />
-                    <span>Create team</span>
+                        <PackagePlus />
+                        <span>Create team</span>
                     </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>

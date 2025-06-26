@@ -2,13 +2,11 @@
 
 namespace App\Http\Middleware;
 
-use App\Enums\Status;
-use App\Models\Team;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class UserHasTeam
+final class UserHasTeam
 {
     /**
      * Handle an incoming request.
@@ -27,7 +25,7 @@ class UserHasTeam
                 return to_route('team.create')->with('info', 'You must create a team first.');
             }
 
-            if (!$user->activeTeam) {
+            if (! $user->activeTeam) {
                 $user->switchTeam($user->teams->first());
             }
         }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 
 import HeadingSmall from '@/components/shared/HeadingSmall.vue';
 import DeleteTeam from '@/components/team/DeleteTeam.vue';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { SharedData, type BreadcrumbItem } from '@/types';
 
-const { props } = usePage<SharedData>()
+const { props } = usePage<SharedData>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -20,31 +20,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/team/settings',
     },
 ];
-
-const form = useForm<{
-    name: string;
-    description: string;
-    icon: File | null;
-    currency: string;
-    currency_symbol: string;
-    _method?: string;
-}>({
-    name: props.team.current.name,
-    description: props.team.current.description,
-    icon: null,
-    currency: (props.team.current?.currency) || 'USD',
-    currency_symbol: (props.team?.current?.currency_symbol) || '$',
-    _method: "PUT"
-});
-
-const submit = () => {
-    form.post(route('team.settings'));
-};
 </script>
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-
         <Head title="Team settings" />
 
         <div class="py-6">
@@ -52,10 +31,22 @@ const submit = () => {
                 <div class="flex flex-col space-y-6">
                     <HeadingSmall title="Team information" description="Update your team details." />
 
-                    <TeamForm :form="form" @submit="submit">
-                        <div class="flex items-center gap-4">
-                            <Button :disabled="form.processing">Save</Button>
-                        </div>
+                    <TeamForm
+                        method="PUT"
+                        :submit-url="route('team.settings')"
+                        :default-values="{
+                            name: props.team.current.name,
+                            description: props.team.current.description,
+                            icon: null,
+                            currency: props.team.current?.currency || 'USD',
+                            currency_symbol: props.team?.current?.currency_symbol || '$',
+                        }"
+                    >
+                        <template v-slot="{ form }">
+                            <div class="flex items-center gap-4">
+                                <Button :disabled="form.processing">Save</Button>
+                            </div>
+                        </template>
                     </TeamForm>
                 </div>
 

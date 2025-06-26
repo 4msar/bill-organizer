@@ -7,7 +7,7 @@ use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class TeamController extends Controller
+final class TeamController extends Controller
 {
     const ValidationRules = [
         'name' => ['required', 'string', 'max:100'],

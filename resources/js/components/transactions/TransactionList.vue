@@ -110,8 +110,7 @@ function getDocumentType(path: string): string {
                             </TableCell>
                             <TableCell>
                                 <div class="flex items-center">
-                                    <component :is="getPaymentMethodIcon(transaction.payment_method)"
-                                        class="text-muted-foreground mr-2 h-4 w-4" />
+                                    <component :is="getPaymentMethodIcon(transaction.payment_method)" class="text-muted-foreground mr-2 h-4 w-4" />
                                     {{ getPaymentMethodName(transaction.payment_method) }}
                                 </div>
                             </TableCell>
@@ -119,20 +118,29 @@ function getDocumentType(path: string): string {
                                 <TooltipProvider v-if="transaction.attachment">
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Button variant="ghost" size="sm" class="h-8 px-2" as="a"
-                                                :href="`/storage/${transaction.attachment}`" target="_blank">
-                                                <component :is="isImage(transaction.attachment)
-                                                    ? 'Image'
-                                                    : isPdf(transaction.attachment)
-                                                        ? FileText
-                                                        : FileText
-                                                    " class="mr-1 h-4 w-4" />
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                class="h-8 px-2"
+                                                as="a"
+                                                :href="`/storage/${transaction.attachment}`"
+                                                target="_blank"
+                                            >
+                                                <component
+                                                    :is="
+                                                        isImage(transaction.attachment)
+                                                            ? 'Image'
+                                                            : isPdf(transaction.attachment)
+                                                              ? FileText
+                                                              : FileText
+                                                    "
+                                                    class="mr-1 h-4 w-4"
+                                                />
                                                 <span class="sr-only md:not-sr-only md:text-xs">View</span>
                                             </Button>
                                         </TooltipTrigger>
                                         <TooltipContent>
-                                            <div class="text-xs">{{ getDocumentType(transaction.attachment) }}
-                                                attachment</div>
+                                            <div class="text-xs">{{ getDocumentType(transaction.attachment) }} attachment</div>
                                         </TooltipContent>
                                     </Tooltip>
                                 </TooltipProvider>
@@ -158,13 +166,26 @@ function getDocumentType(path: string): string {
                             </TableCell>
                             <TableCell class="text-right">
                                 <div class="flex justify-end space-x-1">
-                                    <Button v-if="transaction.attachment" variant="ghost" size="icon" class="h-8 w-8"
-                                        as="a" :href="`/storage/${transaction.attachment}`" download>
+                                    <Button
+                                        v-if="transaction.attachment"
+                                        variant="ghost"
+                                        size="icon"
+                                        class="h-8 w-8"
+                                        as="a"
+                                        :href="`/storage/${transaction.attachment}`"
+                                        download
+                                    >
                                         <Download class="h-4 w-4" />
                                         <span class="sr-only">Download</span>
                                     </Button>
-                                    <Button v-if="showBillLink" variant="ghost" size="icon" class="h-8 w-8" as="a"
-                                        :href="route('bills.show', transaction.bill_id)">
+                                    <Button
+                                        v-if="showBillLink"
+                                        variant="ghost"
+                                        size="icon"
+                                        class="h-8 w-8"
+                                        as="a"
+                                        :href="route('bills.show', transaction.bill_id)"
+                                    >
                                         <ExternalLink class="h-4 w-4" />
                                         <span class="sr-only">View Bill</span>
                                     </Button>

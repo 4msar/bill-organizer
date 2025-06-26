@@ -97,8 +97,7 @@ function submit(): void {
                                 <span class="text-muted-foreground absolute inset-y-0 left-0 flex items-center pl-3">{{
                                     $page.props?.team.current?.currency_symbol as string
                                 }}</span>
-                                <Input v-model="form.amount" type="number" min="0" step="0.01" placeholder="0.00"
-                                    class="pl-8" />
+                                <Input v-model="form.amount" type="number" min="0" step="0.01" placeholder="0.00" class="pl-8" />
                             </div>
                         </FormControl>
                         <FormMessage />
@@ -112,16 +111,24 @@ function submit(): void {
                         <Popover>
                             <PopoverTrigger as-child>
                                 <FormControl>
-                                    <Button variant="outline" class="w-full pl-3 text-left font-normal"
-                                        :class="!form.due_date ? 'text-muted-foreground' : ''">
+                                    <Button
+                                        variant="outline"
+                                        class="w-full pl-3 text-left font-normal"
+                                        :class="!form.due_date ? 'text-muted-foreground' : ''"
+                                    >
                                         <CalendarIcon class="mr-2 h-4 w-4" />
                                         {{ formattedDate || 'Select date' }}
                                     </Button>
                                 </FormControl>
                             </PopoverTrigger>
                             <PopoverContent class="w-auto p-0" align="start">
-                                <Calendar v-model="date" calendar-label="Due Date" initial-focus
-                                    :min-value="today(getLocalTimeZone())" @update:model-value="updateDueDate" />
+                                <Calendar
+                                    v-model="date"
+                                    calendar-label="Due Date"
+                                    initial-focus
+                                    :min-value="today(getLocalTimeZone())"
+                                    @update:model-value="updateDueDate"
+                                />
                             </PopoverContent>
                         </Popover>
                         <FormMessage />
@@ -159,7 +166,6 @@ function submit(): void {
                     </FormControl>
                 </FormItem>
             </FormField>
-
 
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <!-- Recurring Bill -->
@@ -201,8 +207,7 @@ function submit(): void {
                 <FormItem>
                     <FormLabel>Description (Optional)</FormLabel>
                     <FormControl>
-                        <Textarea v-model="form.description" placeholder="Add any additional details about this bill"
-                            rows="3" />
+                        <Textarea v-model="form.description" placeholder="Add any additional details about this bill" rows="3" />
                     </FormControl>
                 </FormItem>
             </FormField>

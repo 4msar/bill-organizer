@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-use App\Traits\HasMetaData;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-class Team extends Model
+final class Team extends Model
 {
-    const PivotTableName = "team_user";
-    const TableName = "teams";
+    const PivotTableName = 'team_user';
+
+    const TableName = 'teams';
 
     protected $fillable = [
         'user_id', // Owner ID
@@ -32,7 +32,7 @@ class Team extends Model
      */
     protected static function booted(): void
     {
-        static::addGlobalScope('user', function (Builder $builder) {
+        self::addGlobalScope('user', function (Builder $builder) {
             $table = self::TableName;
             // check if the user can access the model via pivot table
             $builder->whereHas('users', function (Builder $query) {
@@ -42,7 +42,7 @@ class Team extends Model
         });
     }
 
-    function getIconUrlAttribute()
+    public function getIconUrlAttribute()
     {
         return Storage::url($this->icon);
     }

@@ -6,7 +6,6 @@ use App\Models\Scopes\TeamScope;
 use App\Traits\HasTeam;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -53,7 +52,7 @@ final class Bill extends Model
     {
         parent::boot();
 
-        static::deleted(function (Bill $bill) {
+        self::deleted(function (Bill $bill) {
             $bill->transactions()->delete();
         });
     }

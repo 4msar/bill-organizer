@@ -22,11 +22,11 @@ trait HasTeam
     public static function bootHasTeam()
     {
         static::creating(function (Model $model) {
-            if(empty($model->team_id)){
+            if (empty($model->team_id)) {
                 $model->team_id = active_team_id();
             }
 
-            if(in_array('user_id', $model->getFillable())){
+            if (in_array('user_id', $model->getFillable())) {
                 $model->user_id = Auth::id();
             }
         });

@@ -50,7 +50,6 @@ export interface Transaction extends Model {
     notes: string | null;
 }
 
-
 export interface Team extends Model {
     user_id: number;
     name: string;

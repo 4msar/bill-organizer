@@ -48,7 +48,7 @@ final class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $user?->append('metas'),
             ],
-            'team' => fn() => $this->getTeam($request),
+            'team' => fn () => $this->getTeam($request),
             'ziggy' => [
                 ...(new Ziggy())->toArray(),
                 'location' => $request->url(),
@@ -87,7 +87,6 @@ final class HandleInertiaRequests extends Middleware
         ];
     }
 
-
     /**
      * Get the team of login user
      */
@@ -100,7 +99,7 @@ final class HandleInertiaRequests extends Middleware
 
         return [
             'current' => $user?->activeTeam,
-            'items' => $user?->teams ?? []
+            'items' => $user?->teams ?? [],
         ];
     }
 }

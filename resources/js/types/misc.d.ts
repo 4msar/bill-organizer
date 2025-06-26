@@ -33,8 +33,8 @@ export type NotificationData = {
 
 export type TeamData = {
     current: Team;
-    items: Team[]
-}
+    items: Team[];
+};
 
 export interface SharedData extends PageProps {
     name: string;
