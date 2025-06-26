@@ -155,14 +155,14 @@ function markAsPaid(id: string | number) {
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuItem>
                                                     <Link :href="route('bills.show', bill.id)"
-                                                        class="flex items-center gap-2">
+                                                        class="flex items-center gap-2 w-full">
                                                     <Eye class="mr-2 h-4 w-4" />
                                                     View details
                                                     </Link>
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem class="flex items-center">
                                                     <Link :href="route('bills.edit', bill.id)"
-                                                        class="flex items-center gap-2">
+                                                        class="flex items-center gap-2 w-full">
                                                     <Edit class="mr-2 h-4 w-4" />
                                                     Edit
                                                     </Link>

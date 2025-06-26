@@ -33,6 +33,7 @@ final class Bill extends Model
         'status',
         'is_recurring',
         'recurrence_period',
+        'payment_url',
     ];
 
     /**
@@ -44,6 +45,18 @@ final class Bill extends Model
         'due_date' => 'date',
         'is_recurring' => 'boolean',
     ];
+
+    /**
+     * Boot the model
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleted(function (Bill $bill) {
+            $bill->transactions()->delete();
+        });
+    }
 
     /**
      * Get the user that owns the bill.
@@ -149,6 +162,8 @@ final class Bill extends Model
 
     public function markAsPaid()
     {
-        $this->update(['status' => 'paid']);
+        $this->update([
+            'status' => 'paid',
+        ]);
     }
 }

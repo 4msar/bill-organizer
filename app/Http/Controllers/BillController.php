@@ -9,6 +9,17 @@ use Illuminate\Support\Facades\Redirect;
 
 final class BillController extends Controller
 {
+    const ValidationRules = [
+        'title' => ['required', 'string', 'max:255'],
+        'amount' => ['required', 'numeric'],
+        'due_date' => ['required', 'date'],
+        'category_id' => ['integer', 'nullable'],
+        'description' => ['string', 'nullable'],
+        'is_recurring' => ['boolean', 'nullable'],
+        'recurrence_period' => ['string', 'nullable'],
+        'payment_url' => ['string', 'nullable'],
+    ];
+
     public function index()
     {
         $bills = Bill::with('category')->orderBy('due_date', 'asc')->get();
@@ -40,21 +51,10 @@ final class BillController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'amount' => 'required|numeric',
-            'due_date' => 'required|date',
-        ]);
+        $data = $request->validate(self::ValidationRules);
 
-        Bill::create([
+        Bill::create($data + [
             'team_id' => active_team_id(),
-            'title' => $request->title,
-            'amount' => $request->amount,
-            'due_date' => $request->due_date,
-            'category_id' => $request->category_id,
-            'description' => $request->description,
-            'is_recurring' => $request->is_recurring,
-            'recurrence_period' => $request->recurrence_period,
         ]);
 
         return redirect()->route('bills.index')->with('success', 'Bill created successfully.');
@@ -80,13 +80,9 @@ final class BillController extends Controller
 
     public function update(Request $request, Bill $bill)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'amount' => 'required|numeric',
-            'due_date' => 'required|date',
-        ]);
+        $data = $request->validate(self::ValidationRules);
 
-        $bill->update($request->all());
+        $bill->update($data);
 
         return redirect()->route('bills.index')->with('success', 'Bill updated successfully.');
     }

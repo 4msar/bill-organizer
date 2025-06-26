@@ -81,6 +81,10 @@ Make sure you have the following installed on your system:
     php artisan serve
     ```
 
+11. Run the scheduler to send notification
+   ```bash
+   php artisan schedule:run
+   ```
 ---
 
 ## Docker

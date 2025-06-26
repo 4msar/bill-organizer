@@ -129,8 +129,8 @@ final class TransactionController extends Controller
     {
 
         // Delete attachment if exists
-        if ($transaction->attachment) {
-            Storage::disk('public')->delete($transaction->attachment);
+        if ($transaction->attachment && Storage::exists($transaction->attachment)) {
+            Storage::delete($transaction->attachment);
         }
 
         $billId = $transaction->bill_id;

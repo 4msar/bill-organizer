@@ -19,7 +19,7 @@ interface Category {
     name: string;
 }
 
-type BillData = Pick<Bill, 'title' | 'description' | 'amount' | 'due_date' | 'category_id' | 'is_recurring' | 'recurrence_period'> & {
+type BillData = Pick<Bill, 'title' | 'description' | 'amount' | 'payment_url' | 'due_date' | 'category_id' | 'is_recurring' | 'recurrence_period'> & {
     id?: number;
 };
 
@@ -40,6 +40,7 @@ const form = useForm<BillData>({
     category_id: props.bill.category_id,
     is_recurring: props.bill.is_recurring,
     recurrence_period: props.bill.recurrence_period,
+    payment_url: props.bill.payment_url,
 });
 
 const formattedDate = computed((): string => {
@@ -95,7 +96,7 @@ function submit(): void {
                             <div class="relative">
                                 <span class="text-muted-foreground absolute inset-y-0 left-0 flex items-center pl-3">{{
                                     $page.props?.team.current?.currency_symbol as string
-                                    }}</span>
+                                }}</span>
                                 <Input v-model="form.amount" type="number" min="0" step="0.01" placeholder="0.00"
                                     class="pl-8" />
                             </div>
@@ -148,6 +149,16 @@ function submit(): void {
                     </FormItem>
                 </FormField>
             </div>
+
+            <!-- Payment URL -->
+            <FormField v-model="form.payment_url" name="payment_url">
+                <FormItem>
+                    <FormLabel>Payment URL</FormLabel>
+                    <FormControl>
+                        <Input type="url" v-model="form.payment_url" placeholder="Enter payment URL" />
+                    </FormControl>
+                </FormItem>
+            </FormField>
 
 
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">

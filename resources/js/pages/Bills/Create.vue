@@ -39,6 +39,7 @@ defineProps<Props>();
                     category_id: null,
                     is_recurring: false,
                     recurrence_period: null,
+                    payment_url: '',
                 }" :submit-url="route('bills.store')" submit-method="post" />
 
             </div>

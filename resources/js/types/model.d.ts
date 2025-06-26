@@ -33,6 +33,7 @@ export interface Bill extends Model {
     is_recurring: boolean;
     recurrence_period: 'weekly' | 'monthly' | 'yearly' | null;
     category_id: number | null;
+    payment_url: string;
 
     category?: Category;
     transactions?: Transaction[];

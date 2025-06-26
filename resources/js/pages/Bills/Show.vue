@@ -6,11 +6,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { cn, formatCurrency, formatDate } from '@/lib/utils';
 import { Bill } from '@/types/model';
 import { Head, Link, router } from '@inertiajs/vue3';
 import axios from 'axios';
-import { CalendarIcon, Clock, Edit, Receipt, RotateCcw, Trash2 } from 'lucide-vue-next';
+import { CalendarIcon, Clock, Edit, Link2, Receipt, RotateCcw, Trash2 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 interface Props {
@@ -157,7 +157,14 @@ function onPaymentComplete(): void {
                         </div>
                     </CardContent>
 
-                    <CardFooter v-if="bill.status === 'unpaid'" class="flex justify-end">
+                    <CardFooter v-if="bill.status === 'unpaid'"
+                        :class="cn('flex', bill.payment_url ? 'justify-between' : 'justify-end')">
+                        <a v-if="bill.payment_url" :href="bill.payment_url" target="_blank" rel="noopener noreferrer">
+                            <Button variant="secondary">
+                                <Link2 class="mr-2 h-4 w-4" />
+                                Go to Payment Page
+                            </Button>
+                        </a>
                         <Button @click="openPaymentDialog" :disabled="isLoading">
                             <Receipt class="mr-2 h-4 w-4" />
                             {{ isLoading ? 'Loading...' : 'Record Payment' }}
