@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import NoteCard from '@/components/notes/NoteCard.vue';
+import Heading from '@/components/shared/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -47,16 +48,12 @@ function handlePin(note: Note) {
         <div class="py-6">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <!-- Header -->
-                <div class="mb-6 flex items-center justify-between">
-                    <div>
-                        <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">Notes</h1>
-                        <p class="text-muted-foreground">Organize your thoughts and ideas</p>
-                    </div>
+                <Heading class="flex flex-wrap items-center justify-between gap-2" title="Notes" description="Organize your thoughts and ideas">
                     <Button>
                         <Plus class="mr-2 h-4 w-4" />
                         New Note
                     </Button>
-                </div>
+                </Heading>
 
                 <!-- Notes Grid -->
                 <div v-if="notes.length > 0">

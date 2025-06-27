@@ -70,7 +70,7 @@ final class Bill extends Model
      */
     public function notes()
     {
-        return $this->morphToMany(Note::class, 'noteable');
+        return $this->morphToMany(Note::class, 'notable');
     }
 
 

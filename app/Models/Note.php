@@ -30,10 +30,10 @@ class Note extends Model
 
     public function bills()
     {
-        return $this->morphedByMany(Bill::class, 'noteable');
+        return $this->morphedByMany(Bill::class, 'notable');
     }
 
-    public function noteable()
+    public function notable()
     {
         return $this->morphTo();
     }
