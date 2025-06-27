@@ -37,6 +37,7 @@ const features = [
 </script>
 
 <template>
+
     <Head title="Bill Organizer - Manage Your Bills Easily">
         <link rel="preconnect" href="https://rsms.me/" />
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
@@ -48,22 +49,22 @@ const features = [
             <div class="container mx-auto flex items-center justify-between px-4 py-4">
                 <!-- Logo -->
                 <Link href="/" class="flex items-center space-x-2">
-                    <AppLogo class="text-black dark:text-white" />
+                <AppLogo class="text-black dark:text-white" />
                 </Link>
 
                 <!-- Auth Links -->
                 <nav class="flex items-center gap-4">
                     <template v-if="isAuthenticated">
                         <Link :href="route('dashboard')">
-                            <Button variant="default">Dashboard</Button>
+                        <Button variant="default">Dashboard</Button>
                         </Link>
                     </template>
                     <template v-else>
                         <Link :href="route('login')">
-                            <Button variant="ghost">Log in</Button>
+                        <Button variant="ghost">Log in</Button>
                         </Link>
                         <Link :href="route('register')">
-                            <Button variant="default">Register</Button>
+                        <Button variant="default">Register</Button>
                         </Link>
                     </template>
                 </nav>
@@ -81,9 +82,11 @@ const features = [
                 </p>
                 <div class="flex flex-col justify-center gap-4 sm:flex-row">
                     <Link :href="route('register')">
-                        <Button size="lg" class="w-full sm:w-auto">Get Started</Button>
+                    <Button size="lg" class="w-full sm:w-auto">Get Started</Button>
                     </Link>
-                    <Button size="lg" variant="outline" class="w-full sm:w-auto">Learn More</Button>
+                    <a href="https://github.com/4msar/bill-organizer" target="_blank">
+                        <Button size="lg" variant="outline" class="w-full sm:w-auto">Learn More</Button>
+                    </a>
                 </div>
             </div>
         </section>
@@ -91,7 +94,9 @@ const features = [
         <!-- Features Section -->
         <section class="bg-muted/50 py-20">
             <div class="container mx-auto px-4">
-                <h2 class="text-foreground mb-16 text-center text-3xl font-bold md:text-4xl">Everything you need to manage your bills</h2>
+                <h2 class="text-foreground mb-16 text-center text-3xl font-bold md:text-4xl">Everything you need to
+                    manage your
+                    bills</h2>
 
                 <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
                     <Card v-for="(feature, index) in features" :key="index" class="border-border/50">
@@ -116,7 +121,7 @@ const features = [
                         Join thousands of users who have simplified their bill management process.
                     </p>
                     <Link :href="route('register')">
-                        <Button size="lg">Create Free Account</Button>
+                    <Button size="lg">Create Free Account</Button>
                     </Link>
                 </div>
             </div>
@@ -128,7 +133,7 @@ const features = [
                 <div class="flex flex-col items-center justify-between md:flex-row">
                     <div class="mb-6 md:mb-0">
                         <Link href="/" class="flex items-center space-x-2">
-                            <AppLogo />
+                        <AppLogo />
                         </Link>
                         <p class="text-muted-foreground mt-2 text-sm">
                             © {{ new Date().getFullYear() }} {{ $page.props.name }}. All rights reserved.
