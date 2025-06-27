@@ -54,6 +54,7 @@ final class Bill extends Model
 
         self::deleted(function (Bill $bill) {
             $bill->transactions()->delete();
+            $bill->notes()->detach();
         });
     }
 

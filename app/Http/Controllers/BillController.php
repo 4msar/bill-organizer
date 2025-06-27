@@ -57,7 +57,11 @@ final class BillController extends Controller
             'team_id' => active_team_id(),
         ]);
 
-        return redirect()->back()->with('success', 'Bill created successfully.');
+        if (parse_url(url()->previous(), PHP_URL_PATH) === '/calendar') {
+            return redirect()->back()->with('success', 'Bill created successfully.');
+        }
+
+        return redirect()->route('bills.index')->with('success', 'Bill created successfully.');
     }
 
     public function show(Bill $bill)

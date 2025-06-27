@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { VisitOptions } from '@inertiajs/core';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -10,12 +9,16 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { formatDate } from '@/lib/utils';
 import { Bill, Category } from '@/types/model';
+import { VisitOptions } from '@inertiajs/core';
 import { useForm } from '@inertiajs/vue3';
 import { DateValue, getLocalTimeZone, parseDate, today } from '@internationalized/date';
 import { CalendarIcon } from 'lucide-vue-next';
 import { computed, onMounted } from 'vue';
 
-export type BillData = Pick<Bill, 'title' | 'description' | 'amount' | 'payment_url' | 'due_date' | 'category_id' | 'is_recurring' | 'recurrence_period'> & {
+export type BillData = Pick<
+    Bill,
+    'title' | 'description' | 'amount' | 'payment_url' | 'due_date' | 'category_id' | 'is_recurring' | 'recurrence_period'
+> & {
     id?: number;
 };
 
@@ -66,7 +69,15 @@ onMounted(() => {
 });
 
 function submit(): void {
-    form[props.submitMethod](props.submitUrl, props.options);
+    form[props.submitMethod](props.submitUrl, {
+        ...props.options,
+        onSuccess: (data) => {
+            form.reset();
+            if (props.options?.onSuccess) {
+                props.options?.onSuccess(data);
+            }
+        },
+    });
 }
 </script>
 
@@ -93,9 +104,8 @@ function submit(): void {
                             <div class="relative">
                                 <span class="text-muted-foreground absolute inset-y-0 left-0 flex items-center pl-3">{{
                                     $page.props?.team.current?.currency_symbol as string
-                                    }}</span>
-                                <Input v-model="form.amount" type="number" min="0" step="1" placeholder="0.00"
-                                    class="pl-8" />
+                                }}</span>
+                                <Input v-model="form.amount" type="number" min="0" step="1" placeholder="0.00" class="pl-8" />
                             </div>
                         </FormControl>
                         <FormMessage :message="form.errors.amount" />
@@ -109,16 +119,24 @@ function submit(): void {
                         <Popover>
                             <PopoverTrigger as-child>
                                 <FormControl>
-                                    <Button variant="outline" class="w-full pl-3 text-left font-normal"
-                                        :class="!form.due_date ? 'text-muted-foreground' : ''">
+                                    <Button
+                                        variant="outline"
+                                        class="w-full pl-3 text-left font-normal"
+                                        :class="!form.due_date ? 'text-muted-foreground' : ''"
+                                    >
                                         <CalendarIcon class="mr-2 h-4 w-4" />
                                         {{ formattedDate || 'Select date' }}
                                     </Button>
                                 </FormControl>
                             </PopoverTrigger>
                             <PopoverContent class="w-auto p-0" align="start">
-                                <Calendar v-model="date" calendar-label="Due Date" initial-focus
-                                    :min-value="today(getLocalTimeZone())" @update:model-value="updateDueDate" />
+                                <Calendar
+                                    v-model="date"
+                                    calendar-label="Due Date"
+                                    initial-focus
+                                    :min-value="today(getLocalTimeZone())"
+                                    @update:model-value="updateDueDate"
+                                />
                             </PopoverContent>
                         </Popover>
                         <FormMessage :message="form.errors.due_date" />
@@ -198,8 +216,7 @@ function submit(): void {
                 <FormItem>
                     <FormLabel>Description (Optional)</FormLabel>
                     <FormControl>
-                        <Textarea v-model="form.description" placeholder="Add any additional details about this bill"
-                            rows="3" />
+                        <Textarea v-model="form.description" placeholder="Add any additional details about this bill" rows="3" />
                     </FormControl>
                     <FormMessage :message="form.errors.description" />
                 </FormItem>

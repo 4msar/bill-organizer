@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { formatDate } from '@/lib/utils';
 import { Note } from '@/types/model';
 import { MoreVertical, Pencil, Pin, Trash } from 'lucide-vue-next';
 import { computed } from 'vue';
+import { Badge } from '../ui/badge';
 
 const props = defineProps<{
     note: Note;
@@ -22,7 +23,7 @@ const handleView = () => emit('view', props.note);
 const handleEdit = () => emit('edit', props.note);
 const handleDelete = () => emit('delete', props.note);
 const handlePin = () => emit('pin', props.note);
-
+const queryParams = new URLSearchParams(window.location.search);
 const summaryText = computed(() => {
     if (!props.note.content) return '';
 
@@ -41,9 +42,10 @@ const summaryText = computed(() => {
     <Card class="relative w-full max-w-sm gap-y-1 py-4 transition-shadow duration-200 hover:shadow-md">
         <CardHeader>
             <div class="flex items-start justify-between">
-                <CardTitle class="line-clamp-2 pr-2 text-lg font-semibold">
-                    {{ note.title || 'Untitled Note' }}
-                </CardTitle>
+                <div class="flex w-full flex-wrap items-center justify-between">
+                    <CardTitle class="line-clamp-2 pr-2 text-lg font-semibold">{{ note.title || 'Untitled Note' }} </CardTitle>
+                    <Badge v-if="queryParams.get('team') === 'all'" class="pl-2">{{ note.team?.name }}</Badge>
+                </div>
                 <DropdownMenu>
                     <DropdownMenuTrigger as-child>
                         <Button variant="ghost" size="sm" class="h-8 w-8 p-0">
@@ -76,15 +78,15 @@ const summaryText = computed(() => {
                     {{ summaryText || 'No content available' }}
                 </p>
             </div>
-
-            <div class="flex items-center justify-between">
-                <time class="text-muted-foreground text-xs" :datetime="note.created_at">
-                    {{ formatDate(props.note.created_at) }}
-                </time>
-
-                <Button @click="handleView" variant="outline" size="sm" class="h-8"> View </Button>
-            </div>
         </CardContent>
+
+        <CardFooter class="flex items-center justify-between">
+            <time class="text-muted-foreground text-xs" :datetime="note.created_at">
+                {{ formatDate(props.note.created_at) }}
+            </time>
+
+            <Button @click="handleView" variant="outline" size="sm" class="h-8"> View </Button>
+        </CardFooter>
 
         <!-- Pin indicator -->
         <div v-if="note.is_pinned" class="absolute top-2 left-2">
