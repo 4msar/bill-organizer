@@ -69,5 +69,5 @@ export interface Note extends Model {
     content: string;
     is_pinned: boolean;
 
-    noteable?: Bill[];
+    notable?: Bill[];
 }

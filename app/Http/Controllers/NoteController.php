@@ -14,7 +14,7 @@ class NoteController extends Controller
     {
         // dd(Note::all(), active_team_id());
         return inertia('Notes/Index', [
-            'notes' => Note::with(['user', 'team'])->get(),
+            'notes' => Note::with(['user', 'team', 'notable'])->get(),
         ]);
     }
 

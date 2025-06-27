@@ -21,9 +21,9 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('noteables', function (Blueprint $table) {
+        Schema::create('notables', function (Blueprint $table) {
             $table->foreignId('note_id')->constrained()->onDelete('cascade');
-            $table->nullableMorphs('noteable');
+            $table->nullableMorphs('notable');
         });
     }
 
@@ -33,6 +33,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('notes');
-        Schema::dropIfExists('noteables');
+        Schema::dropIfExists('notables');
     }
 };
