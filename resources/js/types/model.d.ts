@@ -37,6 +37,7 @@ export interface Bill extends Model {
 
     category?: Category;
     transactions?: Transaction[];
+    notes?: Note[];
 }
 
 export interface Transaction extends Model {
@@ -59,4 +60,14 @@ export interface Team extends Model {
     status: string;
     currency: string;
     currency_symbol: string;
+}
+
+export interface Note extends Model {
+    user_id: number;
+    team_id: number;
+    title: string;
+    content: string;
+    is_pinned: boolean;
+
+    noteable?: Bill[];
 }

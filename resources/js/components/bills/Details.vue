@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn, formatCurrency, formatDate } from '@/lib/utils';
 import { Bill } from '@/types/model';
-import { CalendarIcon, Clock, Link2, Receipt, RotateCcw } from 'lucide-vue-next';
+import { CalendarIcon, Clock, Link2, RotateCcw } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 interface Props {
@@ -16,16 +16,15 @@ const { bill } = defineProps<Props>();
 const isPastDue = computed((): boolean => {
     return new Date(bill.due_date as string) < new Date() && bill.status === 'unpaid';
 });
-
 </script>
 
 <template>
     <!-- Bill Details Card -->
     <Card>
         <CardHeader>
-            <div class="flex items-start justify-between">
-                <div>
-                    <CardTitle class="flex items-center gap-2">
+            <div class="flex flex-col items-start justify-between space-y-2 space-x-2 sm:flex-row">
+                <div class="space-y-2">
+                    <CardTitle class="flex flex-wrap items-center gap-2">
                         {{ bill.title }}
                         <Badge v-if="bill.is_recurring" variant="outline">Recurring</Badge>
                         <Badge :variant="bill.status === 'paid' ? 'secondary' : 'default'">
@@ -54,10 +53,7 @@ const isPastDue = computed((): boolean => {
                     <h3 class="text-muted-foreground mb-1 text-sm font-medium">Recurrence</h3>
                     <p class="flex items-center">
                         <RotateCcw class="mr-2 h-4 w-4" />
-                        {{
-                            bill.recurrence_period ? bill.recurrence_period.charAt(0).toUpperCase() +
-                                bill.recurrence_period.slice(1) : ''
-                        }}
+                        {{ bill.recurrence_period ? bill.recurrence_period.charAt(0).toUpperCase() + bill.recurrence_period.slice(1) : '' }}
                     </p>
                 </div>
 
@@ -76,8 +72,7 @@ const isPastDue = computed((): boolean => {
             </div>
         </CardContent>
 
-        <CardFooter v-if="bill.status === 'unpaid'"
-            :class="cn('flex', bill.payment_url ? 'justify-between' : 'justify-end')">
+        <CardFooter v-if="bill.status === 'unpaid'" :class="cn('flex', bill.payment_url ? 'justify-between' : 'justify-end')">
             <a v-if="bill.payment_url" :href="bill.payment_url" target="_blank" rel="noopener noreferrer">
                 <Button variant="secondary">
                     <Link2 class="mr-2 h-4 w-4" />
