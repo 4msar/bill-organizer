@@ -10,7 +10,7 @@
         <div class="grid flex-1 grid-cols-7 grid-rows-6">
             <div v-for="(week, weekIndex) in weeks" :key="weekIndex" class="contents">
                 <div v-for="day in week" :key="day.getTime()"
-                    class="relative border-border/70 border-b border-r p-2 last:border-r-0 min-h-24" :class="{
+                    class="relative border-border/70 border-b border-r p-2 last:border-r-0 min-h-12 md:min-h-24" :class="{
             'bg-muted/30': !isSameMonth(day, currentDate),
             'bg-accent': isToday(day)
           }" @click="handleDayClick(day)">
@@ -25,9 +25,9 @@
 
                     <div class="mt-1 space-y-1">
                         <div v-for="event in getEventsForDay(events, day)" :key="event.id"
-                            class="cursor-pointer rounded px-1 py-0.5 text-xs"
+                            class="cursor-pointer sm:rounded px-1 py-1 sm:py-0.5 text-xs rounded-full"
                             :class="getEventColorClasses(event.color)" @click.stop="$emit('eventSelect', event)">
-                            {{ event.title }}
+                            <span class="sm:block hidden">{{ event.title }}</span>
                         </div>
                     </div>
                 </div>

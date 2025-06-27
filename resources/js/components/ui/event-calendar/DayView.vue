@@ -4,7 +4,7 @@
         <div v-if="allDayEvents.length > 0" class="border-b border-border/70 p-2">
             <div class="text-xs font-medium text-muted-foreground mb-2">All Day</div>
             <div class="space-y-1">
-                <div v-for="event in allDayEvents" :key="event.id" class="cursor-pointer rounded px-2 py-1 text-xs"
+                <div v-for="event in allDayEvents" :key="event.id" class="cursor-pointer rounded px-2 sm:py-1 text-xs"
                     :class="getEventColorClasses(event.color)" @click="$emit('eventSelect', event)">
                     {{ event.title }}
                 </div>
