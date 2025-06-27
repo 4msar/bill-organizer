@@ -12,7 +12,9 @@ class NoteController extends Controller
      */
     public function index()
     {
-        //
+        return inertia('Notes/Index', [
+            'notes' => Note::with(['user', 'team'])->get(),
+        ]);
     }
 
     /**
