@@ -3,6 +3,7 @@
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NoteController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TransactionController;
@@ -54,6 +55,17 @@ Route::middleware(['auth', 'verified', 'team'])->group(function () {
     // Bill payment routes
     Route::get('/bills/{bill}/payment', [BillController::class, 'showPaymentForm'])->name('bills.payment');
     Route::get('/bills/{bill}/payment-details', [BillController::class, 'getPaymentDetails'])->name('bills.payment-details');
+
+    // Notes routes
+    Route::controller(NoteController::class)
+        ->prefix('notes')
+        ->name('notes.')
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/', 'store')->name('store');
+            Route::put('/{note}', 'update')->name('update');
+            Route::delete('/{note}', 'destroy')->name('destroy');
+        });
 });
 
 require __DIR__ . '/settings.php';

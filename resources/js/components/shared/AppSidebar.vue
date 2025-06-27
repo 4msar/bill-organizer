@@ -5,7 +5,7 @@ import NavUser from '@/components/shared/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { Calendar1, Currency, LayoutGrid, Receipt, Settings2, SunMoon, Tags } from 'lucide-vue-next';
+import { Calendar1, Currency, LayoutGrid, Notebook, Receipt, Settings2, SunMoon, Tags } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import TeamSwitcher from './TeamSwitcher.vue';
 
@@ -35,6 +35,11 @@ const mainNavItems: NavItem[] = [
         href: route('calendar'),
         icon: Calendar1,
     },
+    {
+        title: 'Notes',
+        href: route('notes.index'),
+        icon: Notebook,
+    },
 ];
 
 const footerNavItems: NavItem[] = [
@@ -59,7 +64,7 @@ const footerNavItems: NavItem[] = [
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
                         <Link :href="route('dashboard')">
-                        <AppLogo />
+                            <AppLogo />
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>

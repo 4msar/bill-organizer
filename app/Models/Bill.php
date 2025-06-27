@@ -66,6 +66,15 @@ final class Bill extends Model
     }
 
     /**
+     * Notes associated with the bill.
+     */
+    public function notes()
+    {
+        return $this->morphToMany(Note::class, 'noteable');
+    }
+
+
+    /**
      * Get the transactions for the bill.
      */
     public function transactions(): HasMany
