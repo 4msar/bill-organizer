@@ -10,6 +10,10 @@ if (! function_exists('active_team_id')) {
     {
         $user = Auth::user();
 
+        if (!$user) {
+            return null;
+        }
+
         if (empty($user->active_team_id) && $user->teams->count() > 0) {
             $user->switchTeam($user->teams()->first());
         }

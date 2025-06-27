@@ -32,4 +32,9 @@ class Note extends Model
     {
         return $this->morphedByMany(Bill::class, 'noteable');
     }
+
+    public function noteable()
+    {
+        return $this->morphTo();
+    }
 }
