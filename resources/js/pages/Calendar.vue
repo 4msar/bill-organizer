@@ -5,11 +5,13 @@ import HeadingSmall from '@/components/shared/HeadingSmall.vue';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { CalendarEvent, EventCalendar } from '@/components/ui/event-calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useEvents } from '@/composables/useEvents';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Bill, Category, SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { Pen, ScanEye } from 'lucide-vue-next';
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 
 const { props } = usePage<SharedData & {
     bills: Bill[]
@@ -20,36 +22,7 @@ const selectedEvent = ref<CalendarEvent | null>(null)
 const editSelectedEvent = ref<boolean>(false)
 const selectedDate = ref<Date | null>(null)
 const openNewEventDialog = ref(false)
-
-const SevenDaysInMiliseconds = 7 * 24 * 60 * 60 * 1000;
-
-const eventMaper = (item: Bill): CalendarEvent => ({
-    id: item.id.toString(),
-    title: item.title,
-    description: item.description,
-    start: new Date(item.due_date as string),
-    end: new Date(item.due_date as string),
-    // get random color
-    color: getColorByItem(item),
-    location: item.payment_url
-})
-
-const getColorByItem = (item: Bill) => {
-    if (item.status === 'paid') return 'emerald'
-
-    // if due date in 7 days
-    if (new Date(item.due_date as string).getTime() - new Date().getTime() < SevenDaysInMiliseconds) {
-        return 'orange'
-    }
-
-    return 'sky'
-}
-
-const bills = ref(props.bills)
-
-watch(() => usePage<SharedData>().props.bills, (newBills) => {
-    bills.value = (newBills as Bill[])
-}, { deep: true });
+const {bills, events} = useEvents()
 
 const handleEventSelect = (event: CalendarEvent) => {
     selectedEvent.value = event
@@ -108,10 +81,34 @@ const handleDialogClose = () => {
 
         <div class="py-6">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <HeadingSmall title="Calendar" description="View and manage your bills." class="mb-4" />
+                <HeadingSmall title="Calendar" description="View and manage your bills." class="mb-4 justify-between">
+                    <Popover>
+                        <PopoverTrigger as-child>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="lucide lucide-circle-question-mark-icon lucide-circle-question-mark cursor-pointer">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                                <path d="M12 17h.01" />
+                            </svg>
+                        </PopoverTrigger>
+                        <PopoverContent class="w-auto max-w-md" align="start">
+                            Recurring bills will be displayed on the calendar on their respective due dates.
+                            <br /><br />
+                            Here is the recurrence schedule for each bill type:
+                            <ul class="list-disc mt-2 pl-5">
+                                <li><strong>Weekly:</strong> Occurs every week for the next 52 weeks from the start
+                                    date.</li>
+                                <li><strong>Monthly:</strong> Occurs every month for the next 12 months from the start
+                                    date.</li>
+                                <li><strong>Yearly:</strong> Occurs once a year for the next 5 years from the start
+                                    date.</li>
+                            </ul>
+                        </PopoverContent>
+                    </Popover>
+                </HeadingSmall>
 
-                <EventCalendar :events="bills.map(eventMaper)" @new-event="handleNewEventClick"
-                    @select-event="handleEventSelect" />
+                <EventCalendar :events="events" @new-event="handleNewEventClick" @select-event="handleEventSelect" />
 
                 <Dialog :open="Boolean(openNewEventDialog)" @update:open="handleDialogClose">
                     <DialogContent class="sm:max-w-2xl">
