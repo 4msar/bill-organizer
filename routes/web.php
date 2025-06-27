@@ -63,9 +63,18 @@ Route::middleware(['auth', 'verified', 'team'])->group(function () {
         ->group(function () {
             Route::get('/', 'index')->name('index');
             Route::post('/', 'store')->name('store');
-            Route::put('/{note}', 'update')->name('update');
+            Route::match(['put', 'patch'], '/{note}', 'update')->name('update');
             Route::delete('/{note}', 'destroy')->name('destroy');
         });
+});
+
+Route::any('/test', function () {
+    $item = \App\Models\Note::with('notable')->first();
+    $bill = \App\Models\Bill::with('notes')->first();
+
+    // $bill->notes()->sync($item->id);
+
+    dd($bill->toArray(), $item->toArray(), $item->related->first()->notable, $item->bills);
 });
 
 require __DIR__ . '/settings.php';

@@ -70,4 +70,6 @@ export interface Note extends Model {
     is_pinned: boolean;
 
     notable?: Bill[];
+    team?: Team;
+    user?: User;
 }

@@ -46,6 +46,14 @@ final class Transaction extends Model
     }
 
     /**
+     * Get the transaction notes.
+     */
+    public function notes()
+    {
+        return $this->morphToMany(Note::class, 'notable');
+    }
+
+    /**
      * Get the bill associated with the transaction.
      */
     public function bill(): BelongsTo

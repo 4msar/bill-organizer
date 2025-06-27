@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Pivots\Notable;
 use App\Models\Scopes\TeamScope;
 use App\Models\Scopes\UserScope;
+use App\Traits\HasTeam;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Model;
 
 #[ScopedBy([TeamScope::class, UserScope::class])]
 class Note extends Model
 {
+    use HasTeam;
+
     protected $fillable = [
         'user_id',
         'team_id',
@@ -33,8 +37,8 @@ class Note extends Model
         return $this->morphedByMany(Bill::class, 'notable');
     }
 
-    public function notable()
+    function notable()
     {
-        return $this->morphTo();
+        return $this->morphTo()->using(Notable::class);
     }
 }
