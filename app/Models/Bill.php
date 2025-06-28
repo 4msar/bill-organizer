@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Scopes\TeamScope;
+use App\Traits\HasMetaData;
 use App\Traits\HasTeam;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
@@ -15,6 +16,8 @@ final class Bill extends Model
 {
     use HasFactory;
     use HasTeam;
+    // for check the notification are sent or not
+    use HasMetaData;
 
     /**
      * The attributes that are mass assignable.
@@ -178,5 +181,40 @@ final class Bill extends Model
         $this->update([
             'status' => 'paid',
         ]);
+    }
+
+    /**
+     * Check if the bill is already notified for a specific reminder period.
+     * 
+     * @param int $daysBefore Number of days before the due date
+     * @param array $channels Notification channels (e.g., ['mail', 'database'])
+     */
+    public function isAlreadyNotified($daysBefore, array $channels = []): bool
+    {
+        foreach ($channels as $channel) {
+            $data = $this->getMeta("{$channel}_notification", []);
+
+            if (is_array($data) && array_key_exists("notified:$daysBefore", $data)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Mark the bill as notified for a specific reminder period.
+     * 
+     * @param int $daysBefore Number of days before the due date
+     * @param array $channels Notification channels (e.g., ['mail', 'database'])
+     */
+    public function markAsNotified($daysBefore, array $channels = []): void
+    {
+        foreach ($channels as $channel) {
+            $previousData = $this->getMeta($channel, []);
+
+            $this->setMeta("{$channel}_notification", array_merge($previousData, [
+                "notified:$daysBefore" => now()->toDateTimeString(),
+            ]));
+        }
     }
 }

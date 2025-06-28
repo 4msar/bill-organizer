@@ -8,4 +8,12 @@ use Illuminate\Support\Facades\Schedule;
  *
  * Run the job every minute.
  */
-Schedule::job(SendUpcomingBillNotifications::class)->everyMinute();
+$schedule = Schedule::job(SendUpcomingBillNotifications::class);
+
+if (app()->isProduction()) {
+    // In production, run daily at 6 AM to avoid spamming users
+    $schedule->dailyAt('06:00');
+} else {
+    // In development, run every minute to test notifications
+    $schedule->everyMinute();
+}

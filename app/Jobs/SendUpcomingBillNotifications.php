@@ -31,10 +31,12 @@ final class SendUpcomingBillNotifications implements ShouldQueue
 
                 $query->orWhere(fn($q) => $q->where('name', 'web_notification')->where('value', '1'));
             })
+            ->with(['bills', 'meta', 'bills.meta'])
             ->get();
 
         foreach ($users as $user) {
             $preferences = $user->getMeta('early_reminder_days', []);
+            $channels = $user->getNotificationChannels();
 
             foreach ($preferences as $daysBefore) {
                 // Get bills for the user due on the target date
@@ -44,13 +46,15 @@ final class SendUpcomingBillNotifications implements ShouldQueue
                     ->all();
 
                 foreach ($bills as $bill) {
-                    // Skip if the bill notification has already been sent 
-                    if ($user->isAlreadyNotified(UpcomingBillNotification::class, $bill->id)) {
+                    // Skip if the bill notification has already been sent for this reminder period
+                    if ($bill->isAlreadyNotified($daysBefore, $channels)) {
                         continue;
                     }
 
                     // Notify the user about the upcoming bill
                     $user->notify(new UpcomingBillNotification($bill));
+
+                    $bill->markAsNotified($daysBefore, $channels);
                 }
             }
         }
