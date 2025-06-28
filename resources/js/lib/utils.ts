@@ -39,3 +39,41 @@ export function getIconComponent(iconName: string | null): LucideIcons.LucideIco
 export const getLink = (related: NotablePivot) => {
     return related.type === 'Bill' ? route('bills.show', related.notable_id) : route('transactions.show', related.notable_id);
 };
+
+export function getFileExtension(path: string): string {
+    if (!path) return '';
+    const parts = path.split('.');
+    return parts[parts.length - 1].toLowerCase();
+}
+
+export function isImage(path: string): boolean {
+    const ext = getFileExtension(path);
+    return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext);
+}
+
+export function isPdf(path: string): boolean {
+    return getFileExtension(path) === 'pdf';
+}
+
+export function getDocumentType(path: string): string {
+    const ext = getFileExtension(path);
+    if (isImage(path)) return 'Image';
+    if (isPdf(path)) return 'PDF';
+    return ext.toUpperCase();
+}
+
+export const paymentMethods = {
+    cash: 'Cash',
+    credit_card: 'Credit Card',
+    debit_card: 'Debit Card',
+    bank_transfer: 'Bank Transfer',
+    paypal: 'PayPal',
+    crypto: 'Cryptocurrency',
+    check: 'Check',
+    other: 'Other',
+} as const;
+
+export function getPaymentMethodName(method: string | null): string {
+    if (!method) return 'Other';
+    return paymentMethods[method as keyof typeof paymentMethods] || method;
+}

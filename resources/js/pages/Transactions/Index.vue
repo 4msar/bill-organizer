@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { formatDate } from '@/lib/utils';
+import { formatDate, paymentMethods } from '@/lib/utils';
 import { PaginatedData } from '@/types';
 import { Bill, Transaction } from '@/types/model';
 import { Head, router } from '@inertiajs/vue3';
@@ -96,17 +96,6 @@ function resetFilters(): void {
         },
     );
 }
-
-const paymentMethods = {
-    cash: 'Cash',
-    credit_card: 'Credit Card',
-    debit_card: 'Debit Card',
-    bank_transfer: 'Bank Transfer',
-    paypal: 'PayPal',
-    crypto: 'Cryptocurrency',
-    check: 'Check',
-    other: 'Other',
-};
 </script>
 
 <template>
