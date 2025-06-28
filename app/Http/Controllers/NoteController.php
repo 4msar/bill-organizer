@@ -41,9 +41,14 @@ class NoteController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
             'is_pinned' => 'boolean',
+            'related' => ['array', 'nullable'],
         ]);
 
         $note = Note::create($data);
+
+        if ($data['related']) {
+            $note->bills()->sync($data['related']);
+        }
 
         return redirect()->route('notes.index')->with('success', 'Note created successfully.');
     }
@@ -58,9 +63,14 @@ class NoteController extends Controller
             'title' => ['required', 'sometimes', 'string', 'max:255'],
             'content' => ['required', 'sometimes', 'string'],
             'is_pinned' => ['boolean', 'sometimes'],
+            'related' => ['array', 'nullable'],
         ]);
 
         $note->update($data);
+
+        if ($data['related']) {
+            $note->bills()->sync($data['related']);
+        }
 
         return redirect()->route('notes.index')->with('success', 'Note updated successfully.');
     }

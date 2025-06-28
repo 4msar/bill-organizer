@@ -8,12 +8,13 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { SharedData, type BreadcrumbItem } from '@/types';
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
-        title: 'Notification preferences',
-        href: '/settings/notifications',
+        title: 'Application Preferences',
+        href: '/settings/preferences',
     },
 ];
 
@@ -36,12 +37,16 @@ interface NotificationSettings {
     email_notification: boolean;
     web_notification: boolean;
     early_reminder_days: (number | string)[];
+    enable_notes: boolean;
+    enable_calendar: boolean;
     [key: string]: any;
 }
 
 const form = useForm<NotificationSettings>({
     email_notification: Boolean(user.metas?.email_notification ?? true),
     web_notification: Boolean(user.metas?.web_notification ?? true),
+    enable_notes: Boolean(user.metas?.enable_notes ?? false),
+    enable_calendar: Boolean(user.metas?.enable_calendar ?? true),
 
     /**
      * early reminder days
@@ -68,9 +73,8 @@ const submit = () => {
 
         <SettingsLayout>
             <div class="space-y-6">
-                <HeadingSmall title="Notification settings" description="User notification preferences." />
-
                 <form @submit.prevent="submit" class="space-y-6">
+                    <HeadingSmall title="Notification settings" description="User notification preferences." />
                     <div class="flex items-center justify-between">
                         <Label for="email" class="flex items-center space-x-3">
                             <Checkbox id="email" v-model="form.email_notification" />
@@ -96,6 +100,32 @@ const submit = () => {
                                 </SelectItem>
                             </SelectContent>
                         </Select>
+                    </div>
+
+                    <hr />
+
+                    <HeadingSmall title="Feature Settings" description="Enable or disabled some experimental features." />
+
+                    <div class="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div class="space-y-0.5">
+                            <Label class="text-base"> Calendar </Label>
+                            <p class="text-sm">Enable the Calendar feature to view bills and reminders in a calendar format.</p>
+                        </div>
+                        <div>
+                            <Switch :model-value="form.enable_calendar" @update:model-value="(value) => (form.enable_calendar = value)" />
+                        </div>
+                    </div>
+                    <div class="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div class="space-y-0.5">
+                            <Label class="text-base"> Notes </Label>
+                            <p class="text-sm">
+                                Enable the notes feature to add notes and linked to bills. This is an experimental feature and may not be fully
+                                functional.
+                            </p>
+                        </div>
+                        <div>
+                            <Switch :model-value="form.enable_notes" @update:model-value="(value) => (form.enable_notes = value)" />
+                        </div>
                     </div>
 
                     <div class="flex items-center gap-4">

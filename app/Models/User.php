@@ -92,4 +92,30 @@ final class User extends Authenticatable implements MustVerifyEmail
 
         $this->refresh();
     }
+
+    /**
+     * Set default meta data for the user.
+     */
+    public function setDefaultMetaData(): void
+    {
+        if (!$this->getMeta('email_notification')) {
+            $this->setMeta('email_notification', true);
+        }
+
+        if (!$this->getMeta('web_notification')) {
+            $this->setMeta('web_notification', true);
+        }
+
+        if (!$this->getMeta('early_reminder_days')) {
+            $this->setMeta('early_reminder_days', [7, 15, 30]);
+        }
+
+        if ($this->getMeta('enable_notes') === null) {
+            $this->setMeta('enable_notes', false);
+        }
+
+        if ($this->getMeta('enable_calendar') === null) {
+            $this->setMeta('enable_calendar', true);
+        }
+    }
 }

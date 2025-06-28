@@ -4,10 +4,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Note } from '@/types/model';
-import { useForm } from '@inertiajs/vue3';
+import { Bill, Note } from '@/types/model';
+import { useForm, usePage } from '@inertiajs/vue3';
 import { watch } from 'vue';
 import FormError from '../shared/FormError.vue';
+import MultiSelect from '../shared/MultiSelect.vue';
 import { Label } from '../ui/label';
 
 interface Props {
@@ -24,10 +25,15 @@ const emit = defineEmits<{
     success: [];
 }>();
 
+const {
+    props: { bills },
+} = usePage<{ bills: Bill[] }>();
+
 const form = useForm({
     title: props.note?.title || '',
     content: props.note?.content || '',
     is_pinned: Boolean(props.note?.is_pinned || false),
+    related: [],
 });
 
 const handleSubmit = async () => {
@@ -81,13 +87,13 @@ const handleClose = () => {
             <form @submit.prevent="handleSubmit">
                 <div class="grid gap-4 py-4">
                     <div>
-                        <Label>Title *</Label>
+                        <Label class="mb-2">Title *</Label>
                         <Input placeholder="Enter note title..." v-model="form.title" :disabled="form.processing" />
                         <FormError :message="form.errors.title" />
                     </div>
 
                     <div>
-                        <Label>Content</Label>
+                        <Label class="mb-2">Content</Label>
                         <Textarea
                             placeholder="Write your note content here..."
                             class="min-h-[120px] resize-none"
@@ -105,6 +111,20 @@ const handleClose = () => {
                         <Label for="is_pinned" class="flex items-center space-x-3">
                             <Checkbox id="is_pinned" v-model="form.is_pinned" :tabindex="3" />
                         </Label>
+                    </div>
+
+                    <div>
+                        <Label class="mb-2">Linked Bill</Label>
+                        <MultiSelect
+                            v-model="form.related"
+                            :options="
+                                bills.map((item) => ({
+                                    label: item.title,
+                                    value: item.id,
+                                }))
+                            "
+                        />
+                        <FormError :message="form.errors.title" />
                     </div>
                 </div>
 

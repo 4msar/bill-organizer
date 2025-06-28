@@ -22,7 +22,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::middleware(['auth', 'verified', 'team'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/calendar', [DashboardController::class, 'calendar'])->name('calendar');
+    Route::get('/calendar', [DashboardController::class, 'calendar'])->name('calendar')->middleware('feature:calendar');
 
     Route::get('team/settings', [TeamController::class, 'index'])->name('team.settings');
     Route::put('team/settings', [TeamController::class, 'update']);
@@ -60,6 +60,7 @@ Route::middleware(['auth', 'verified', 'team'])->group(function () {
     Route::controller(NoteController::class)
         ->prefix('notes')
         ->name('notes.')
+        ->middleware('feature:notes')
         ->group(function () {
             Route::get('/', 'index')->name('index');
             Route::post('/', 'store')->name('store');

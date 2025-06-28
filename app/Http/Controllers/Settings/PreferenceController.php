@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Settings;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
-final class NotificationPreferenceController extends Controller
+final class PreferenceController extends Controller
 {
     /**
      * Show the notification preferences form.
@@ -14,10 +15,9 @@ final class NotificationPreferenceController extends Controller
     public function edit()
     {
         $user = Auth::user();
+        $user->load('meta');
 
-        return Inertia::render('settings/NotificationPreferences', [
-            'preferences' => $user->notification_preferences ? json_decode($user->notification_preferences, true) : [],
-        ]);
+        return Inertia::render('settings/Preferences');
     }
 
     /**
@@ -29,6 +29,8 @@ final class NotificationPreferenceController extends Controller
             'email_notification' => ['nullable', 'boolean'],
             'web_notification' => ['nullable', 'boolean'],
             'early_reminder_days' => ['array'],
+            'enable_notes' => ['nullable', 'boolean'],
+            'enable_calendar' => ['nullable', 'boolean'],
         ]);
 
         /**
@@ -36,10 +38,15 @@ final class NotificationPreferenceController extends Controller
          */
         $user = $request->user();
 
+        // Update notification preferences
         $user->setMeta('email_notification', $request->input('email_notification', false));
         $user->setMeta('web_notification', $request->input('web_notification', false));
         $user->setMeta('early_reminder_days', $request->input('early_reminder_days', []));
 
-        return redirect()->back()->with('success', 'Notification preferences updated successfully.');
+        // Enable or disable features
+        $user->setMeta('enable_notes', $request->input('enable_notes', false));
+        $user->setMeta('enable_calendar', $request->input('enable_calendar', false));
+
+        return redirect()->back()->with('success', 'Application preferences updated successfully.');
     }
 }

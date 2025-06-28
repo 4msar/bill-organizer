@@ -3,8 +3,8 @@ import NavFooter from '@/components/shared/NavFooter.vue';
 import NavMain from '@/components/shared/NavMain.vue';
 import NavUser from '@/components/shared/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
+import { SharedData, type NavItem } from '@/types';
+import { Link, usePage } from '@inertiajs/vue3';
 import { Calendar1, Currency, LayoutGrid, Notebook, Receipt, Settings2, SunMoon, Tags } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import TeamSwitcher from './TeamSwitcher.vue';
@@ -54,6 +54,19 @@ const footerNavItems: NavItem[] = [
         icon: Settings2,
     },
 ];
+
+const page = usePage<SharedData>();
+
+const filterFeatures = (item: NavItem) => {
+    // Filter out items based on feature flags or conditions
+    if (item.title === 'Notes' && !page.props.auth.user.metas.enable_notes) {
+        return false;
+    }
+    if (item.title === 'Calendar' && !page.props.auth.user.metas.enable_calendar) {
+        return false;
+    }
+    return true;
+};
 </script>
 
 <template>
@@ -72,7 +85,7 @@ const footerNavItems: NavItem[] = [
         </SidebarHeader>
 
         <SidebarContent>
-            <NavMain :items="mainNavItems" />
+            <NavMain :items="mainNavItems.filter(filterFeatures)" />
         </SidebarContent>
 
         <SidebarFooter>
