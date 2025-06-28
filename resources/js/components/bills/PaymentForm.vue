@@ -12,6 +12,7 @@ import { formatCurrency, formatDate } from '@/lib/utils';
 import { Bill } from '@/types/model';
 import { useForm } from '@inertiajs/vue3';
 import { parseDate } from '@internationalized/date';
+import { format } from 'date-fns';
 import { CalendarIcon, FileText, Receipt } from 'lucide-vue-next';
 import { DateValue } from 'reka-ui';
 import { computed } from 'vue';
@@ -78,7 +79,7 @@ const nextDueDateFormatted = computed((): string => {
 });
 
 const payment_date = computed({
-    get: () => (form.payment_date ? parseDate(form.payment_date) : undefined),
+    get: () => (form.payment_date ? parseDate(format(form.payment_date, 'yyyy-MM-dd')) : undefined),
     set: (val) => val,
 });
 </script>

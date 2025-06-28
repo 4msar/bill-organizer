@@ -13,6 +13,11 @@ final class TeamScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
+        // if running in console, skip the scope
+        if (app()->runningInConsole()) {
+            return;
+        }
+
         $builder->where('team_id', active_team_id());
     }
 }

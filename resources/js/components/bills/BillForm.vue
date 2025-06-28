@@ -12,6 +12,7 @@ import { Bill, Category } from '@/types/model';
 import { VisitOptions } from '@inertiajs/core';
 import { useForm } from '@inertiajs/vue3';
 import { DateValue, getLocalTimeZone, parseDate, today } from '@internationalized/date';
+import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-vue-next';
 import { computed, onMounted } from 'vue';
 
@@ -56,7 +57,9 @@ function updateDueDate(date?: DateValue): void {
 }
 
 const date = computed({
-    get: () => (form.due_date ? parseDate(form.due_date) : undefined),
+    get: () => {
+        return form.due_date ? parseDate(format(form.due_date, 'yyyy-MM-dd')) : undefined;
+    },
     set: (val) => val,
 });
 
@@ -72,7 +75,9 @@ function submit(): void {
     form[props.submitMethod](props.submitUrl, {
         ...props.options,
         onSuccess: (data) => {
-            form.reset();
+            if (!props.bill?.id) {
+                form.reset();
+            }
             if (props.options?.onSuccess) {
                 props.options?.onSuccess(data);
             }
