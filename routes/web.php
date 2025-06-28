@@ -68,14 +68,5 @@ Route::middleware(['auth', 'verified', 'team'])->group(function () {
         });
 });
 
-Route::any('/test', function () {
-    $item = \App\Models\Note::with('notable')->first();
-    $bill = \App\Models\Bill::with('notes')->first();
-
-    // $bill->notes()->sync($item->id);
-
-    dd($bill->toArray(), $item->toArray(), $item->related->first()->notable, $item->bills);
-});
-
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

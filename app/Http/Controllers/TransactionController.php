@@ -114,11 +114,8 @@ final class TransactionController extends Controller
      */
     public function show(Transaction $transaction)
     {
-
-        $transaction->load(['bill', 'bill.category']);
-
-        return Inertia::render('Transactions/Show', [
-            'transaction' => $transaction,
+        return redirect()->route('bills.show', [
+            'bill' => $transaction->bill_id,
         ]);
     }
 

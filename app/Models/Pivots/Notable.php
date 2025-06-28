@@ -14,6 +14,8 @@ class Notable extends MorphPivot
         'notable_id',
     ];
 
+    protected $appends = ['type'];
+
     public function notable()
     {
         return $this->morphTo();
@@ -22,5 +24,10 @@ class Notable extends MorphPivot
     public function note()
     {
         return $this->belongsTo(Note::class);
+    }
+
+    public function getTypeAttribute()
+    {
+        return class_basename($this->notable_type);
     }
 }

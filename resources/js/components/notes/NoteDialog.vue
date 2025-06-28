@@ -48,7 +48,6 @@ const handleSubmit = async () => {
 watch(
     () => props.note,
     (newNote) => {
-        console.log(newNote);
         if (newNote) {
             form.title = newNote.title || '';
             form.content = newNote.content || '';
