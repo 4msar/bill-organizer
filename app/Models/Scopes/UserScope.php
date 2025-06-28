@@ -14,6 +14,10 @@ final class UserScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
+        // if running in console, skip the scope
+        if (app()->runningInConsole()) {
+            return;
+        }
         // User must be authenticated
         $builder->where('user_id', Auth::id());
     }
