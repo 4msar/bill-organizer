@@ -137,7 +137,11 @@ final class Bill extends Model
      */
     public function isUpcomingIn($days = 1)
     {
-        return $this->due_date->lte(now()->addDays($days)) &&
+        if ($days == 'due_day') {
+            $days = 0;
+        }
+
+        return $this->due_date->lte(now()->addDays(intval($days))) &&
             $this->status === 'unpaid';
     }
 

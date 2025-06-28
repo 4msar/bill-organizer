@@ -33,7 +33,7 @@ final class UpcomingBillNotification extends Notification
             $channels[] = 'mail';
         }
 
-        if ($notifiable?->setMeta('web_notification', false)) {
+        if ($notifiable?->getMeta('web_notification', false)) {
             $channels[] = 'database';
         }
 

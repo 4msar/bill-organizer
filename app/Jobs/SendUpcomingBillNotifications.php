@@ -11,6 +11,10 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+// $job = (new \App\Jobs\MyJob($data));
+
+// dispatch($job);
+
 final class SendUpcomingBillNotifications implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -21,13 +25,12 @@ final class SendUpcomingBillNotifications implements ShouldQueue
     public function handle()
     {
         // Get all users with notification preferences
-        $users = User::query()->whereHas(
-            'meta',
-            fn (Builder $query) => $query
-                ->where('email_notification', true)
-                ->orWhere('web_notification', true),
-        )
-            ->with('bills')
+        $users = User::query()
+            ->whereHas('meta', function ($query) {
+                $query->where(fn($q) => $q->where('name', 'email_notification')->where('value', '1'));
+
+                $query->orWhere(fn($q) => $q->where('name', 'web_notification')->where('value', '1'));
+            })
             ->get();
 
         foreach ($users as $user) {
@@ -37,10 +40,16 @@ final class SendUpcomingBillNotifications implements ShouldQueue
                 // Get bills for the user due on the target date
                 $bills = $user->bills
                     ->where('status', 'unpaid')
-                    ->filter(fn ($bill) => $bill->isUpcomingIn($daysBefore))
+                    ->filter(fn($bill) => $bill->isUpcomingIn($daysBefore))
                     ->all();
 
                 foreach ($bills as $bill) {
+                    // Skip if the bill notification has already been sent 
+                    if ($user->isAlreadyNotified(UpcomingBillNotification::class, $bill->id)) {
+                        continue;
+                    }
+
+                    // Notify the user about the upcoming bill
                     $user->notify(new UpcomingBillNotification($bill));
                 }
             }
