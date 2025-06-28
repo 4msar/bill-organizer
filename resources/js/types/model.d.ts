@@ -70,7 +70,7 @@ export type NotablePivot = {
     notable_type: string;
     note_id: number;
     type: string;
-    notable: Bill | Transaction;
+    notable: Bill;
 };
 
 export interface Note extends Model {

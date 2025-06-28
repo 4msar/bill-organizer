@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\NotificationPreferenceController;
+use App\Http\Controllers\Settings\PreferenceController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +20,6 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('settings/Appearance');
     })->name('appearance');
 
-    Route::get('settings/notifications', [NotificationPreferenceController::class, 'edit'])->name('notifications.edit');
-    Route::put('settings/notifications', [NotificationPreferenceController::class, 'update'])->name('notifications.update');
+    Route::get('settings/preferences', [PreferenceController::class, 'edit'])->name('notifications.edit');
+    Route::put('settings/preferences', [PreferenceController::class, 'update'])->name('notifications.update');
 });

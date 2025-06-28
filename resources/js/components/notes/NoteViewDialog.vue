@@ -81,10 +81,10 @@ const formattedContent = computed(() => {
                 <div v-if="note?.content" class="prose prose-sm text-muted-foreground max-w-none" v-html="formattedContent"></div>
                 <p v-else class="text-muted-foreground italic">This note has no content.</p>
 
-                <div v-if="note?.related && note.related.length" class="mt-4 flex items-center gap-2" title="Related Items">
+                <div v-if="note?.related && note.related.length" class="mt-4 flex flex-wrap items-center gap-2" title="Related Items">
                     <template v-for="item in note.related" :key="item.notable_id">
                         <Link :href="getLink(item)">
-                            <Badge>{{ item.type }}:{{ item.notable_id }}</Badge>
+                            <Badge>{{ item.type }}: {{ item.notable.title ?? item.notable_id }}</Badge>
                         </Link>
                     </template>
                 </div>

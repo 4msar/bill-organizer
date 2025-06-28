@@ -2,9 +2,8 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { formatDate, getLink } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
 import { Note } from '@/types/model';
-import { Link } from '@inertiajs/vue3';
 import { MoreVertical, Pencil, Pin, Trash } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { Badge } from '../ui/badge';
@@ -81,11 +80,7 @@ const summaryText = computed(() => {
             </div>
 
             <div v-if="note?.related && note.related.length" class="mt-4 flex items-center gap-2" title="Related Items">
-                <template v-for="item in note.related" :key="item.notable_id">
-                    <Link :href="getLink(item)">
-                        <Badge variant="secondary">{{ item.type }}:{{ item.notable_id }}</Badge>
-                    </Link>
-                </template>
+                <Badge variant="secondary">Linked: {{ note.related.length }} items</Badge>
             </div>
         </CardContent>
 
