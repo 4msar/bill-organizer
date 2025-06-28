@@ -49,5 +49,5 @@ watch(
 </script>
 
 <template>
-    <Toaster />
+    <Toaster rich-colors />
 </template>

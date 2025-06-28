@@ -119,19 +119,17 @@ final class User extends Authenticatable implements MustVerifyEmail
         }
     }
 
-    /**
-     * Check if the user has already been notified about a specific notification type.
-     */
-    public function isAlreadyNotified(string $notificationClass, int $billId): bool
+    function getNotificationChannels()
     {
-        // for email notifications
+        $channels = [];
+        // Check if the user has enabled email notifications
+        if ($this?->getMeta('email_notification', false)) {
+            $channels[] = 'mail';
+        }
+        if ($this?->getMeta('web_notification', false)) {
+            $channels[] = 'database';
+        }
 
-        
-
-        // for web notifications, check if the notification exists in the database
-        return $this->notifications()
-            ->where('type', $notificationClass)
-            ->where('data->bill_id', $billId)
-            ->exists();
+        return $channels;
     }
 }
