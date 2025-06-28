@@ -49,6 +49,9 @@ export interface Transaction extends Model {
     payment_method: string | null;
     attachment: string | null;
     notes: string | null;
+
+    attachment_link?: string; // Computed property for attachment URL
+    bill?: Bill;
 }
 
 export interface Team extends Model {
@@ -62,6 +65,14 @@ export interface Team extends Model {
     currency_symbol: string;
 }
 
+export type NotablePivot = {
+    notable_id: number;
+    notable_type: string;
+    note_id: number;
+    type: string;
+    notable: Bill | Transaction;
+};
+
 export interface Note extends Model {
     user_id: number;
     team_id: number;
@@ -69,7 +80,7 @@ export interface Note extends Model {
     content: string;
     is_pinned: boolean;
 
-    notable?: Bill[];
+    related?: NotablePivot[];
     team?: Team;
     user?: User;
 }

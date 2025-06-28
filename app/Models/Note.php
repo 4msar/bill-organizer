@@ -34,11 +34,18 @@ class Note extends Model
 
     public function bills()
     {
-        return $this->morphedByMany(Bill::class, 'notable');
+        return $this->morphedByMany(Bill::class, 'notable')
+            ->using(Notable::class);
     }
 
-    function notable()
+    public function transactions()
     {
-        return $this->morphTo()->using(Notable::class);
+        return $this->morphedByMany(Transaction::class, 'notable')
+            ->using(Notable::class);
+    }
+
+    public function related()
+    {
+        return $this->hasMany(Notable::class, 'note_id')->with('notable');
     }
 }

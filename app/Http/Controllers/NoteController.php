@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bill;
 use App\Models\Note;
 use App\Models\Scopes\TeamScope;
 use Illuminate\Http\Request;
@@ -17,13 +18,17 @@ class NoteController extends Controller
      */
     public function index()
     {
+        $notes = Note::when(
+            request('team', 'current') === 'all',
+            function ($query) {
+                $query->withoutGlobalScope(TeamScope::class);
+                $query->with('team');
+            }
+        )->with('related')->get();
+
         return inertia('Notes/Index', [
-            'notes' => Note::when(
-                request('team', 'current') === 'all',
-                function ($query) {
-                    $query->withoutGlobalScope(TeamScope::class);
-                }
-            )->with(['user', 'team'])->get(),
+            'bills' => Bill::all(),
+            'notes' => $notes,
         ]);
     }
 

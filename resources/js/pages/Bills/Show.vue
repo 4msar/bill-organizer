@@ -3,15 +3,13 @@ import Details from '@/components/bills/Details.vue';
 import PaymentDialog from '@/components/bills/PaymentDialog.vue';
 import TransactionList from '@/components/transactions/TransactionList.vue';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { cn, formatCurrency, formatDate } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
 import { Bill } from '@/types/model';
 import { Head, Link, router } from '@inertiajs/vue3';
 import axios from 'axios';
-import { CalendarIcon, Clock, Edit, Link2, Receipt, RotateCcw, Trash2 } from 'lucide-vue-next';
+import { Edit, Receipt, Trash2 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 interface Props {
@@ -56,17 +54,18 @@ function onPaymentComplete(): void {
 </script>
 
 <template>
-    <AppLayout :breadcrumbs="[
-        {
-            title: 'Bills',
-            href: route('bills.index'),
-        },
-        {
-            title: `Bill Details (${bill.title})`,
-            href: route('bills.show', bill.id),
-        },
-    ]">
-
+    <AppLayout
+        :breadcrumbs="[
+            {
+                title: 'Bills',
+                href: route('bills.index'),
+            },
+            {
+                title: `Bill Details (${bill.title})`,
+                href: route('bills.show', bill.id),
+            },
+        ]"
+    >
         <Head :title="bill.title" />
 
         <div class="py-6">
@@ -74,8 +73,7 @@ function onPaymentComplete(): void {
                 <!-- Back Button and Title -->
                 <div class="mb-6 flex items-center justify-between">
                     <div>
-                        <Link :href="route('bills.index')" class="text-muted-foreground text-sm hover:underline"> &larr;
-                        Back to Bills </Link>
+                        <Link :href="route('bills.index')" class="text-muted-foreground text-sm hover:underline"> &larr; Back to Bills </Link>
                         <h2 class="mt-1 text-xl font-semibold text-gray-800 dark:text-gray-200">
                             {{ bill.title }}
                         </h2>
@@ -83,8 +81,8 @@ function onPaymentComplete(): void {
                     <div class="flex gap-2">
                         <Button variant="outline" asChild>
                             <Link :href="route('bills.edit', bill.id)">
-                            <Edit class="mr-2 h-4 w-4" />
-                            Edit
+                                <Edit class="mr-2 h-4 w-4" />
+                                Edit
                             </Link>
                         </Button>
                         <Button variant="destructive" @click="deleteBill">
@@ -97,8 +95,7 @@ function onPaymentComplete(): void {
                 <!-- Past Due Alert -->
                 <Alert v-if="isPastDue" variant="destructive" class="mb-6">
                     <AlertTitle>Past Due!</AlertTitle>
-                    <AlertDescription> This bill was due on {{ formatDate(bill.due_date as string) }} and is still
-                        unpaid. </AlertDescription>
+                    <AlertDescription> This bill was due on {{ formatDate(bill.due_date as string) }} and is still unpaid. </AlertDescription>
                 </Alert>
 
                 <!-- Bill Details Card -->
@@ -117,8 +114,13 @@ function onPaymentComplete(): void {
                 </div>
 
                 <!-- Payment Dialog -->
-                <PaymentDialog v-model:isOpen="isPaymentDialogOpen" :bill="bill" :payment-methods="paymentMethods"
-                    :next-due-date="nextDueDate" @payment-complete="onPaymentComplete" />
+                <PaymentDialog
+                    v-model:isOpen="isPaymentDialogOpen"
+                    :bill="bill"
+                    :payment-methods="paymentMethods"
+                    :next-due-date="nextDueDate"
+                    @payment-complete="onPaymentComplete"
+                />
             </div>
         </div>
     </AppLayout>

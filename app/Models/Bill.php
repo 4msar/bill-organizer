@@ -71,9 +71,9 @@ final class Bill extends Model
      */
     public function notes()
     {
-        return $this->morphToMany(Note::class, 'notable');
+        return $this->morphToMany(Note::class, 'notable')
+            ->using(Pivots\Notable::class);
     }
-
 
     /**
      * Get the transactions for the bill.

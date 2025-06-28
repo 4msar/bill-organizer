@@ -1,3 +1,4 @@
+import { NotablePivot } from '@/types';
 import { clsx, type ClassValue } from 'clsx';
 import * as LucideIcons from 'lucide-vue-next';
 import { twMerge } from 'tailwind-merge';
@@ -34,3 +35,7 @@ export function getIconComponent(iconName: string | null): LucideIcons.LucideIco
 
     return (LucideIcons[pascalCase as keyof typeof LucideIcons] as LucideIcons.LucideIcon) || LucideIcons.CircleDot;
 }
+
+export const getLink = (related: NotablePivot) => {
+    return related.type === 'Bill' ? route('bills.show', related.notable_id) : route('transactions.show', related.notable_id);
+};

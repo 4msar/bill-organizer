@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 #[ScopedBy(TeamScope::class)]
 final class Transaction extends Model
@@ -38,6 +39,13 @@ final class Transaction extends Model
     ];
 
     /**
+     * The attributes that should be appended to the model's array form.
+     */
+    protected $appends = [
+        'attachment_link',
+    ];
+
+    /**
      * Get the user that made the transaction.
      */
     public function user(): BelongsTo
@@ -46,18 +54,22 @@ final class Transaction extends Model
     }
 
     /**
-     * Get the transaction notes.
-     */
-    public function notes()
-    {
-        return $this->morphToMany(Note::class, 'notable');
-    }
-
-    /**
      * Get the bill associated with the transaction.
      */
     public function bill(): BelongsTo
     {
         return $this->belongsTo(Bill::class);
+    }
+
+    /**
+     * Get transaction attachment link.
+     */
+    public function getAttachmentLinkAttribute(): ?string
+    {
+        if ($this->attachment) {
+            return Storage::url($this->attachment);
+        }
+
+        return null;
     }
 }
