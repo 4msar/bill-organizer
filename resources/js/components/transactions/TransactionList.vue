@@ -3,9 +3,10 @@ import Tooltip from '@/components/shared/Tooltip.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { formatCurrency, formatDate, getDocumentType, getPaymentMethodName, isImage, isPdf } from '@/lib/utils';
 import { Transaction } from '@/types/model';
 import { Calendar, CreditCard, Download, ExternalLink, FileText, Receipt, Trash2 } from 'lucide-vue-next';
+import { ref } from 'vue';
 import Confirm from '../shared/Confirm.vue';
 import TransactionDetailsDialog from './TransactionDetailsDialog.vue';
 
@@ -16,21 +17,9 @@ interface Props {
 
 defineProps<Props>();
 
-const methods = {
-    cash: 'Cash',
-    credit_card: 'Credit Card',
-    debit_card: 'Debit Card',
-    bank_transfer: 'Bank Transfer',
-    paypal: 'PayPal',
-    crypto: 'Cryptocurrency',
-    check: 'Check',
-    other: 'Other',
-};
-
-function getPaymentMethodName(method: string | null): string {
-    if (!method) return 'Other';
-    return methods[method as keyof typeof methods] || method;
-}
+// Dialog state
+const showDetailsDialog = ref(false);
+const selectedTransaction = ref<Transaction | null>(null);
 
 function getPaymentMethodIcon(method: string | null) {
     if (method) {
@@ -40,26 +29,9 @@ function getPaymentMethodIcon(method: string | null) {
     return CreditCard;
 }
 
-function getFileExtension(path: string): string {
-    if (!path) return '';
-    const parts = path.split('.');
-    return parts[parts.length - 1].toLowerCase();
-}
-
-function isImage(path: string): boolean {
-    const ext = getFileExtension(path);
-    return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext);
-}
-
-function isPdf(path: string): boolean {
-    return getFileExtension(path) === 'pdf';
-}
-
-function getDocumentType(path: string): string {
-    const ext = getFileExtension(path);
-    if (isImage(path)) return 'Image';
-    if (isPdf(path)) return 'PDF';
-    return ext.toUpperCase();
+function openTransactionDetails(transaction: Transaction): void {
+    selectedTransaction.value = transaction;
+    showDetailsDialog.value = true;
 }
 </script>
 
@@ -99,17 +71,22 @@ function getDocumentType(path: string): string {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow v-for="transaction in transactions" :key="transaction.id">
-                            <TableCell class="cursor-pointer">
+                        <TableRow
+                            v-for="transaction in transactions"
+                            :key="transaction.id"
+                            class="hover:bg-muted/50 cursor-pointer"
+                            @click="openTransactionDetails(transaction)"
+                        >
+                            <TableCell>
                                 <div class="flex items-center">
                                     <Calendar class="text-muted-foreground mr-2 h-4 w-4" />
                                     {{ formatDate(transaction.payment_date) }}
                                 </div>
                             </TableCell>
-                            <TableCell class="cursor-pointer font-medium">
+                            <TableCell class="font-medium">
                                 {{ formatCurrency(transaction.amount, $page.props?.team?.current?.currency as string) }}
                             </TableCell>
-                            <TableCell class="cursor-pointer">
+                            <TableCell>
                                 <div class="flex items-center">
                                     <component :is="getPaymentMethodIcon(transaction.payment_method)" class="text-muted-foreground mr-2 h-4 w-4" />
                                     {{ getPaymentMethodName(transaction.payment_method) }}
@@ -124,6 +101,7 @@ function getDocumentType(path: string): string {
                                         as="a"
                                         :href="`/storage/${transaction.attachment}`"
                                         target="_blank"
+                                        @click.stop
                                     >
                                         <component
                                             :is="isImage(transaction.attachment) ? 'Image' : isPdf(transaction.attachment) ? FileText : FileText"
@@ -136,7 +114,7 @@ function getDocumentType(path: string): string {
                             </TableCell>
                             <TableCell>
                                 <Tooltip v-if="transaction.notes" :title="transaction.notes">
-                                    <Button variant="ghost" size="sm" class="h-8 px-2">
+                                    <Button variant="ghost" size="sm" class="h-8 px-2" @click.stop>
                                         <FileText class="h-4 w-4" />
                                         <span class="sr-only">Notes</span>
                                     </Button>
@@ -144,7 +122,7 @@ function getDocumentType(path: string): string {
                                 <span v-else class="text-muted-foreground text-sm">—</span>
                             </TableCell>
                             <TableCell class="text-right">
-                                <div class="flex justify-end space-x-1">
+                                <div class="flex justify-end space-x-1" @click.stop>
                                     <Button
                                         v-if="transaction.attachment_link"
                                         variant="ghost"
@@ -183,5 +161,5 @@ function getDocumentType(path: string): string {
         </CardContent>
     </Card>
 
-    <TransactionDetailsDialog v-if="showDetailsDialog" @close="showDetailsDialog = false" :transaction="selectedTransaction" />
+    <TransactionDetailsDialog v-model:open="showDetailsDialog" :transaction="selectedTransaction" />
 </template>
