@@ -66,7 +66,7 @@ const extractType = (notification: NotificationData) => {
                     v-for="notification in page.props.items.data"
                     :key="notification.id"
                     class="group rounded-md border p-4"
-                    :class="{ 'bg-gray-100': notification.read_at === null }"
+                    :class="{ 'bg-background': notification.read_at === null }"
                 >
                     <div class="flex w-full items-center justify-between">
                         <Link
@@ -85,7 +85,7 @@ const extractType = (notification: NotificationData) => {
                     <p v-if="notification.description" class="text-muted-foreground text-sm">{{ notification.description }}</p>
                     <div class="relative mt-2 flex items-center justify-between">
                         <p class="text-muted-foreground mt-1 text-sm">{{ notification.created_time }}</p>
-                        <div class="hidden group-hover:flex">
+                        <div class="flex group-hover:flex sm:hidden">
                             <Confirm :url="route('notifications.delete', notification.id)" title="Are you sure?" modal>
                                 <span class="cursor-pointer text-sm text-red-500 transition-all duration-150 hover:text-red-700"> Delete </span>
                             </Confirm>
