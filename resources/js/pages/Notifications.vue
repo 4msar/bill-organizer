@@ -1,15 +1,16 @@
 <script setup lang="ts">
+import Confirm from '@/components/shared/Confirm.vue';
 import HeadingSmall from '@/components/shared/HeadingSmall.vue';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { NotificationData, PaginatedData } from '@/types';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { CheckCircle, Inbox } from 'lucide-vue-next';
 import { ref } from 'vue';
 
-const { items: notifications } = defineProps<{
+const page = usePage<{
     items: PaginatedData<NotificationData>;
 }>();
 
@@ -31,24 +32,9 @@ async function markAllAsRead(): Promise<void> {
     }
 }
 
-const handlePaginationLinkClick = (direction: 'prev' | 'next') => {
-    if (!notifications.links.next || !notifications.links.prev) {
-        return;
-    }
-
-    const page = direction === 'prev' ? notifications.links.prev : notifications.links.next;
-
-    console.log(`Navigating to ${direction} page:`, page);
-    if (page) {
-        router.get(page, {}, { preserveState: true, preserveScroll: true });
-    }
-};
-
 const extractType = (notification: NotificationData) => {
     return notification.type.split('\\').pop();
 };
-
-console.log({ notifications });
 </script>
 
 <template>
@@ -63,7 +49,7 @@ console.log({ notifications });
         <Head title="Notifications" />
         <div class="space-y-6 px-4 py-6">
             <HeadingSmall title="Notifications" description="Latest notifications" class="flex items-center justify-between">
-                <Button @click="markAllAsRead" class="flex items-center" v-if="notifications.data.length > 0">
+                <Button @click="markAllAsRead" class="flex items-center" v-if="page.props.items.data.length > 0">
                     <Inbox class="mr-2 h-4 w-4" />
                     Mark All as Read
                 </Button>
@@ -75,11 +61,11 @@ console.log({ notifications });
             </Alert>
 
             <!-- Notifications List -->
-            <div class="space-y-4" v-if="notifications.data.length > 0">
+            <div class="space-y-4" v-if="page.props.items.data.length > 0">
                 <div
-                    v-for="notification in notifications.data"
+                    v-for="notification in page.props.items.data"
                     :key="notification.id"
-                    class="rounded-md border p-4"
+                    class="group rounded-md border p-4"
                     :class="{ 'bg-gray-100': notification.read_at === null }"
                 >
                     <div class="flex w-full items-center justify-between">
@@ -97,7 +83,14 @@ console.log({ notifications });
                         </Badge>
                     </div>
                     <p v-if="notification.description" class="text-muted-foreground text-sm">{{ notification.description }}</p>
-                    <p class="text-muted-foreground mt-1 text-sm">{{ notification.created_time }}</p>
+                    <div class="relative mt-2 flex items-center justify-between">
+                        <p class="text-muted-foreground mt-1 text-sm">{{ notification.created_time }}</p>
+                        <div class="hidden group-hover:flex">
+                            <Confirm :url="route('notifications.delete', notification.id)" title="Are you sure?" modal>
+                                <span class="cursor-pointer text-sm text-red-500 transition-all duration-150 hover:text-red-700"> Delete </span>
+                            </Confirm>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- No Notifications Message -->
@@ -106,18 +99,20 @@ console.log({ notifications });
             </div>
 
             <!-- Pagination -->
-            <div v-if="notifications?.meta?.last_page > 1" class="mt-6 flex justify-center">
+            <div v-if="page.props.items?.meta?.last_page > 1" class="mt-6 flex justify-center">
                 <div class="flex items-center space-x-2">
-                    <Button variant="outline" size="sm" :disabled="!notifications.links.prev" @click="handlePaginationLinkClick('prev')">
-                        Previous
+                    <Button variant="outline" size="sm" :disabled="!page.props.items.links.prev">
+                        <Link v-if="page.props.items.links.prev" :href="page.props.items.links.prev"> Previous </Link>
+                        <span v-else> Previous </span>
                     </Button>
 
                     <span class="text-muted-foreground text-sm">
-                        Page {{ notifications.meta.current_page }} of {{ notifications.meta.last_page }}
+                        Page {{ page.props.items.meta.current_page }} of {{ page.props.items.meta.last_page }}
                     </span>
 
-                    <Button variant="outline" size="sm" :disabled="!notifications.links.next" @click="handlePaginationLinkClick('prev')">
-                        Next
+                    <Button variant="outline" size="sm" :disabled="!page.props.items.links.next">
+                        <Link v-if="page.props.items.links.next" :href="page.props.items.links.next"> Next </Link>
+                        <span v-else> Next </span>
                     </Button>
                 </div>
             </div>

@@ -10,12 +10,11 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
-import { Link } from '@inertiajs/vue3';
+import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import { Button, buttonVariants } from '../ui/button';
+import { Button } from '../ui/button';
 
-withDefaults(
+const props = withDefaults(
     defineProps<{
         url: string;
         title?: string;
@@ -28,9 +27,21 @@ withDefaults(
     },
 );
 
-defineEmits(['confirm', 'cancel']);
+const emit = defineEmits(['confirm', 'cancel']);
 
 const open = ref(false);
+
+const handleDelete = () => {
+    router.delete(props.url, {
+        onFinish: () => {
+            open.value = false;
+            emit('confirm');
+        },
+        onCancel: () => {
+            emit('cancel');
+        },
+    });
+};
 </script>
 
 <template>
@@ -51,9 +62,7 @@ const open = ref(false);
                     <Button variant="secondary" @click="open = false"> Cancel </Button>
                 </DialogClose>
 
-                <Link :class="cn(buttonVariants({ variant: 'destructive' }))" :href="url" method="delete" as="button" class="flex items-center gap-1"
-                    >Delete</Link
-                >
+                <Button variant="destructive" @click="handleDelete">Delete</Button>
             </DialogFooter>
         </DialogContent>
     </Dialog>
@@ -67,14 +76,7 @@ const open = ref(false);
             <hr class="my-2 w-full border-t border-slate-200 dark:border-slate-700" />
             <div class="flex items-center justify-between space-x-2 px-2 pb-2">
                 <Button class="px-2 py-0" variant="secondary" size="xs" @click="open = false">No</Button>
-                <Link
-                    :class="cn(buttonVariants({ variant: 'destructive', size: 'xs' }))"
-                    :href="url"
-                    method="delete"
-                    as="button"
-                    class="flex items-center gap-1"
-                    >Yes</Link
-                >
+                <Button class="px-2 py-0" variant="destructive" size="xs" @click="handleDelete">Yes</Button>
             </div>
         </PopoverContent>
     </Popover>

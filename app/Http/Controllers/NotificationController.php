@@ -33,4 +33,16 @@ final class NotificationController extends Controller
 
         return redirect()->back()->with('success', 'All notifications marked as read.');
     }
+
+    /**
+     * Delete a specific notification.
+     */
+    public function delete($id)
+    {
+        $user = Auth::user();
+        $notification = $user->notifications()->findOrFail($id);
+        $notification->delete();
+
+        return redirect()->back()->with('success', 'Notification deleted successfully.');
+    }
 }
