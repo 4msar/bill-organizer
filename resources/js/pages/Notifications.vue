@@ -37,6 +37,8 @@ const handlePaginationLinkClick = (direction: 'prev' | 'next') => {
     }
 
     const page = direction === 'prev' ? notifications.links.prev : notifications.links.next;
+
+    console.log(`Navigating to ${direction} page:`, page);
     if (page) {
         router.get(page, {}, { preserveState: true, preserveScroll: true });
     }
@@ -81,7 +83,11 @@ console.log({ notifications });
                     :class="{ 'bg-gray-100': notification.read_at === null }"
                 >
                     <div class="flex w-full items-center justify-between">
-                        <Link v-if="notification.url" :href="notification.url" class="text-primary text-sm transition-all hover:underline">
+                        <Link
+                            v-if="notification.url"
+                            :href="notification.url"
+                            class="text-primary text-sm transition-all hover:underline dark:text-white"
+                        >
                             <h3 class="w-full flex-1 text-lg font-semibold">{{ notification.title || 'Notification' }}</h3>
                         </Link>
                         <h3 v-else class="w-full flex-1 text-lg font-semibold">{{ notification.title || 'Notification' }}</h3>

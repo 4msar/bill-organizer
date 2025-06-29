@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\SendUpcomingBillNotifications;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 
 /**
@@ -17,3 +18,18 @@ if (app()->isProduction()) {
     // In development, run every minute to test notifications
     $schedule->everyMinute();
 }
+
+Artisan::command('app:test', function () {
+    // $day = $this->ask('Day:');
+    $user = \App\Models\User::find(1);
+    // $bills = $user->bills
+    //     ->where('status', 'unpaid')
+    //     ->filter(fn($bill) => $bill->isUpcomingIn($day))->values();
+
+    $bills = $user->bills
+        ->where('status', 'unpaid')
+        ->filter(fn($bill) => $bill->shouldNotify(1))
+        ->values();
+
+    dd($bills->toArray());
+});

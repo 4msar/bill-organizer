@@ -72,7 +72,10 @@ const isPastDue = computed((): boolean => {
             </div>
         </CardContent>
 
-        <CardFooter v-if="bill.status === 'unpaid'" :class="cn('flex', bill.payment_url ? 'justify-between' : 'justify-end')">
+        <CardFooter
+            v-if="bill.status === 'unpaid'"
+            :class="cn('flex flex-wrap items-center gap-2', bill.payment_url ? 'justify-between' : 'justify-end')"
+        >
             <a v-if="bill.payment_url" :href="bill.payment_url" target="_blank" rel="noopener noreferrer">
                 <Button variant="secondary">
                     <Link2 class="mr-2 h-4 w-4" />
