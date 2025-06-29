@@ -42,8 +42,8 @@ final class SendUpcomingBillNotifications implements ShouldQueue
                 // Get bills for the user due on the target date
                 $bills = $user->bills
                     ->where('status', 'unpaid')
-                    ->filter(fn($bill) => $bill->isUpcomingIn($daysBefore))
-                    ->all();
+                    ->filter(fn($bill) => $bill->shouldNotify($daysBefore))
+                    ->values();
 
                 foreach ($bills as $bill) {
                     // Skip if the bill notification has already been sent for this reminder period

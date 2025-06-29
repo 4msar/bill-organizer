@@ -91,7 +91,7 @@ const submit = () => {
                     <div class="grid gap-2">
                         <Label for="reminder" class="flex items-center space-x-3"> Notification Reminder </Label>
                         <Select v-model="form.early_reminder_days" multiple>
-                            <SelectTrigger class="w-full">
+                            <SelectTrigger class="!h-auto w-full text-left whitespace-normal">
                                 <SelectValue placeholder="Select" />
                             </SelectTrigger>
                             <SelectContent>

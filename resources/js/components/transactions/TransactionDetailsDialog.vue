@@ -158,8 +158,8 @@ const paymentMethodIcon = computed(() => {
                             Delete
                         </Button>
                     </Confirm>
+                    <Button size="sm" class="w-auto" @click="handleClose">Close</Button>
                 </div>
-                <Button @click="handleClose">Close</Button>
             </DialogFooter>
         </DialogContent>
     </Dialog>

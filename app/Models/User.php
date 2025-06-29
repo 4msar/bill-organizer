@@ -54,7 +54,7 @@ final class User extends Authenticatable implements MustVerifyEmail
      */
     public function bills()
     {
-        return $this->hasMany(Bill::class);
+        return $this->hasMany(Bill::class)->orderBy('due_date', 'asc');
     }
 
     /**

@@ -144,8 +144,23 @@ final class Bill extends Model
             $days = 0;
         }
 
-        return $this->due_date->lte(now()->addDays(intval($days))) &&
-            $this->status === 'unpaid';
+        return $this->due_date->lte(now()->addDays(intval($days)));
+    }
+
+    /**
+     * Should notify the user about the bill.
+     *
+     * @param integer $days
+     * @return boolean
+     */
+    public function shouldNotify($days = 1)
+    {
+        if ($days == 'due_day') {
+            $days = 0;
+        }
+
+        $targetDate = now()->addDays($days);
+        return $this->due_date->isSameDay($targetDate);
     }
 
     /**
