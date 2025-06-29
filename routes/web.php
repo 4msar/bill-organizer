@@ -29,6 +29,7 @@ Route::middleware(['auth', 'verified', 'team'])->group(function () {
     Route::delete('team/delete', [TeamController::class, 'destroy'])->name('team.delete');
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'delete'])->name('notifications.delete');
     Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 
     // Bill routes
