@@ -15,7 +15,7 @@ TEMP_DIR="${CURRENT_FILE_DIR}/temp"
 WEB_USER="www-data"  # Change this to your web server user
 GITHUB_TOKEN=""  # Optional: Set if you need authentication for private repos
 # Keep specified number of old releases (0 means keep none)
-KEEP_RELEASES=${KEEP_RELEASES:-1}  # Default to 1 if not set
+KEEP_RELEASES="-1"  # Default to 1 if not set
 
 # Colors for output
 RED='\033[0;31m'
@@ -161,6 +161,7 @@ download_and_prepare() {
         exit 1
     fi
     
+    # Set the extracted directory name
     NEW_APP_DIR="${TEMP_DIR}/${EXTRACTED_DIR}"
     success "Extracted to: $NEW_APP_DIR"
 
@@ -208,6 +209,12 @@ deploy() {
 
     echo
     log "Creating release directory: $RELEASE_DIR"
+    # Ensure the release directory does not already exist
+    if [[ ! -d "$RELEASE_DIR" ]]; then
+        # warning "Release directory already exists, removing it"
+        # rm -rf "$RELEASE_DIR"
+        mkdir -p "$RELEASE_DIR"
+    fi
     echo
     
     # Copy new version to release directory
@@ -266,14 +273,14 @@ cleanup() {
     if [[ $KEEP_RELEASES -eq 0 ]]; then
         log "Removing all old releases..."
         find "$(dirname "$INSTALL_DIR")" -maxdepth 1 -name "${APP_NAME}-v*" -type d | xargs rm -rf 2>/dev/null || true
+        
+        # Remove backups
+        log "Removing backup directory..."
+        rm -rf "$BACKUP_DIR"
     else
         log "Removing old releases (keeping last $KEEP_RELEASES)..."
         find "$(dirname "$INSTALL_DIR")" -maxdepth 1 -name "${APP_NAME}-v*" -type d | sort -V | head -n -$KEEP_RELEASES | xargs rm -rf 2>/dev/null || true
     fi
-
-    # Remove backups
-    log "Removing backup directory..."
-    rm -rf "$BACKUP_DIR"
     
     success "Cleanup completed"
 }
@@ -308,6 +315,20 @@ health_check() {
     fi
 }
 
+self_update() {
+    log "Updating deployment script..."
+    
+    # Download the latest version of the script
+    curl -s -o "$CURRENT_FILE_DIR/deploy-latest.sh" "https://raw.githubusercontent.com/${GITHUB_REPO}/main/deploy-latest.sh"
+    
+    if [[ $? -ne 0 ]]; then
+        error "Failed to update deployment script"
+        exit 1
+    fi
+    
+    success "Deployment script updated successfully"
+}
+
 # Main deployment process
 main() {
     log "Starting Bill Organizer deployment..."
@@ -318,7 +339,6 @@ main() {
     # print some empty lines for better readability
     echo
     echo
-    echo
     
     # Pre-deployment checks
     # check_permissions # enable if running as root is required
@@ -327,7 +347,6 @@ main() {
     check_current_version
     
     # print some empty lines for better readability
-    echo
     echo
     echo
 
@@ -342,6 +361,16 @@ main() {
         cleanup
         success "🎉 Deployment completed successfully!"
         log "New version $LATEST_VERSION is now live"
+
+        echo
+        # Self-update the deployment script
+        read -p "Update deployment script? [y/N]: " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            self_update
+        else
+            log "Skipping deployment script update"
+        fi
     else
         rollback
         error "❌ Deployment failed and has been rolled back"
