@@ -41,7 +41,10 @@ jobs:
 
 
       - name: Install Node Dependencies
-        run: npm install
+        run: |
+          # FIXME: Remove when deps are resolved
+          npm config set legacy-peer-deps true
+          npm install
 
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
