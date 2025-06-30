@@ -17,6 +17,7 @@ const { props } = usePage<
     SharedData & {
         bills: Bill[];
         categories: Category[];
+        tags: string[];
     }
 >();
 
@@ -50,6 +51,7 @@ const billItemFormData = computed<BillData>(() => {
               recurrence_period: bill.value?.recurrence_period,
               payment_url: bill.value?.payment_url,
               id: bill.value?.id,
+              tags: bill.value?.tags ?? [],
           }
         : {
               title: '',
@@ -60,6 +62,7 @@ const billItemFormData = computed<BillData>(() => {
               is_recurring: false,
               recurrence_period: null,
               payment_url: '',
+              tags: [],
           };
 });
 
@@ -120,7 +123,7 @@ const handleDialogClose = () => {
             </div>
         </div>
         <Dialog :open="Boolean(openNewEventDialog)" @update:open="handleDialogClose">
-            <DialogContent class="max-h-3/4 overflow-y-auto sm:max-w-2xl">
+            <DialogContent class="max-h-3/4 overflow-y-auto sm:max-w-2xl md:max-h-max">
                 <DialogHeader class="text-left">
                     <DialogTitle>{{ selectedEvent?.id ? 'Edit Bill' : 'Create Bill' }}</DialogTitle>
                     <DialogDescription> Enter your bill details. </DialogDescription>
@@ -152,6 +155,7 @@ const handleDialogClose = () => {
                     :options="{
                         onSuccess: () => handleDialogClose(),
                     }"
+                    :tags="props.tags"
                     :bill="billItemFormData"
                 />
             </DialogContent>

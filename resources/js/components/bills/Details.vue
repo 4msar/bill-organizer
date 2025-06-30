@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { cn, formatCurrency, formatDate } from '@/lib/utils';
 import { Bill } from '@/types/model';
 import { CalendarIcon, Clock, Link2, RotateCcw } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { capitalize, computed } from 'vue';
 
 interface Props {
     bill: Bill;
@@ -69,6 +69,14 @@ const isPastDue = computed((): boolean => {
             <div v-if="bill.description" class="mt-6">
                 <h3 class="text-muted-foreground mb-1 text-sm font-medium">Description</h3>
                 <p class="text-sm">{{ bill.description }}</p>
+            </div>
+
+            <div v-if="bill.tags && bill.tags.length" class="mt-6">
+                <div class="flex flex-wrap gap-2">
+                    <Badge v-for="tag in bill.tags" :key="tag" variant="secondary" class="cursor-default">
+                        {{ capitalize(tag) }}
+                    </Badge>
+                </div>
             </div>
         </CardContent>
 

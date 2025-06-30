@@ -14,17 +14,20 @@ import { useForm } from '@inertiajs/vue3';
 import { DateValue, getLocalTimeZone, parseDate, today } from '@internationalized/date';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-vue-next';
-import { computed, onMounted } from 'vue';
+import { capitalize, computed, onMounted } from 'vue';
+import TagInput from '../shared/TagInput.vue';
+import { Label } from '../ui/label';
 
 export type BillData = Pick<
     Bill,
-    'title' | 'description' | 'amount' | 'payment_url' | 'due_date' | 'category_id' | 'is_recurring' | 'recurrence_period'
+    'title' | 'description' | 'amount' | 'payment_url' | 'due_date' | 'category_id' | 'is_recurring' | 'recurrence_period' | 'tags'
 > & {
     id?: number;
 };
 
 interface Props {
     categories: Category[];
+    tags: string[];
     bill: BillData;
     submitUrl: string;
     submitMethod: 'post' | 'put';
@@ -42,6 +45,7 @@ const form = useForm<BillData>({
     is_recurring: props.bill.is_recurring,
     recurrence_period: props.bill.recurrence_period,
     payment_url: props.bill.payment_url,
+    tags: props.bill.tags || [],
 });
 
 const formattedDate = computed((): string => {
@@ -170,16 +174,32 @@ function submit(): void {
                 </FormField>
             </div>
 
-            <!-- Payment URL -->
-            <FormField v-model="form.payment_url" name="payment_url">
-                <FormItem>
-                    <FormLabel>Payment URL</FormLabel>
-                    <FormControl>
-                        <Input type="url" v-model="form.payment_url" placeholder="Enter payment URL" />
-                    </FormControl>
-                    <FormMessage :message="form.errors.payment_url" />
-                </FormItem>
-            </FormField>
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <!-- Payment URL -->
+                <FormField v-model="form.payment_url" name="payment_url">
+                    <FormItem>
+                        <FormLabel>Payment URL</FormLabel>
+                        <FormControl>
+                            <Input type="url" v-model="form.payment_url" placeholder="Enter payment URL" />
+                        </FormControl>
+                        <FormMessage :message="form.errors.payment_url" />
+                    </FormItem>
+                </FormField>
+                <!-- Tags -->
+                <div>
+                    <Label class="mb-2">Tags (Optional)</Label>
+                    <TagInput
+                        v-model="form.tags"
+                        placeholder="Add tags (e.g. utilities, groceries)"
+                        :options="
+                            tags.map((item) => ({
+                                value: item.toLowerCase(),
+                                label: capitalize(item),
+                            }))
+                        "
+                    />
+                </div>
+            </div>
 
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <!-- Recurring Bill -->

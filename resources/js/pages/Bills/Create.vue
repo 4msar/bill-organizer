@@ -7,6 +7,7 @@ import { Head } from '@inertiajs/vue3';
 
 interface Props {
     categories: Category[];
+    tags: string[];
 }
 
 defineProps<Props>();
@@ -33,6 +34,7 @@ defineProps<Props>();
 
                 <BillForm
                     :categories="categories"
+                    :tags="tags"
                     :bill="{
                         title: '',
                         description: '',
@@ -42,6 +44,7 @@ defineProps<Props>();
                         is_recurring: false,
                         recurrence_period: null,
                         payment_url: '',
+                        tags: [],
                     }"
                     :submit-url="route('bills.store')"
                     submit-method="post"
