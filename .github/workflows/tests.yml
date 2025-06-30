@@ -35,7 +35,10 @@ jobs:
         run: |
           rm -rf node_modules
           rm -rf vendor
-          rm -f package-lock.json yarn.lock composer.lock
+          [ -e package-lock.json ] && rm package-lock.json
+          [ -e yarn.lock ] && rm yarn.lock
+          [ -e composer.lock ] && rm composer.lock
+
 
       - name: Install Node Dependencies
         run: npm install
