@@ -69,7 +69,7 @@ jobs:
         run: php artisan ziggy:generate
 
       - name: Type check TypeScript files
-        run: npx vue-tsc --noEmit
+        run: yarn lint
 
       - name: Build frontend assets
         run: yarn build
