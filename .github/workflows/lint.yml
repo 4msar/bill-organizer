@@ -24,7 +24,6 @@ jobs:
         with:
           php-version: '8.4'
 
-
       - name: Clean cache and lock files
         run: |
           rm -rf node_modules
@@ -35,6 +34,8 @@ jobs:
 
       - name: Install Dependencies
         run: |
+          # FIXME: Remove when deps are resolved
+          npm config set legacy-peer-deps true
           composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
           npm install
 
