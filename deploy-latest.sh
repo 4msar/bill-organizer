@@ -11,7 +11,7 @@ APP_NAME="bill-organizer"
 CURRENT_FILE_DIR="$(dirname "$(readlink -f "$0")")"
 INSTALL_DIR="${CURRENT_FILE_DIR}/${APP_NAME}"
 BACKUP_DIR="${CURRENT_FILE_DIR}/backups"
-TEMP_DIR="${CURRENT_FILE_DIR}/${APP_NAME}-deployment"
+TEMP_DIR="${CURRENT_FILE_DIR}/temp"
 WEB_USER="www-data"  # Change this to your web server user
 GITHUB_TOKEN=""  # Optional: Set if you need authentication for private repos
 # Keep specified number of old releases (0 means keep none)
@@ -119,7 +119,7 @@ create_backup() {
     BACKUP_FILE="${BACKUP_DIR}/${APP_NAME}-backup-$(date +%Y%m%d-%H%M%S).tar.gz"
     
     if [[ -d "$INSTALL_DIR" ]]; then
-        tar -czf "$BACKUP_FILE" -C "$(dirname "$INSTALL_DIR")" "$(basename "$INSTALL_DIR")" 2>/dev/null || {
+        tar -czf "$BACKUP_FILE" "$(dirname "$INSTALL_DIR")" 2>/dev/null || {
             warning "Backup creation failed, but continuing..."
         }
         success "Backup created: $BACKUP_FILE"
@@ -163,6 +163,8 @@ download_and_prepare() {
     
     NEW_APP_DIR="${TEMP_DIR}/${EXTRACTED_DIR}"
     success "Extracted to: $NEW_APP_DIR"
+
+    cd "$CURRENT_FILE_DIR"
 }
 
 # Preserve important files
@@ -183,7 +185,13 @@ preserve_files() {
     for file in "${preserve_files[@]}"; do
         if [[ -e "${INSTALL_DIR}/${file}" ]]; then
             log "Preserving: $file"
-            mkdir -p "$(dirname "${NEW_APP_DIR}/${file}")"
+            # Get the parent directory of the target file/directory
+            target_parent="$(dirname "${NEW_APP_DIR}/${file}")"
+            mkdir -p "$target_parent"
+            
+            # Remove the target if it exists to avoid nested directories
+            rm -rf "${NEW_APP_DIR}/${file}"
+            
             cp -r "${INSTALL_DIR}/${file}" "${NEW_APP_DIR}/${file}" 2>/dev/null || {
                 warning "Could not preserve $file"
             }
@@ -197,12 +205,19 @@ deploy() {
     
     # Create new release directory
     RELEASE_DIR="${INSTALL_DIR}-${LATEST_VERSION}"
+
+    echo
+    log "Creating release directory: $RELEASE_DIR"
+    echo
     
     # Copy new version to release directory
-    cp -r "$NEW_APP_DIR" "$RELEASE_DIR"
+    cp -r "$NEW_APP_DIR"/* "$RELEASE_DIR"/
     
     # Set proper permissions
-    chown -R "$WEB_USER:$WEB_USER" "$RELEASE_DIR"
+    # check if the web user exists
+    if id -u "$WEB_USER" &>/dev/null; then
+        chown -R "$WEB_USER:$WEB_USER" "$RELEASE_DIR"
+    fi
     chmod -R 755 "$RELEASE_DIR"
     chmod -R 775 "$RELEASE_DIR/storage" "$RELEASE_DIR/bootstrap/cache"
     
@@ -228,15 +243,12 @@ deploy() {
         php artisan migrate --force
     fi
     
-    # Create symbolic link (atomic operation)
-    CURRENT_LINK="${INSTALL_DIR}-current"
-    NEW_LINK="${INSTALL_DIR}-new"
+    cd "$CURRENT_FILE_DIR"
     
     # Create new symlink
-    ln -sfn "$RELEASE_DIR" "$NEW_LINK"
-    
-    # Atomic swap
-    mv "$NEW_LINK" "$INSTALL_DIR"
+    ln -sfn "$RELEASE_DIR" "${INSTALL_DIR}"
+
+    log "New symlink created: ${INSTALL_DIR}"
     
     # Update version file
     echo "$LATEST_VERSION" > "${INSTALL_DIR}/version.txt"
@@ -299,15 +311,27 @@ health_check() {
 # Main deployment process
 main() {
     log "Starting Bill Organizer deployment..."
+    log "Working directory: $CURRENT_FILE_DIR"
     log "Repository: $GITHUB_REPO"
     log "Install directory: $INSTALL_DIR"
+
+    # print some empty lines for better readability
+    echo
+    echo
+    echo
     
     # Pre-deployment checks
-    check_permissions
+    # check_permissions # enable if running as root is required
     check_dependencies
     get_latest_release
     check_current_version
     
+    # print some empty lines for better readability
+    echo
+    echo
+    echo
+
+
     # Deployment process
     create_backup
     download_and_prepare
