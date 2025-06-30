@@ -8,6 +8,7 @@ import { Head } from '@inertiajs/vue3';
 interface Props {
     bill: Bill;
     categories: Category[];
+    tags: string[];
 }
 
 defineProps<Props>();
@@ -40,7 +41,13 @@ defineProps<Props>();
                         <CardDescription> Update the details of your bill. </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <BillForm :bill="bill" :categories="categories" :submit-url="route('bills.update', bill.id)" submit-method="put" />
+                        <BillForm
+                            :tags="tags"
+                            :bill="bill"
+                            :categories="categories"
+                            :submit-url="route('bills.update', bill.id)"
+                            submit-method="put"
+                        />
                     </CardContent>
                 </Card>
             </div>

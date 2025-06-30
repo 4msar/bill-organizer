@@ -27,6 +27,7 @@ export interface Bill extends Model {
     team_id: number;
     title: string;
     description: string;
+    tags: string[]; // Array of tags
     amount: number;
     due_date?: string;
     status: 'paid' | 'unpaid';

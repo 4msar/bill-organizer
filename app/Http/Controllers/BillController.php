@@ -18,6 +18,7 @@ final class BillController extends Controller
         'is_recurring' => ['boolean', 'nullable'],
         'recurrence_period' => ['string', 'nullable'],
         'payment_url' => ['string', 'nullable'],
+        'tags' => ['array', 'nullable'],
     ];
 
     public function index()
@@ -46,6 +47,7 @@ final class BillController extends Controller
     {
         return inertia('Bills/Create', [
             'categories' => Category::all(),
+            'tags' => Bill::getAllTags()
         ]);
     }
 
@@ -79,7 +81,11 @@ final class BillController extends Controller
 
     public function edit(Bill $bill)
     {
-        return inertia('Bills/Edit', ['bill' => $bill, 'categories' => Category::all()]);
+        return inertia('Bills/Edit', [
+            'bill' => $bill,
+            'categories' => Category::all(),
+            'tags' => Bill::getAllTags()
+        ]);
     }
 
     public function update(Request $request, Bill $bill)

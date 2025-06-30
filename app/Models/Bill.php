@@ -36,6 +36,7 @@ final class Bill extends Model
         'is_recurring',
         'recurrence_period',
         'payment_url',
+        'tags',
     ];
 
     /**
@@ -46,6 +47,7 @@ final class Bill extends Model
     protected $casts = [
         'due_date' => 'date',
         'is_recurring' => 'boolean',
+        'tags' => 'array',
     ];
 
     /**
@@ -58,6 +60,13 @@ final class Bill extends Model
         self::deleted(function (Bill $bill) {
             $bill->transactions()->delete();
             $bill->notes()->detach();
+        });
+
+        self::creating(function (Bill $bill) {
+            if ($bill->tags) {
+                $bill->tags = array_map(fn($item) => strtolower(trim($item)), $bill->tags);
+                $bill->tags = array_filter($bill->tags, fn($tag) => !empty($tag));
+            }
         });
     }
 
@@ -177,6 +186,23 @@ final class Bill extends Model
     public function scopePaid($query)
     {
         return $query->where('status', 'paid');
+    }
+
+    /**
+     * Get all tags
+     * 
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getAllTags()
+    {
+        return self::query()
+            ->whereNotNull('tags')
+            ->pluck('tags')
+            ->filter()
+            ->flatten()
+            ->map(fn($tag) => strtolower(trim($tag)))
+            ->unique()
+            ->values();
     }
 
     /**

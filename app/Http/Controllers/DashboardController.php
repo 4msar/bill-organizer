@@ -128,6 +128,7 @@ final class DashboardController extends Controller
         return Inertia::render('Calendar', [
             'bills' => Bill::with('category')->get(),
             'categories' => Category::all(),
+            'tags' => Bill::getAllTags()
         ]);
     }
 }
