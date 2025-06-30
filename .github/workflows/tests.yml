@@ -31,6 +31,12 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
+      - name: Clean cache and lock files
+        run: |
+          rm -rf node_modules
+          rm -rf vendor
+          rm -f package-lock.json yarn.lock composer.lock
+
       - name: Install Node Dependencies
         run: npm install
 
