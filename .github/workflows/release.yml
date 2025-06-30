@@ -175,8 +175,8 @@ jobs:
 
           ### What's New
           - Incremented patch version to ${{ steps.version.outputs.version_number }}
-          - Committed changes since last release
-          {{ COMMIT_MESSAGES }}
+          - Committed changes since last release:
+          $COMMIT_MESSAGES
 
           ### Installation
           1. Download the \`bill-organizer-${{ steps.version.outputs.version_number }}.zip\` file
