@@ -44,6 +44,15 @@ jobs:
           node-version: '22'
           cache: 'yarn'
 
+      - name: Validate environment
+        run: |
+          echo "🔍 Validating build environment..."
+          php --version
+          composer --version
+          node --version
+          yarn --version
+          echo "✅ Environment validation complete"
+
       - name: Install Composer dependencies
         run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
@@ -58,6 +67,9 @@ jobs:
 
       - name: Publish Ziggy configuration
         run: php artisan ziggy:generate
+
+      - name: Type check TypeScript files
+        run: npx vue-tsc --noEmit
 
       - name: Build frontend assets
         run: yarn build
