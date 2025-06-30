@@ -159,7 +159,21 @@ jobs:
           
           # Move archive to workspace
           mv bill-organizer-${{ steps.version.outputs.version_number }}.zip $GITHUB_WORKSPACE/
-
+      - name: Delete existing draft release with same version (if any)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          echo "Checking for existing draft release with tag $VERSION"
+          RELEASE_ID=$(gh release list --limit 100 --json isDraft,tagName,id | jq -r \
+            --arg VERSION "$VERSION" '.[] | select(.isDraft and .tagName == $VERSION) | .id')
+          if [ -n "$RELEASE_ID" ]; then
+            echo "Found draft release with id $RELEASE_ID, deleting..."
+            gh release delete "$VERSION" --yes
+          else
+            echo "No draft release with tag $VERSION found."
+          fi
+          
       - name: Create Draft Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
