@@ -109,7 +109,6 @@ jobs:
             --exclude='node_modules' \
             --exclude='vendor' \
             --exclude='tests' \
-            --exclude='.env*' \
             --exclude='*.log' \
             --exclude='storage/logs/*' \
             --exclude='storage/framework/cache/*' \
@@ -165,6 +164,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo "Creating draft release for version ${{ steps.version.outputs.version }}"
+          echo "Commit messages since last release:"
+          COMMIT_MESSAGES=$(git log --pretty=format:"- %s" $(git describe --tags --abbrev=0)..HEAD)
           gh release create ${{ steps.version.outputs.version }} \
             bill-organizer-${{ steps.version.outputs.version_number }}.zip \
             --draft \
@@ -172,9 +174,9 @@ jobs:
             --notes "## Bill Organizer Release ${{ steps.version.outputs.version }}
 
           ### What's New
-          - Optimized production build
-          - All frontend assets compiled and optimized
-          - Production-ready Laravel application
+          - Incremented patch version to ${{ steps.version.outputs.version_number }}
+          - Committed changes since last release
+          {{ COMMIT_MESSAGES }}
 
           ### Installation
           1. Download the \`bill-organizer-${{ steps.version.outputs.version_number }}.zip\` file
