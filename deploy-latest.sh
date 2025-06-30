@@ -8,11 +8,14 @@ set -e  # Exit on any error
 # Configuration
 GITHUB_REPO="4msar/bill-organizer"
 APP_NAME="bill-organizer"
-INSTALL_DIR="/var/www/html"  # Change this to your web root directory
-BACKUP_DIR="/var/backups/${APP_NAME}"
-TEMP_DIR="/tmp/${APP_NAME}-deployment"
+CURRENT_FILE_DIR="$(dirname "$(readlink -f "$0")")"
+INSTALL_DIR="${CURRENT_FILE_DIR}/${APP_NAME}"
+BACKUP_DIR="${CURRENT_FILE_DIR}/backups"
+TEMP_DIR="${CURRENT_FILE_DIR}/${APP_NAME}-deployment"
 WEB_USER="www-data"  # Change this to your web server user
 GITHUB_TOKEN=""  # Optional: Set if you need authentication for private repos
+# Keep specified number of old releases (0 means keep none)
+KEEP_RELEASES=${KEEP_RELEASES:-1}  # Default to 1 if not set
 
 # Colors for output
 RED='\033[0;31m'
@@ -248,9 +251,17 @@ cleanup() {
     # Remove temp directory
     rm -rf "$TEMP_DIR"
     
-    # Keep only last 3 releases
-    log "Removing old releases (keeping last 3)..."
-    find "$(dirname "$INSTALL_DIR")" -maxdepth 1 -name "${APP_NAME}-v*" -type d | sort -V | head -n -3 | xargs rm -rf
+    if [[ $KEEP_RELEASES -eq 0 ]]; then
+        log "Removing all old releases..."
+        find "$(dirname "$INSTALL_DIR")" -maxdepth 1 -name "${APP_NAME}-v*" -type d | xargs rm -rf 2>/dev/null || true
+    else
+        log "Removing old releases (keeping last $KEEP_RELEASES)..."
+        find "$(dirname "$INSTALL_DIR")" -maxdepth 1 -name "${APP_NAME}-v*" -type d | sort -V | head -n -$KEEP_RELEASES | xargs rm -rf 2>/dev/null || true
+    fi
+
+    # Remove backups
+    log "Removing backup directory..."
+    rm -rf "$BACKUP_DIR"
     
     success "Cleanup completed"
 }
