@@ -165,8 +165,8 @@ jobs:
         run: |
           VERSION=${{ steps.version.outputs.version }}
           echo "Checking for existing draft release with tag $VERSION"
-          RELEASE_ID=$(gh release list --limit 100 --json isDraft,tagName,id | jq -r \
-            --arg VERSION "$VERSION" '.[] | select(.isDraft and .tagName == $VERSION) | .id')
+          RELEASE_ID=$(gh release list --limit 100 --json isDraft,tagName,name | jq -r \
+            --arg VERSION "$VERSION" '.[] | select(.isDraft and .tagName == $VERSION) | .name')
           if [ -n "$RELEASE_ID" ]; then
             echo "Found draft release with id $RELEASE_ID, deleting..."
             gh release delete "$VERSION" --yes
