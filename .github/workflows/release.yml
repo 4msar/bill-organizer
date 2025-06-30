@@ -1,0 +1,191 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+          extensions: bcmath, ctype, fileinfo, json, mbstring, openssl, pdo, tokenizer, xml, zip
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'yarn'
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+      - name: Install Yarn dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Copy environment file
+        run: cp .env.example .env
+
+      - name: Generate application key
+        run: php artisan key:generate
+
+      - name: Publish Ziggy configuration
+        run: php artisan ziggy:generate
+
+      - name: Build frontend assets
+        run: yarn build
+
+      - name: Generate semantic version
+        id: version
+        run: |
+          # Get the latest tag
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "Latest tag: $LATEST_TAG"
+          
+          # Remove 'v' prefix if it exists
+          LATEST_VERSION=${LATEST_TAG#v}
+          
+          # Split version into parts
+          IFS='.' read -ra VERSION_PARTS <<< "$LATEST_VERSION"
+          MAJOR=${VERSION_PARTS[0]:-0}
+          MINOR=${VERSION_PARTS[1]:-0}
+          PATCH=${VERSION_PARTS[2]:-0}
+          
+          # Increment patch version
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="v${MAJOR}.${MINOR}.${NEW_PATCH}"
+          
+          echo "New version: $NEW_VERSION"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "version_number=${MAJOR}.${MINOR}.${NEW_PATCH}" >> $GITHUB_OUTPUT
+
+      - name: Create production archive
+        run: |
+          # Create temporary directory for production files
+          mkdir -p /tmp/bill-organizer-production
+          
+          # Copy application files (excluding development files)
+          rsync -av \
+            --exclude='.git*' \
+            --exclude='node_modules' \
+            --exclude='vendor' \
+            --exclude='tests' \
+            --exclude='.env*' \
+            --exclude='*.log' \
+            --exclude='storage/logs/*' \
+            --exclude='storage/framework/cache/*' \
+            --exclude='storage/framework/sessions/*' \
+            --exclude='storage/framework/views/*' \
+            --exclude='storage/app/private/*' \
+            --exclude='bootstrap/cache/*' \
+            --exclude='.phpunit*' \
+            --exclude='phpunit.xml' \
+            --exclude='pint.json' \
+            --exclude='eslint.config.js' \
+            --exclude='.prettier*' \
+            --exclude='tsconfig.json' \
+            --exclude='vite.config.ts' \
+            --exclude='package.json' \
+            --exclude='yarn.lock' \
+            --exclude='components.json' \
+            --exclude='public/hot' \
+            ./ /tmp/bill-organizer-production/
+          
+          # Install production Composer dependencies
+          cd /tmp/bill-organizer-production
+          composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+          
+          # Create optimized autoloader
+          composer dump-autoload --optimize --no-dev
+          
+          # Clean up any remaining development files
+          rm -rf storage/framework/cache/*
+          rm -rf storage/framework/sessions/*
+          rm -rf storage/framework/views/*
+          rm -rf storage/logs/*
+          rm -rf bootstrap/cache/*
+          
+          # Create necessary directories
+          mkdir -p storage/logs
+          mkdir -p storage/framework/cache
+          mkdir -p storage/framework/sessions
+          mkdir -p storage/framework/views
+          mkdir -p bootstrap/cache
+          
+          # Set proper permissions
+          chmod -R 755 storage bootstrap/cache
+          
+          # Create the archive
+          cd /tmp
+          zip -r bill-organizer-${{ steps.version.outputs.version_number }}.zip bill-organizer-production/
+          
+          # Move archive to workspace
+          mv bill-organizer-${{ steps.version.outputs.version_number }}.zip $GITHUB_WORKSPACE/
+
+      - name: Create Draft Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create ${{ steps.version.outputs.version }} \
+            bill-organizer-${{ steps.version.outputs.version_number }}.zip \
+            --draft \
+            --title "Release ${{ steps.version.outputs.version }}" \
+            --notes "## Bill Organizer Release ${{ steps.version.outputs.version }}
+
+          ### What's New
+          - Optimized production build
+          - All frontend assets compiled and optimized
+          - Production-ready Laravel application
+
+          ### Installation
+          1. Download the \`bill-organizer-${{ steps.version.outputs.version_number }}.zip\` file
+          2. Extract to your web server directory
+          3. Copy \`.env.example\` to \`.env\` and configure your environment
+          4. Run \`php artisan key:generate\` to generate application key
+          5. Configure your database and run \`php artisan migrate\`
+          6. Set up your web server to point to the \`public\` directory
+
+          ### Requirements
+          - PHP 8.3 or higher
+          - MySQL 8.0+ or compatible database
+          - Web server (Apache/Nginx)
+          - Composer (for any additional setup)
+
+          ### Build Information
+          - Built on: ${{ github.sha }}
+          - Laravel Version: 12.x
+          - PHP Version: 8.3"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bill-organizer-${{ steps.version.outputs.version_number }}
+          path: bill-organizer-${{ steps.version.outputs.version_number }}.zip
+          retention-days: 30
