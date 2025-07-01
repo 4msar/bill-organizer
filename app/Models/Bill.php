@@ -168,7 +168,7 @@ final class Bill extends Model
             $days = 0;
         }
 
-        $targetDate = now()->addDays($days);
+        $targetDate = now()->addDays(intval($days));
         return $this->due_date->isSameDay($targetDate);
     }
 
@@ -213,7 +213,7 @@ final class Bill extends Model
         $now = now();
 
         return $query->where('due_date', '>=', $now)
-            ->where('due_date', '<=', $now->copy()->addDays($days))
+            ->where('due_date', '<=', $now->copy()->addDays(intval($days)))
             ->where('status', 'unpaid');
     }
 
