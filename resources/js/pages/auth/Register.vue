@@ -5,12 +5,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
+
+const {
+    props: { email = '' },
+} = usePage<{
+    email: string;
+}>();
 
 const form = useForm({
     name: '',
-    email: '',
+    email,
     password: '',
     password_confirmation: '',
 });
