@@ -55,7 +55,7 @@ final class RegisteredUserController extends Controller
         if (
             ($invitation['email'] ?? null) == $user->email &&
             isset($invitation['team']) &&
-            $team = Team::find($invitation['team'])
+            $team = Team::query()->withoutGlobalScope('user')->find($invitation['team'])
         ) {
             $user->switchTeam($team);
             $user->teams()->attach($team);
