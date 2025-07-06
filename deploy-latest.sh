@@ -8,14 +8,14 @@ set -e  # Exit on any error
 # Configuration
 GITHUB_REPO="4msar/bill-organizer"
 APP_NAME="bill-organizer"
-CURRENT_FILE_DIR="$(dirname "$(readlink -f "$0")")"
+CURRENT_FILE_DIR=$(pwd)
 INSTALL_DIR="${CURRENT_FILE_DIR}/${APP_NAME}"
 BACKUP_DIR="${CURRENT_FILE_DIR}/backups"
 TEMP_DIR="${CURRENT_FILE_DIR}/temp"
 WEB_USER="www-data"  # Change this to your web server user
 GITHUB_TOKEN=""  # Optional: Set if you need authentication for private repos
 # Keep specified number of old releases (0 means keep none)
-KEEP_RELEASES="-1"  # Default to 1 if not set
+KEEP_RELEASES="1"  # Default to 1 if not set
 
 # Colors for output
 RED='\033[0;31m'
@@ -108,6 +108,7 @@ check_current_version() {
         fi
     else
         warning "No version file found, proceeding with deployment"
+        CURRENT_VERSION="none"
     fi
 }
 
@@ -171,6 +172,7 @@ download_and_prepare() {
 # Preserve important files
 preserve_files() {
     log "Preserving important files..."
+    echo
     
     # Files to preserve from current installation
     local preserve_files=(
@@ -184,20 +186,25 @@ preserve_files() {
     )
     
     for file in "${preserve_files[@]}"; do
+        log "Checking for file: $file in ${INSTALL_DIR}"
         if [[ -e "${INSTALL_DIR}/${file}" ]]; then
             log "Preserving: $file"
-            # Get the parent directory of the target file/directory
-            target_parent="$(dirname "${NEW_APP_DIR}/${file}")"
-            mkdir -p "$target_parent"
-            
+
             # Remove the target if it exists to avoid nested directories
             rm -rf "${NEW_APP_DIR}/${file}"
             
-            cp -r "${INSTALL_DIR}/${file}" "${NEW_APP_DIR}/${file}" 2>/dev/null || {
+            log "Copying ${INSTALL_DIR}/${file} to new application directory: ${NEW_APP_DIR}/${file}"
+
+            cp -rf "${INSTALL_DIR}/${file}" "${NEW_APP_DIR}/${file}" 2>/dev/null || {
                 warning "Could not preserve $file"
             }
+        else
+            warning "File not found: $file in ${INSTALL_DIR}, skipping preservation"
         fi
     done
+
+    echo
+    echo
 }
 
 # Deploy new version
@@ -208,17 +215,10 @@ deploy() {
     RELEASE_DIR="${INSTALL_DIR}-${LATEST_VERSION}"
 
     echo
-    log "Creating release directory: $RELEASE_DIR"
-    # Ensure the release directory does not already exist
-    if [[ ! -d "$RELEASE_DIR" ]]; then
-        # warning "Release directory already exists, removing it"
-        # rm -rf "$RELEASE_DIR"
-        mkdir -p "$RELEASE_DIR"
-    fi
     echo
     
     # Copy new version to release directory
-    cp -r "$NEW_APP_DIR"/* "$RELEASE_DIR"/
+    cp -r "$NEW_APP_DIR" "$RELEASE_DIR/"
     
     # Set proper permissions
     # check if the web user exists
@@ -270,16 +270,54 @@ cleanup() {
     # Remove temp directory
     rm -rf "$TEMP_DIR"
     
+    echo
     if [[ $KEEP_RELEASES -eq 0 ]]; then
-        log "Removing all old releases..."
-        find "$(dirname "$INSTALL_DIR")" -maxdepth 1 -name "${APP_NAME}-v*" -type d | xargs rm -rf 2>/dev/null || true
-        
         # Remove backups
         log "Removing backup directory..."
         rm -rf "$BACKUP_DIR"
     else
-        log "Removing old releases (keeping last $KEEP_RELEASES)..."
-        find "$(dirname "$INSTALL_DIR")" -maxdepth 1 -name "${APP_NAME}-v*" -type d | sort -V | head -n -$KEEP_RELEASES | xargs rm -rf 2>/dev/null || true
+        log "Keeping last $KEEP_RELEASES releases"
+        # Ensure backup directory exists
+        mkdir -p "$BACKUP_DIR"
+
+        # Remove old backups except the last one
+        ALL_OLD_BACKUPS=$(find "$BACKUP_DIR" -maxdepth 1 -name "${APP_NAME}-backup-*" -type f | sort -V)
+
+        # Keep the last $KEEP_RELEASES backups
+        REMOVABLE_BACKUPS=$(echo "$ALL_OLD_BACKUPS" | tail -n +$((KEEP_RELEASES + 1)))
+
+        if [[ -n "$REMOVABLE_BACKUPS" ]]; then
+            for backup in $REMOVABLE_BACKUPS; do
+                log "Removing old backup: $(basename "$backup")"
+                rm -f "$backup"
+            done
+        else
+            warning "No old backups to clean up"
+        fi
+        
+    fi
+    
+    log "Removing last old releases..."
+    OLD_RELEASES=$(find "$(dirname "$INSTALL_DIR")" -maxdepth 1 -name "${APP_NAME}-v*" -type d | sort -V | head -n 1)
+
+    if [[ -n "$OLD_RELEASES" ]]; then
+        for release in $OLD_RELEASES; do
+
+            log "Currently processing release: $release"
+
+            log "Latest version: $APP_NAME-$LATEST_VERSION"
+
+            # Skip the current release
+            if [[ $(basename "$release") == "$APP_NAME-$LATEST_VERSION" ]]; then
+                log "Skipping current release: $(basename "$release")"
+                continue
+            fi
+
+            log "Removing old release: $(basename "$release")"
+            rm -rf "$release"
+        done
+    else
+        warning "No old releases to clean up"
     fi
     
     success "Cleanup completed"
