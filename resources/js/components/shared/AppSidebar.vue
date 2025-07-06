@@ -67,6 +67,14 @@ const filterFeatures = (item: NavItem) => {
     }
     return true;
 };
+
+const filterFooterItems = (item: NavItem) => {
+    // Filter out footer items based on feature flags or conditions
+    if (item.title === 'Team settings' && page.props.team?.current?.user_id !== page.props.auth?.user?.id) {
+        return false;
+    }
+    return true;
+};
 </script>
 
 <template>
@@ -89,7 +97,7 @@ const filterFeatures = (item: NavItem) => {
         </SidebarContent>
 
         <SidebarFooter>
-            <NavFooter v-if="$page.props.team.current" :items="footerNavItems" />
+            <NavFooter v-if="$page.props.team.current" :items="footerNavItems.filter(filterFooterItems)" />
             <NavUser />
         </SidebarFooter>
     </Sidebar>
