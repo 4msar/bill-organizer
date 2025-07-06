@@ -41,7 +41,7 @@ class TeamInvitation extends Mailable
     public function content(): Content
     {
         return new Content(
-            htmlString: new MailMessage()
+            htmlString: (new MailMessage())
                 ->subject('You have been invited to join a team')
                 ->line("{$this->sender->name} has invited you to join the team '{$this->team->name}'.")
                 ->action('Join Team', URL::signedRoute(
