@@ -50,7 +50,7 @@ final class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        $invitation = $request->session('join_team', []);
+        $invitation = $request->session()->get('join_team', []);
 
         if (
             ($invitation['email'] ?? null) == $user->email &&
