@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Status;
+use App\Mail\TeamInvitation;
 use App\Models\Team;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 final class TeamController extends Controller
 {
@@ -22,6 +25,13 @@ final class TeamController extends Controller
      */
     public function index()
     {
+        $user = request()->user();
+        $user->activeTeam->load(['users', 'owner']);
+
+        if ($user->activeTeam->user_id !== $user->id) {
+            abort(403, 'You are not the owner of this team, only owner can update team.');
+        }
+
         return inertia('Teams/Edit');
     }
 
@@ -114,5 +124,79 @@ final class TeamController extends Controller
         }
 
         return to_route('team.create');
+    }
+
+    /**
+     * Show the form for joining a team.
+     */
+    public function join(string $teamId)
+    {
+        $team = Team::query()->withoutGlobalScope('user')->findOrFail($teamId);
+
+        $mail = request()->query('email');
+        if ($mail && $user = User::where('email', $mail)->first()) {
+            // If the user already exists, switch to invited team
+            $user->switchTeam($team);
+
+            return to_route('dashboard')->with('success', 'Switched to your team successfully.');
+        }
+
+        // If the user does not exist, store the email in the session
+        session(['join_team' => [
+            'email' => $mail,
+            'team' => $teamId,
+        ]]);
+
+        return inertia('auth/Register', [
+            'email' => $mail,
+        ]);
+    }
+
+    /**
+     * Add a member to the team.
+     */
+    public function addMember(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        $user = $request->user();
+        $team = $user->activeTeam;
+
+        // Check if the user already exists
+        $member = User::where('email', $request->email)->first();
+
+        if ($member) {
+            // If the user exists, invite them to the team
+            $team->users()->attach($member);
+            return back()->with('success', 'Member added successfully.');
+        }
+
+        try {
+            Mail::to($request->email)->send(new TeamInvitation($team, $user, $request->email));
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+
+        return back()->with('success', 'Invitation sent successfully.');
+    }
+
+    /**
+     * Remove a member from the team.
+     */
+    public function removeMember(Request $request, User $user)
+    {
+        $team = $request->user()->activeTeam;
+
+        // Check if the user is the owner of the team
+        if ($user->id === $team->user_id) {
+            return back()->withErrors(['error' => 'Cannot remove the team owner.']);
+        }
+
+        // Remove the member from the team
+        $team->users()->detach($user);
+
+        return back()->with('success', 'Member removed successfully.');
     }
 }

@@ -14,6 +14,8 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
+Route::get('join/team/{teamId}', [TeamController::class, 'join'])->name('team.join')->middleware(['guest', 'signed']);
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/team/create', [TeamController::class, 'create'])->name('team.create');
     Route::post('/team/store', [TeamController::class, 'store'])->name('team.store');
@@ -24,9 +26,15 @@ Route::middleware(['auth', 'verified', 'team'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/calendar', [DashboardController::class, 'calendar'])->name('calendar')->middleware('feature:calendar');
 
-    Route::get('team/settings', [TeamController::class, 'index'])->name('team.settings');
-    Route::put('team/settings', [TeamController::class, 'update']);
-    Route::delete('team/delete', [TeamController::class, 'destroy'])->name('team.delete');
+    // Team routes
+    Route::controller(TeamController::class)->name('team.')->prefix('team')->group(function () {
+        Route::get('settings', 'index')->name('settings');
+        Route::put('settings', 'update');
+        Route::delete('delete', 'destroy')->name('delete');
+
+        Route::post('member', 'addMember')->name('member.add');
+        Route::delete('member/{user}', 'removeMember')->name('member.remove');
+    });
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::delete('/notifications/{id}', [NotificationController::class, 'delete'])->name('notifications.delete');

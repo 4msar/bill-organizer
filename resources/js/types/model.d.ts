@@ -64,6 +64,8 @@ export interface Team extends Model {
     status: string;
     currency: string;
     currency_symbol: string;
+
+    users?: User[];
 }
 
 export type NotablePivot = {

@@ -44,6 +44,27 @@ final class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        $user->setDefaultMetaData();
+
+        event(new Registered($user));
+
+        Auth::login($user);
+
+        $invitation = $request->session('join_team', []);
+
+        if (
+            ($invitation['email'] ?? null) == $user->email &&
+            isset($invitation['team']) &&
+            $team = Team::find($invitation['team'])
+        ) {
+            $user->switchTeam($team);
+            $user->teams()->attach($team);
+
+            $request->session()->forget('join_team');
+
+            return to_route('dashboard');
+        }
+
         $team = Team::create([
             'user_id' => $user->id,
             'name' => 'Personal',
@@ -53,11 +74,6 @@ final class RegisteredUserController extends Controller
         ]);
 
         $user->teams()->attach($team);
-        $user->setDefaultMetaData();
-
-        event(new Registered($user));
-
-        Auth::login($user);
 
         return to_route('dashboard');
     }
