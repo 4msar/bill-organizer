@@ -54,6 +54,6 @@ final class Team extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, self::PivotTableName);
+        return $this->belongsToMany(User::class, self::PivotTableName)->distinct();
     }
 }
