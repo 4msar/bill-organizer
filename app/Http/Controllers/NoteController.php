@@ -41,8 +41,17 @@ class NoteController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
             'is_pinned' => 'boolean',
+            'is_team_note' => 'boolean',
             'related' => ['array', 'nullable'],
         ]);
+
+        // Handle team note logic: if is_team_note is true, set user_id to null
+        if (isset($data['is_team_note']) && $data['is_team_note']) {
+            $data['user_id'] = null;
+        }
+
+        // Remove is_team_note from data as it's not a database field
+        unset($data['is_team_note']);
 
         $note = Note::create($data);
 
@@ -63,12 +72,25 @@ class NoteController extends Controller
             'title' => ['required', 'sometimes', 'string', 'max:255'],
             'content' => ['required', 'sometimes', 'string'],
             'is_pinned' => ['boolean', 'sometimes'],
+            'is_team_note' => ['boolean', 'sometimes'],
             'related' => ['array', 'nullable'],
         ]);
 
+        // Handle team note logic: if is_team_note is true, set user_id to null
+        if (isset($data['is_team_note'])) {
+            if ($data['is_team_note']) {
+                $data['user_id'] = null;
+            } else {
+                $data['user_id'] = auth()->id();
+            }
+        }
+
+        // Remove is_team_note from data as it's not a database field
+        unset($data['is_team_note']);
+
         $note->update($data);
 
-        if ($data['related']) {
+        if (isset($data['related'])) {
             $note->bills()->sync($data['related']);
         }
 

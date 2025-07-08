@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Bill, Note } from '@/types/model';
 import { useForm, usePage } from '@inertiajs/vue3';
@@ -33,6 +34,7 @@ const form = useForm({
     title: props.note?.title || '',
     content: props.note?.content || '',
     is_pinned: Boolean(props.note?.is_pinned || false),
+    is_team_note: Boolean(props.note?.user_id === null),
     related: [],
 });
 
@@ -58,6 +60,7 @@ watch(
             form.title = newNote.title || '';
             form.content = newNote.content || '';
             form.is_pinned = Boolean(newNote.is_pinned || false);
+            form.is_team_note = Boolean(newNote.user_id === null);
         } else {
             form.reset();
         }
@@ -110,6 +113,16 @@ const handleClose = () => {
                         </div>
                         <Label for="is_pinned" class="flex items-center space-x-3">
                             <Checkbox id="is_pinned" v-model="form.is_pinned" :tabindex="3" />
+                        </Label>
+                    </div>
+
+                    <div class="flex flex-row items-center justify-between rounded-lg border p-3">
+                        <div class="space-y-0.5">
+                            <Label for="is_team_note" class="text-base">Team note</Label>
+                            <div class="text-muted-foreground text-sm">Team notes are visible to all members of your team.</div>
+                        </div>
+                        <Label for="is_team_note" class="flex items-center space-x-3">
+                            <Switch id="is_team_note" v-model="form.is_team_note" :tabindex="4" />
                         </Label>
                     </div>
 
