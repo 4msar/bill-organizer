@@ -14,11 +14,15 @@ final class UserScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
-        // if running in console, skip the scope
-        if (app()->runningInConsole()) {
+        // if running in console but not in tests, skip the scope
+        if (app()->runningInConsole() && !app()->runningUnitTests()) {
             return;
         }
         // User must be authenticated
-        $builder->where('user_id', Auth::id());
+        // Include both user-specific notes and team notes (where user_id is null)
+        $builder->where(function ($query) {
+            $query->where('user_id', Auth::id())
+                  ->orWhereNull('user_id');
+        });
     }
 }

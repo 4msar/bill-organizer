@@ -77,7 +77,7 @@ export type NotablePivot = {
 };
 
 export interface Note extends Model {
-    user_id: number;
+    user_id: number | null;
     team_id: number;
     title: string;
     content: string;
