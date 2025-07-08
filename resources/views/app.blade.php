@@ -9,6 +9,26 @@
         <meta name="keywords" content="bill organizer, bill tracking, payment management, bill reminder, expense tracker, financial organization, budget management, due date tracker">
         <meta name="author" content="Bill Organizer">
         <meta name="robots" content="index, follow">
+        <meta name="theme-color" content="#3b82f6">
+        <meta name="msapplication-TileColor" content="#3b82f6">
+        
+        {{-- Structured Data for SEO --}}
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "{{ config('app.name', 'Bill Organizer') }}",
+            "description": "Efficiently manage, track, and organize all your bills and payments in one secure place. Never miss a payment again with our intuitive bill management system.",
+            "url": "{{ config('app.url', 'https://bills.msar.me') }}",
+            "applicationCategory": "FinanceApplication",
+            "operatingSystem": "Web Browser",
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+            }
+        }
+        </script>
         
         {{-- Open Graph Meta Tags for Social Media --}}
         <meta property="og:title" content="{{ config('app.name', 'Bill Organizer') }}">
@@ -17,11 +37,15 @@
         <meta property="og:url" content="{{ config('app.url', 'http://localhost') }}">
         <meta property="og:site_name" content="{{ config('app.name', 'Bill Organizer') }}">
         <meta property="og:locale" content="{{ str_replace('_', '-', app()->getLocale()) }}">
+        <meta property="og:image" content="{{ config('app.url', 'https://bills.msar.me') }}/logo.svg">
+        <meta property="og:image:alt" content="{{ config('app.name', 'Bill Organizer') }} Logo">
         
         {{-- Twitter Card Meta Tags --}}
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="{{ config('app.name', 'Bill Organizer') }}">
         <meta name="twitter:description" content="Efficiently manage, track, and organize all your bills and payments in one secure place.">
+        <meta name="twitter:image" content="{{ config('app.url', 'https://bills.msar.me') }}/logo.svg">
+        <meta name="twitter:image:alt" content="{{ config('app.name', 'Bill Organizer') }} Logo">>
         
         {{-- Canonical URL --}}
         <link rel="canonical" href="{{ config('app.url', 'https://bills.msar.me/') }}">
