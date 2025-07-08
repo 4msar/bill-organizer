@@ -24,7 +24,7 @@
         <meta name="twitter:description" content="Efficiently manage, track, and organize all your bills and payments in one secure place.">
         
         {{-- Canonical URL --}}
-        <link rel="canonical" href="{{ config('app.url', 'http://localhost') }}">
+        <link rel="canonical" href="{{ config('app.url', 'https://bills.msar.me/') }}">
 
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script>
