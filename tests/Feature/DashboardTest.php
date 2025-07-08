@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\User;
 use App\Models\Team;
+use App\Models\User;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
@@ -15,7 +15,7 @@ test('authenticated users can visit the dashboard', function () {
     $team = Team::create(['name' => 'Test Team', 'user_id' => $user->id]);
     $user->teams()->attach($team);
     $user->switchTeam($team);
-    
+
     $this->actingAs($user);
 
     $response = $this->get('/dashboard');

@@ -21,12 +21,10 @@ final class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        $team = Team::create([
+        $team = Team::factory()->create([
             'user_id' => $user->id,
             'name' => 'Test Team',
             'description' => 'Test Team Description',
-            'icon' => '/logo.svg',
-            'status' => 'active',
         ]);
 
         $user->teams()->attach($team);

@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class UserCanAccessFeature
+final class UserCanAccessFeature
 {
     /**
      * Handle an incoming request.
@@ -23,7 +23,7 @@ class UserCanAccessFeature
         if ($user) {
             $featureEnabled = $user->getMeta("enable_$feature", false);
 
-            if (!$featureEnabled) {
+            if (! $featureEnabled) {
                 return back(fallback: route('dashboard'))
                     ->with('error', 'You do not have access to this feature.');
             }

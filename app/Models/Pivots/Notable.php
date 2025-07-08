@@ -5,9 +5,10 @@ namespace App\Models\Pivots;
 use App\Models\Note;
 use Illuminate\Database\Eloquent\Relations\MorphPivot;
 
-class Notable extends MorphPivot
+final class Notable extends MorphPivot
 {
     protected $table = 'notables';
+
     protected $fillable = [
         'note_id',
         'notable_type',

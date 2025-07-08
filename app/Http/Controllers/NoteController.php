@@ -7,11 +7,11 @@ use App\Models\Note;
 use App\Models\Scopes\TeamScope;
 use Illuminate\Http\Request;
 
-class NoteController extends Controller
+final class NoteController extends Controller
 {
     /**
      * Display a listing of the resource.
-     * 
+     *
      * Shows all notes for the current team by default.
      * If you want to show all teams notes, you can pass 'all' as a query parameter.
      * available query parameters: all, current
@@ -62,7 +62,6 @@ class NoteController extends Controller
         return redirect()->route('notes.index')->with('success', 'Note created successfully.');
     }
 
-
     /**
      * Update the specified resource in storage.
      */
@@ -81,7 +80,7 @@ class NoteController extends Controller
             if ($data['is_team_note']) {
                 $data['user_id'] = null;
             } else {
-                $data['user_id'] = auth()->id();
+                $data['user_id'] = $request->user()->id;
             }
         }
 

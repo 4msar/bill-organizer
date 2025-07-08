@@ -9,7 +9,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->user = User::factory()->create();
-    
+
     // Create team manually for simplicity
     $this->team = Team::create([
         'user_id' => $this->user->id,
@@ -20,11 +20,11 @@ beforeEach(function () {
         'currency' => 'USD',
         'currency_symbol' => '$',
     ]);
-    
+
     // Attach user to team and set as active
     $this->user->teams()->attach($this->team);
     $this->user->update(['active_team_id' => $this->team->id]);
-    
+
     $this->actingAs($this->user);
 });
 
@@ -75,7 +75,7 @@ it('shows both personal and team notes for user via UserScope', function () {
 
     // Test that both notes are returned when queried
     $notes = Note::all();
-    
+
     expect($notes)->toHaveCount(2);
     expect($notes->pluck('title')->toArray())->toContain('Personal Note');
     expect($notes->pluck('title')->toArray())->toContain('Team Note');
@@ -85,7 +85,7 @@ it('does not show other users personal notes', function () {
     // Create another user and their personal note
     $otherUser = User::factory()->create();
     $otherUser->teams()->attach($this->team);
-    
+
     $otherUserNote = Note::create([
         'title' => 'Other User Note',
         'content' => 'Other user content',
@@ -103,12 +103,12 @@ it('does not show other users personal notes', function () {
 
     // Test that only team note is visible to current user (other user's personal note should not be visible)
     $notes = Note::all();
-    
+
     // Debug what we're getting
     $titles = $notes->pluck('title')->toArray();
     $userIds = $notes->pluck('user_id')->toArray();
-    
-    expect($notes)->toHaveCount(1, 'Expected 1 note, got: ' . implode(', ', $titles) . ' with user_ids: ' . implode(', ', $userIds));
+
+    expect($notes)->toHaveCount(1, 'Expected 1 note, got: '.implode(', ', $titles).' with user_ids: '.implode(', ', $userIds));
     expect($titles)->toContain('Team Note');
     expect($titles)->not->toContain('Other User Note');
 });

@@ -1,28 +1,27 @@
 @reference "../../../css/app.css";
 
 @layer components {
-
     .markdown-editor *:not(pre, code) {
         @apply text-base;
     }
 
     .markdown-editor pre,
     .markdown-editor code {
-        @apply text-xs font-mono;
+        @apply font-mono text-xs;
     }
 
     /* CodeMirror Base Styles */
     .CodeMirror {
-        @apply font-mono h-[300px] text-black relative overflow-hidden bg-white;
+        @apply relative h-[300px] overflow-hidden bg-white font-mono text-black;
     }
 
     .CodeMirror-lines {
-        @apply py-1 cursor-text min-h-[1px];
+        @apply min-h-[1px] cursor-text py-1;
     }
 
     .CodeMirror pre.CodeMirror-line,
     .CodeMirror pre.CodeMirror-line-like {
-        @apply px-1 rounded-none border-0 bg-transparent text-inherit m-0 whitespace-pre normal-case relative z-[2] overflow-visible;
+        @apply relative z-[2] m-0 overflow-visible rounded-none border-0 bg-transparent px-1 whitespace-pre text-inherit normal-case;
         -webkit-tap-highlight-color: transparent;
         -webkit-font-variant-ligatures: contextual;
         font-variant-ligatures: contextual;
@@ -34,11 +33,11 @@
     }
 
     .CodeMirror-gutters {
-        @apply border-r border-gray-300 bg-gray-50 whitespace-nowrap absolute left-0 top-0 min-h-full z-[3];
+        @apply absolute top-0 left-0 z-[3] min-h-full border-r border-gray-300 bg-gray-50 whitespace-nowrap;
     }
 
     .CodeMirror-linenumber {
-        @apply px-1 py-0 pl-[5px] min-w-[20px] text-right text-gray-500 whitespace-nowrap;
+        @apply min-w-[20px] px-1 py-0 pl-[5px] text-right whitespace-nowrap text-gray-500;
     }
 
     .CodeMirror-guttermarker {
@@ -50,7 +49,7 @@
     }
 
     .CodeMirror-cursor {
-        @apply border-l border-black border-r-0 w-0 absolute pointer-events-none;
+        @apply pointer-events-none absolute w-0 border-r-0 border-l border-black;
     }
 
     .CodeMirror div.CodeMirror-secondarycursor {
@@ -66,14 +65,14 @@
     }
 
     .cm-fat-cursor .CodeMirror-line::selection,
-    .cm-fat-cursor .CodeMirror-line>span::selection,
-    .cm-fat-cursor .CodeMirror-line>span>span::selection {
+    .cm-fat-cursor .CodeMirror-line > span::selection,
+    .cm-fat-cursor .CodeMirror-line > span > span::selection {
         @apply bg-transparent;
     }
 
     .cm-fat-cursor .CodeMirror-line::-moz-selection,
-    .cm-fat-cursor .CodeMirror-line>span::-moz-selection,
-    .cm-fat-cursor .CodeMirror-line>span>span::-moz-selection {
+    .cm-fat-cursor .CodeMirror-line > span::-moz-selection,
+    .cm-fat-cursor .CodeMirror-line > span > span::-moz-selection {
         @apply bg-transparent;
     }
 
@@ -105,11 +104,11 @@
     }
 
     .CodeMirror-rulers {
-        @apply absolute left-0 right-0 top-[-50px] bottom-0 overflow-hidden;
+        @apply absolute top-[-50px] right-0 bottom-0 left-0 overflow-hidden;
     }
 
     .CodeMirror-ruler {
-        @apply border-l border-gray-300 top-0 bottom-0 absolute;
+        @apply absolute top-0 bottom-0 border-l border-gray-300;
     }
 
     /* Syntax Highlighting */
@@ -245,7 +244,7 @@
 
     /* Scrollbar and Layout */
     .CodeMirror-scroll {
-        @apply overflow-scroll mb-[-50px] mr-[-50px] pb-[50px] h-full outline-none relative z-0;
+        @apply relative z-0 mr-[-50px] mb-[-50px] h-full overflow-scroll pb-[50px] outline-none;
     }
 
     .CodeMirror-sizer {
@@ -260,11 +259,11 @@
     }
 
     .CodeMirror-vscrollbar {
-        @apply right-0 top-0 overflow-x-hidden overflow-y-scroll;
+        @apply top-0 right-0 overflow-x-hidden overflow-y-scroll;
     }
 
     .CodeMirror-hscrollbar {
-        @apply bottom-0 left-0 overflow-y-hidden overflow-x-scroll;
+        @apply bottom-0 left-0 overflow-x-scroll overflow-y-hidden;
     }
 
     .CodeMirror-scrollbar-filler {
@@ -272,15 +271,15 @@
     }
 
     .CodeMirror-gutter-filler {
-        @apply left-0 bottom-0;
+        @apply bottom-0 left-0;
     }
 
     .CodeMirror-gutter {
-        @apply whitespace-normal h-full inline-block align-top mb-[-50px];
+        @apply mb-[-50px] inline-block h-full align-top whitespace-normal;
     }
 
     .CodeMirror-gutter-wrapper {
-        @apply absolute z-[4] bg-transparent border-none;
+        @apply absolute z-[4] border-none bg-transparent;
     }
 
     .CodeMirror-gutter-background {
@@ -288,7 +287,7 @@
     }
 
     .CodeMirror-gutter-elt {
-        @apply absolute cursor-default z-[4];
+        @apply absolute z-[4] cursor-default;
     }
 
     .CodeMirror-gutter-wrapper ::selection {
@@ -308,7 +307,7 @@
     }
 
     .CodeMirror-linebackground {
-        @apply absolute left-0 right-0 top-0 bottom-0 z-0;
+        @apply absolute top-0 right-0 bottom-0 left-0 z-0;
     }
 
     .CodeMirror-linewidget {
@@ -332,7 +331,7 @@
     }
 
     .CodeMirror-measure {
-        @apply absolute w-full h-0 overflow-hidden invisible;
+        @apply invisible absolute h-0 w-full overflow-hidden;
     }
 
     .CodeMirror-measure pre {
@@ -364,14 +363,14 @@
     }
 
     .CodeMirror-line::selection,
-    .CodeMirror-line>span::selection,
-    .CodeMirror-line>span>span::selection {
+    .CodeMirror-line > span::selection,
+    .CodeMirror-line > span > span::selection {
         @apply bg-indigo-200;
     }
 
     .CodeMirror-line::-moz-selection,
-    .CodeMirror-line>span::-moz-selection,
-    .CodeMirror-line>span>span::-moz-selection {
+    .CodeMirror-line > span::-moz-selection,
+    .CodeMirror-line > span > span::-moz-selection {
         @apply bg-indigo-200;
     }
 
@@ -412,7 +411,7 @@
     }
 
     .EasyMDEContainer .CodeMirror {
-        @apply box-border h-auto border border-gray-300 rounded-b p-[10px] z-0;
+        @apply z-0 box-border h-auto rounded-b border border-gray-300 p-[10px];
         word-wrap: break-word;
     }
 
@@ -421,7 +420,7 @@
     }
 
     .EasyMDEContainer .CodeMirror-fullscreen {
-        @apply bg-white fixed top-[50px] left-0 right-0 bottom-0 h-auto z-[8] border-r-0 rounded-br-none;
+        @apply fixed top-[50px] right-0 bottom-0 left-0 z-[8] h-auto rounded-br-none border-r-0 bg-white;
     }
 
     .EasyMDEContainer .CodeMirror-sided {
@@ -429,7 +428,7 @@
     }
 
     .EasyMDEContainer.sided--no-fullscreen .CodeMirror-sided {
-        @apply border-r-0 rounded-br-none relative flex-auto;
+        @apply relative flex-auto rounded-br-none border-r-0;
     }
 
     .EasyMDEContainer .CodeMirror-placeholder {
@@ -442,20 +441,20 @@
 
     /* Editor Toolbar */
     .editor-toolbar {
-        @apply relative select-none py-[9px] px-[10px] border-t border-l border-r border-gray-300 rounded-t bg-white;
+        @apply relative rounded-t border-t border-r border-l border-gray-300 bg-white px-[10px] py-[9px] select-none;
     }
 
     .editor-toolbar.fullscreen {
-        @apply w-full h-[50px] pt-[10px] pb-[10px] box-border bg-white border-0 fixed top-0 left-0 opacity-100 z-[9];
+        @apply fixed top-0 left-0 z-[9] box-border h-[50px] w-full border-0 bg-white pt-[10px] pb-[10px] opacity-100;
     }
 
     .editor-toolbar.fullscreen::before {
-        @apply w-5 h-[50px] fixed top-0 left-0 m-0 p-0;
+        @apply fixed top-0 left-0 m-0 h-[50px] w-5 p-0;
         background: linear-gradient(to right, #fff 0%, rgba(255, 255, 255, 0) 100%);
     }
 
     .editor-toolbar.fullscreen::after {
-        @apply w-5 h-[50px] fixed top-0 right-0 m-0 p-0;
+        @apply fixed top-0 right-0 m-0 h-[50px] w-5 p-0;
         background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #fff 100%);
     }
 
@@ -465,50 +464,50 @@
 
     .editor-toolbar .easymde-dropdown,
     .editor-toolbar button {
-        @apply bg-transparent inline-block text-center no-underline h-[30px] m-0 p-0 border border-transparent rounded cursor-pointer;
+        @apply m-0 inline-block h-[30px] cursor-pointer rounded border border-transparent bg-transparent p-0 text-center no-underline;
     }
 
     .editor-toolbar button {
-        @apply font-bold min-w-[30px] px-[6px] whitespace-nowrap;
+        @apply min-w-[30px] px-[6px] font-bold whitespace-nowrap;
     }
 
     .editor-toolbar button.active,
     .editor-toolbar button:hover {
-        @apply bg-gray-50 border-gray-400;
+        @apply border-gray-400 bg-gray-50;
     }
 
     .editor-toolbar i.separator {
-        @apply inline-block w-0 border-l border-gray-300 border-r border-white text-transparent mx-[6px];
+        @apply mx-[6px] inline-block w-0 border-r border-l border-gray-300 border-white text-transparent;
         text-indent: -10px;
     }
 
     .editor-toolbar button:after {
-        @apply text-xs align-text-bottom relative top-[2px];
-        font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+        @apply relative top-[2px] align-text-bottom text-xs;
+        font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
     }
 
     .editor-toolbar button.heading-1:after {
-        content: "1";
+        content: '1';
     }
 
     .editor-toolbar button.heading-2:after {
-        content: "2";
+        content: '2';
     }
 
     .editor-toolbar button.heading-3:after {
-        content: "3";
+        content: '3';
     }
 
     .editor-toolbar button.heading-bigger:after {
-        content: "▲";
+        content: '▲';
     }
 
     .editor-toolbar button.heading-smaller:after {
-        content: "▼";
+        content: '▼';
     }
 
     .editor-toolbar.disabled-for-preview button:not(.no-disable) {
-        @apply opacity-60 pointer-events-none;
+        @apply pointer-events-none opacity-60;
     }
 
     @media only screen and (max-width: 700px) {
@@ -519,7 +518,7 @@
 
     /* Editor Status Bar */
     .editor-statusbar {
-        @apply py-2 px-[10px] text-xs text-gray-500 text-right;
+        @apply px-[10px] py-2 text-right text-xs text-gray-500;
     }
 
     .EasyMDEContainer.sided--no-fullscreen .editor-statusbar {
@@ -527,7 +526,7 @@
     }
 
     .editor-statusbar span {
-        @apply inline-block min-w-[4em] ml-4;
+        @apply ml-4 inline-block min-w-[4em];
     }
 
     .editor-statusbar .lines:before {
@@ -544,11 +543,11 @@
 
     /* Editor Preview */
     .editor-preview-full {
-        @apply absolute w-full h-full top-0 left-0 z-[7] overflow-auto hidden box-border;
+        @apply absolute top-0 left-0 z-[7] box-border hidden h-full w-full overflow-auto;
     }
 
     .editor-preview-side {
-        @apply fixed bottom-0 w-1/2 top-[50px] right-0 z-[9] overflow-auto hidden box-border border border-gray-300;
+        @apply fixed top-[50px] right-0 bottom-0 z-[9] box-border hidden w-1/2 overflow-auto border border-gray-300;
         word-wrap: break-word;
     }
 
@@ -557,7 +556,7 @@
     }
 
     .EasyMDEContainer.sided--no-fullscreen .editor-preview-active-side {
-        @apply flex-auto h-auto static;
+        @apply static h-auto flex-auto;
     }
 
     .editor-preview-active {
@@ -565,15 +564,15 @@
     }
 
     .editor-preview {
-        @apply p-[10px] bg-gray-50;
+        @apply bg-gray-50 p-[10px];
     }
 
-    .editor-preview>p {
+    .editor-preview > p {
         @apply mt-0;
     }
 
     .editor-preview pre {
-        @apply bg-gray-200 mb-[10px];
+        @apply mb-[10px] bg-gray-200;
     }
 
     .editor-preview table td,
@@ -596,36 +595,36 @@
 
     .editor-preview h1,
     .cm-s-easymde .cm-header-1 {
-        @apply text-green-700 mb-2 font-extrabold leading-tight;
+        @apply mb-2 leading-tight font-extrabold text-green-700;
     }
 
     .editor-preview h2,
     .cm-s-easymde .cm-header-2 {
-        @apply text-cyan-700 mb-2 font-bold leading-tight;
+        @apply mb-2 leading-tight font-bold text-cyan-700;
     }
 
     .editor-preview h3,
     .cm-s-easymde .cm-header-3 {
-        @apply text-teal-500 mb-2 font-semibold leading-tight;
+        @apply mb-2 leading-tight font-semibold text-teal-500;
     }
 
     .editor-preview h4,
     .cm-s-easymde .cm-header-4 {
-        @apply text-gray-500 mb-2 font-medium leading-tight;
+        @apply mb-2 leading-tight font-medium text-gray-500;
     }
 
     .editor-preview h5,
     .cm-s-easymde .cm-header-5 {
-        @apply text-green-400 mb-2 font-medium leading-tight;
+        @apply mb-2 leading-tight font-medium text-green-400;
     }
 
     .editor-preview h6,
     .cm-s-easymde .cm-header-6 {
-        @apply text-base mb-2 font-medium leading-tight;
+        @apply mb-2 text-base leading-tight font-medium;
     }
 
     .cm-s-easymde .cm-comment {
-        @apply bg-black/5 rounded;
+        @apply rounded bg-black/5;
     }
 
     .cm-s-easymde .cm-link {
@@ -651,7 +650,7 @@
     }
 
     .easymde-dropdown-content {
-        @apply block invisible absolute bg-gray-50 shadow-lg p-2 z-[2] top-[30px];
+        @apply invisible absolute top-[30px] z-[2] block bg-gray-50 p-2 shadow-lg;
     }
 
     .easymde-dropdown:active .easymde-dropdown-content,
@@ -668,7 +667,7 @@
     span[data-img-src]::after {
         content: '';
         background-image: var(--bg-image);
-        @apply block max-h-full max-w-full bg-contain h-0 bg-no-repeat;
+        @apply block h-0 max-h-full max-w-full bg-contain bg-no-repeat;
         padding-top: var(--height);
         width: var(--width);
     }

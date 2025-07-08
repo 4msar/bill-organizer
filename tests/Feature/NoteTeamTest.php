@@ -9,7 +9,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->user = User::factory()->create();
-    
+
     // Create team manually for simplicity
     $this->team = Team::create([
         'user_id' => $this->user->id,
@@ -20,11 +20,11 @@ beforeEach(function () {
         'currency' => 'USD',
         'currency_symbol' => '$',
     ]);
-    
+
     // Attach user to team and set as active
     $this->user->teams()->attach($this->team);
     $this->user->update(['active_team_id' => $this->team->id]);
-    
+
     $this->actingAs($this->user);
 });
 
@@ -37,7 +37,7 @@ it('can create a personal note with user_id set', function () {
     ]);
 
     $response->assertRedirect(route('notes.index'));
-    
+
     $note = Note::where('title', 'Personal Note')->first();
     expect($note)->not->toBeNull();
     expect($note->user_id)->toBe($this->user->id);
@@ -53,7 +53,7 @@ it('can create a team note with user_id as null', function () {
     ]);
 
     $response->assertRedirect(route('notes.index'));
-    
+
     $note = Note::where('title', 'Team Note')->first();
     expect($note)->not->toBeNull();
     expect($note->user_id)->toBeNull();
@@ -76,7 +76,7 @@ it('can update a personal note to team note', function () {
     ]);
 
     $response->assertRedirect(route('notes.index'));
-    
+
     $note->refresh();
     expect($note->user_id)->toBeNull();
     expect($note->title)->toBe('Updated Note');
@@ -98,7 +98,7 @@ it('can update a team note to personal note', function () {
     ]);
 
     $response->assertRedirect(route('notes.index'));
-    
+
     $note->refresh();
     expect($note->user_id)->toBe($this->user->id);
     expect($note->title)->toBe('Personal Note');
