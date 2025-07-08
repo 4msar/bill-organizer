@@ -3,6 +3,28 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        {{-- SEO Meta Tags --}}
+        <meta name="description" content="Bill Organizer - Efficiently manage, track, and organize all your bills and payments in one secure place. Never miss a payment again with our intuitive bill management system.">
+        <meta name="keywords" content="bill organizer, bill tracking, payment management, bill reminder, expense tracker, financial organization, budget management, due date tracker">
+        <meta name="author" content="Bill Organizer">
+        <meta name="robots" content="index, follow">
+        
+        {{-- Open Graph Meta Tags for Social Media --}}
+        <meta property="og:title" content="{{ config('app.name', 'Bill Organizer') }}">
+        <meta property="og:description" content="Efficiently manage, track, and organize all your bills and payments in one secure place. Never miss a payment again.">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{{ config('app.url', 'http://localhost') }}">
+        <meta property="og:site_name" content="{{ config('app.name', 'Bill Organizer') }}">
+        <meta property="og:locale" content="{{ str_replace('_', '-', app()->getLocale()) }}">
+        
+        {{-- Twitter Card Meta Tags --}}
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{{ config('app.name', 'Bill Organizer') }}">
+        <meta name="twitter:description" content="Efficiently manage, track, and organize all your bills and payments in one secure place.">
+        
+        {{-- Canonical URL --}}
+        <link rel="canonical" href="{{ config('app.url', 'http://localhost') }}">
 
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script>
