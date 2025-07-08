@@ -115,13 +115,14 @@ const userName = props.auth.user.name || 'User';
 </script>
 
 <template>
-    <AppLayout :breadcrumbs="[
-        {
-            title: 'Dashboard',
-            href: route('dashboard'),
-        },
-    ]">
-
+    <AppLayout
+        :breadcrumbs="[
+            {
+                title: 'Dashboard',
+                href: route('dashboard'),
+            },
+        ]"
+    >
         <Head title="Dashboard" />
 
         <div class="py-6">
@@ -150,8 +151,7 @@ const userName = props.auth.user.name || 'User';
                         </CardHeader>
                         <CardContent>
                             <div class="text-2xl font-bold">{{ stats.totalBills }}</div>
-                            <div class="text-muted-foreground mt-1 text-xs">{{ stats.paidBills }} paid, {{
-                                stats.unpaidBills }} unpaid</div>
+                            <div class="text-muted-foreground mt-1 text-xs">{{ stats.paidBills }} paid, {{ stats.unpaidBills }} unpaid</div>
                             <div class="bg-muted mt-3 h-2 w-full overflow-hidden rounded-full">
                                 <div class="bg-primary h-full" :style="{ width: `${paymentProgress}%` }" />
                             </div>
@@ -167,8 +167,7 @@ const userName = props.auth.user.name || 'User';
                         </CardHeader>
                         <CardContent>
                             <div class="text-destructive text-2xl font-bold">
-                                {{ formatCurrency(stats.totalUnpaidAmount, $page.props?.team?.current?.currency as
-                                    string) }}
+                                {{ formatCurrency(stats.totalUnpaidAmount, $page.props?.team?.current?.currency as string) }}
                             </div>
                             <div class="text-muted-foreground mt-1 text-xs">{{ stats.unpaidBills }} unpaid bills</div>
                         </CardContent>
@@ -182,8 +181,7 @@ const userName = props.auth.user.name || 'User';
                         </CardHeader>
                         <CardContent>
                             <div class="text-2xl font-bold">
-                                {{ formatCurrency(stats.amountDueThisMonth, $page.props?.team?.current?.currency as
-                                    string) }}
+                                {{ formatCurrency(stats.amountDueThisMonth, $page.props?.team?.current?.currency as string) }}
                             </div>
                             <div class="text-muted-foreground mt-1 text-xs">
                                 {{ new Date().toLocaleDateString('en-US', { month: 'long' }) }}
@@ -199,8 +197,7 @@ const userName = props.auth.user.name || 'User';
                         </CardHeader>
                         <CardContent>
                             <div class="text-success text-2xl font-bold">
-                                {{ formatCurrency(stats.totalPaidAmount, $page.props?.team?.current?.currency as string)
-                                }}
+                                {{ formatCurrency(stats.totalPaidAmount, $page.props?.team?.current?.currency as string) }}
                             </div>
                             <div class="text-muted-foreground mt-1 text-xs">{{ stats.paidBills }} paid bills</div>
                         </CardContent>
@@ -236,18 +233,18 @@ const userName = props.auth.user.name || 'User';
                                         <TableRow v-for="bill in upcomingBills" :key="bill.id">
                                             <TableCell class="font-medium">
                                                 {{ bill.title }}
-                                                <Badge v-if="bill.is_recurring" variant="secondary" class="ml-2">
-                                                    Recurring </Badge>
+                                                <Badge v-if="bill.is_recurring" variant="secondary" class="ml-2"> Recurring </Badge>
                                             </TableCell>
-                                            <TableCell>{{ formatCurrency(bill.amount,
-                                                $page.props?.team?.current?.currency as string) }}</TableCell>
+                                            <TableCell>{{ formatCurrency(bill.amount, $page.props?.team?.current?.currency as string) }}</TableCell>
                                             <TableCell>
-                                                <span :class="{
-                                                    'text-destructive': getDueStatus(bill.due_date as string) === 'overdue',
-                                                    'font-medium':
-                                                        getDueStatus(bill.due_date as string) === 'today' ||
-                                                        getDueStatus(bill.due_date as string) === 'tomorrow',
-                                                }">
+                                                <span
+                                                    :class="{
+                                                        'text-destructive': getDueStatus(bill.due_date as string) === 'overdue',
+                                                        'font-medium':
+                                                            getDueStatus(bill.due_date as string) === 'today' ||
+                                                            getDueStatus(bill.due_date as string) === 'tomorrow',
+                                                    }"
+                                                >
                                                     {{ getDueStatus(bill.due_date as string) }}
                                                 </span>
                                             </TableCell>
@@ -255,15 +252,14 @@ const userName = props.auth.user.name || 'User';
                                             <TableCell class="text-right">
                                                 <Button variant="ghost" size="sm" asChild>
                                                     <Link :href="route('bills.show', bill.id)">
-                                                    <ArrowRightCircle class="h-4 w-4" />
-                                                    <span class="sr-only">View</span>
+                                                        <ArrowRightCircle class="h-4 w-4" />
+                                                        <span class="sr-only">View</span>
                                                     </Link>
                                                 </Button>
                                             </TableCell>
                                         </TableRow>
                                         <TableRow v-if="upcomingBills.length === 0">
-                                            <TableCell colspan="5" class="text-muted-foreground py-4 text-center"> No
-                                                upcoming bills </TableCell>
+                                            <TableCell colspan="5" class="text-muted-foreground py-4 text-center"> No upcoming bills </TableCell>
                                         </TableRow>
                                     </TableBody>
                                 </Table>
@@ -297,8 +293,7 @@ const userName = props.auth.user.name || 'User';
                                     <TableBody>
                                         <TableRow v-for="bill in recentBills" :key="bill.id">
                                             <TableCell class="font-medium">{{ bill.title }}</TableCell>
-                                            <TableCell>{{ formatCurrency(bill.amount,
-                                                $page.props?.team?.current?.currency as string) }}</TableCell>
+                                            <TableCell>{{ formatCurrency(bill.amount, $page.props?.team?.current?.currency as string) }}</TableCell>
                                             <TableCell>
                                                 <Badge :variant="bill.status === 'paid' ? 'secondary' : 'default'">
                                                     {{ bill.status === 'paid' ? 'Paid' : 'Unpaid' }}
@@ -308,15 +303,14 @@ const userName = props.auth.user.name || 'User';
                                             <TableCell class="text-right">
                                                 <Button variant="ghost" size="sm" asChild>
                                                     <Link :href="route('bills.show', bill.id)">
-                                                    <ArrowRightCircle class="h-4 w-4" />
-                                                    <span class="sr-only">View</span>
+                                                        <ArrowRightCircle class="h-4 w-4" />
+                                                        <span class="sr-only">View</span>
                                                     </Link>
                                                 </Button>
                                             </TableCell>
                                         </TableRow>
                                         <TableRow v-if="recentBills.length === 0">
-                                            <TableCell colspan="5" class="text-muted-foreground py-4 text-center"> No
-                                                bills yet </TableCell>
+                                            <TableCell colspan="5" class="text-muted-foreground py-4 text-center"> No bills yet </TableCell>
                                         </TableRow>
                                     </TableBody>
                                 </Table>
@@ -324,8 +318,8 @@ const userName = props.auth.user.name || 'User';
                             <CardFooter>
                                 <Button variant="outline" asChild class="w-full">
                                     <Link :href="route('bills.create')">
-                                    <Plus class="mr-2 h-4 w-4" />
-                                    Add New Bill
+                                        <Plus class="mr-2 h-4 w-4" />
+                                        Add New Bill
                                     </Link>
                                 </Button>
                             </CardFooter>
@@ -355,17 +349,14 @@ const userName = props.auth.user.name || 'User';
                                         <TableCell class="font-medium">{{ category.name }}</TableCell>
                                         <TableCell>
                                             {{ category.paid_bills_count + category.unpaid_bills_count }}
-                                            <span class="text-muted-foreground"> ({{ category.unpaid_bills_count }}
-                                                unpaid) </span>
+                                            <span class="text-muted-foreground"> ({{ category.unpaid_bills_count }} unpaid) </span>
                                         </TableCell>
                                         <TableCell class="text-right">
-                                            {{ formatCurrency(category.total_amount,
-                                                $page.props?.team?.current?.currency as string) }}
+                                            {{ formatCurrency(category.total_amount, $page.props?.team?.current?.currency as string) }}
                                         </TableCell>
                                     </TableRow>
                                     <TableRow v-if="categories.length === 0">
-                                        <TableCell colspan="3" class="text-muted-foreground py-4 text-center"> No
-                                            categories yet </TableCell>
+                                        <TableCell colspan="3" class="text-muted-foreground py-4 text-center"> No categories yet </TableCell>
                                     </TableRow>
                                 </TableBody>
                             </Table>
@@ -389,11 +380,9 @@ const userName = props.auth.user.name || 'User';
                                 <div v-if="chartSeries.length > 0" class="h-full w-full">
                                     <!-- This is a placeholder for ApexCharts -->
                                     <!-- In a real implementation, you would use: -->
-                                    <apexchart type="bar" height="300" :options="chartOptions" :series="chartSeries">
-                                    </apexchart>
+                                    <apexchart type="bar" height="300" :options="chartOptions" :series="chartSeries"> </apexchart>
                                 </div>
-                                <div v-else class="text-muted-foreground text-center">Not enough data to display chart
-                                </div>
+                                <div v-else class="text-muted-foreground text-center">Not enough data to display chart</div>
                             </div>
                         </CardContent>
                     </Card>
@@ -403,20 +392,20 @@ const userName = props.auth.user.name || 'User';
                 <div class="flex flex-wrap gap-4">
                     <Button asChild>
                         <Link :href="route('bills.create')">
-                        <Plus class="mr-2 h-4 w-4" />
-                        Add New Bill
+                            <Plus class="mr-2 h-4 w-4" />
+                            Add New Bill
                         </Link>
                     </Button>
                     <Button variant="outline" asChild>
                         <Link :href="route('bills.index')">
-                        <CreditCard class="mr-2 h-4 w-4" />
-                        View All Bills
+                            <CreditCard class="mr-2 h-4 w-4" />
+                            View All Bills
                         </Link>
                     </Button>
                     <Button variant="outline" asChild>
                         <Link :href="route('categories.index', { action: 'create' })">
-                        <Landmark class="mr-2 h-4 w-4" />
-                        Add Category
+                            <Landmark class="mr-2 h-4 w-4" />
+                            Add Category
                         </Link>
                     </Button>
                 </div>

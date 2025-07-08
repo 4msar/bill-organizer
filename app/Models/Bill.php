@@ -15,9 +15,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 final class Bill extends Model
 {
     use HasFactory;
-    use HasTeam;
     // for check the notification are sent or not
     use HasMetaData;
+
+    use HasTeam;
 
     /**
      * The attributes that are mass assignable.
@@ -64,8 +65,8 @@ final class Bill extends Model
 
         self::creating(function (Bill $bill) {
             if ($bill->tags) {
-                $bill->tags = array_map(fn($item) => strtolower(trim($item)), $bill->tags);
-                $bill->tags = array_filter($bill->tags, fn($tag) => !empty($tag));
+                $bill->tags = array_map(fn ($item) => strtolower(trim($item)), $bill->tags);
+                $bill->tags = array_filter($bill->tags, fn ($tag) => ! empty($tag));
             }
         });
     }
@@ -159,8 +160,8 @@ final class Bill extends Model
     /**
      * Should notify the user about the bill.
      *
-     * @param integer $days
-     * @return boolean
+     * @param  int  $days
+     * @return bool
      */
     public function shouldNotify($days = 1)
     {
@@ -169,6 +170,7 @@ final class Bill extends Model
         }
 
         $targetDate = now()->addDays(intval($days));
+
         return $this->due_date->isSameDay($targetDate);
     }
 
@@ -190,7 +192,7 @@ final class Bill extends Model
 
     /**
      * Get all tags
-     * 
+     *
      * @return \Illuminate\Support\Collection
      */
     public static function getAllTags()
@@ -200,7 +202,7 @@ final class Bill extends Model
             ->pluck('tags')
             ->filter()
             ->flatten()
-            ->map(fn($tag) => strtolower(trim($tag)))
+            ->map(fn ($tag) => strtolower(trim($tag)))
             ->unique()
             ->values();
     }
@@ -226,9 +228,9 @@ final class Bill extends Model
 
     /**
      * Check if the bill is already notified for a specific reminder period.
-     * 
-     * @param int $daysBefore Number of days before the due date
-     * @param array $channels Notification channels (e.g., ['mail', 'database'])
+     *
+     * @param  int  $daysBefore  Number of days before the due date
+     * @param  array  $channels  Notification channels (e.g., ['mail', 'database'])
      */
     public function isAlreadyNotified($daysBefore, array $channels = []): bool
     {
@@ -239,14 +241,15 @@ final class Bill extends Model
                 return true;
             }
         }
+
         return false;
     }
 
     /**
      * Mark the bill as notified for a specific reminder period.
-     * 
-     * @param int $daysBefore Number of days before the due date
-     * @param array $channels Notification channels (e.g., ['mail', 'database'])
+     *
+     * @param  int  $daysBefore  Number of days before the due date
+     * @param  array  $channels  Notification channels (e.g., ['mail', 'database'])
      */
     public function markAsNotified($daysBefore, array $channels = []): void
     {

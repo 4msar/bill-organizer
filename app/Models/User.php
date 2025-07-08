@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-
 use App\Traits\HasMetaData;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 final class User extends Authenticatable implements MustVerifyEmail
 {
@@ -98,15 +97,15 @@ final class User extends Authenticatable implements MustVerifyEmail
      */
     public function setDefaultMetaData(): void
     {
-        if (!$this->getMeta('email_notification')) {
+        if (! $this->getMeta('email_notification')) {
             $this->setMeta('email_notification', true);
         }
 
-        if (!$this->getMeta('web_notification')) {
+        if (! $this->getMeta('web_notification')) {
             $this->setMeta('web_notification', true);
         }
 
-        if (!$this->getMeta('early_reminder_days')) {
+        if (! $this->getMeta('early_reminder_days')) {
             $this->setMeta('early_reminder_days', [7, 15, 30]);
         }
 
@@ -119,7 +118,7 @@ final class User extends Authenticatable implements MustVerifyEmail
         }
     }
 
-    function getNotificationChannels()
+    public function getNotificationChannels()
     {
         $channels = [];
         // Check if the user has enabled email notifications

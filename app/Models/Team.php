@@ -3,12 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 final class Team extends Model
 {
+    use HasFactory;
+
     const PivotTableName = 'team_user';
 
     const TableName = 'teams';
@@ -44,7 +47,9 @@ final class Team extends Model
 
     public function getIconUrlAttribute()
     {
-        return Storage::url($this->icon);
+        return $this->icon ?
+            Storage::url($this->icon) :
+            Storage::url('teams/default.png');
     }
 
     public function owner()

@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Model;
 
 #[ScopedBy([TeamScope::class, UserScope::class])]
-class Note extends Model
+final class Note extends Model
 {
     use HasTeam;
 

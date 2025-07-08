@@ -27,8 +27,10 @@ trait HasTeam
             }
 
             // Only set user_id if it's not explicitly set and the model doesn't already have a user_id attribute set
-            if (in_array('user_id', $model->getFillable()) && 
-                !array_key_exists('user_id', $model->getAttributes())) {
+            if (
+                in_array('user_id', $model->getFillable()) &&
+                ! array_key_exists('user_id', $model->getAttributes())
+            ) {
                 $model->user_id = Auth::id();
             }
         });

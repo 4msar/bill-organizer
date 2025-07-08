@@ -170,13 +170,14 @@ final class TeamController extends Controller
         if ($member) {
             // If the user exists, invite them to the team
             $team->users()->attach($member);
+
             return back()->with('success', 'Member added successfully.');
         }
 
         try {
             Mail::to($request->email)->send(new TeamInvitation($team, $user, $request->email));
         } catch (\Throwable $th) {
-            //throw $th;
+            // throw $th;
         }
 
         return back()->with('success', 'Invitation sent successfully.');

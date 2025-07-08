@@ -69,7 +69,7 @@ final class RegisteredUserController extends Controller
             'user_id' => $user->id,
             'name' => 'Personal',
             'description' => 'Your personal team.',
-            'icon' => null,
+            'icon' => 'teams/default.png',
             'status' => Status::Active,
         ]);
 
