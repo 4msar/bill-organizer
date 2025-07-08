@@ -10,6 +10,9 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     $this->user = User::factory()->create();
 
+    // Enable notes feature for the user
+    $this->user->setMeta('enable_notes', true);
+
     // Create team manually for simplicity
     $this->team = Team::create([
         'user_id' => $this->user->id,
@@ -26,6 +29,9 @@ beforeEach(function () {
     $this->user->update(['active_team_id' => $this->team->id]);
 
     $this->actingAs($this->user);
+
+    // Browse to the notes index page
+    $this->get(route('notes.index'));
 });
 
 it('can create a personal note with user_id set', function () {
