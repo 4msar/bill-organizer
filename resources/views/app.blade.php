@@ -49,6 +49,10 @@
         
         {{-- Canonical URL --}}
         <link rel="canonical" href="{{ config('app.url', 'https://bills.msar.me/') }}">
+        
+        {{-- Favicon --}}
+        <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+        <link rel="icon" href="{{ asset('logo.svg') }}" type="image/svg+xml">
 
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script>
