@@ -1,2 +1,5 @@
 User-agent: *
 Disallow:
+
+# Sitemap
+Sitemap: https://bills.msar.me/sitemap.xml
