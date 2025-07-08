@@ -45,9 +45,15 @@ final class NoteController extends Controller
             'related' => ['array', 'nullable'],
         ]);
 
+        // Set team_id from current user's active team
+        $data['team_id'] = $request->user()->active_team_id;
+
         // Handle team note logic: if is_team_note is true, set user_id to null
         if (isset($data['is_team_note']) && $data['is_team_note']) {
             $data['user_id'] = null;
+        } else {
+            // For personal notes, set user_id to current user
+            $data['user_id'] = $request->user()->id;
         }
 
         // Remove is_team_note from data as it's not a database field
@@ -55,7 +61,7 @@ final class NoteController extends Controller
 
         $note = Note::create($data);
 
-        if ($data['related']) {
+        if (isset($data['related']) && $data['related']) {
             $note->bills()->sync($data['related']);
         }
 
