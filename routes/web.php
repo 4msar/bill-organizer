@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BillController;
+use App\Http\Controllers\BillReportController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NoteController;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome');
+    return Inertia::render('Landing');
 })->name('home');
 
 Route::get('join/team/{teamId}', [TeamController::class, 'join'])->name('team.join')->middleware(['guest', 'signed']);
@@ -51,6 +52,14 @@ Route::middleware(['auth', 'verified', 'team'])->group(function () {
         Route::delete('/{bill}', 'destroy')->name('bills.destroy');
         Route::patch('/{bill}/pay', 'markAsPaid')->name('bills.pay');
     });
+
+    Route::controller(BillReportController::class)
+        ->prefix('reports')
+        ->name('reports.')
+        ->group(function () {
+            Route::get('/team', 'teamReport')->name('team');
+            Route::get('/bills/{bill}', 'billReport')->name('bills.show');
+        });
 
     // Category routes
     Route::resource('categories', CategoryController::class)->except('create', 'show', 'edit');
