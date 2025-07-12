@@ -10,7 +10,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { Bill } from '@/types/model';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { Calendar, CheckCheck, Clock, DollarSign, Edit, Eye, MoreHorizontal, PlusCircle, Trash2 } from 'lucide-vue-next';
+import { Calendar, ChartNoAxesCombined, CheckCheck, Clock, DollarSign, Edit, Eye, MoreHorizontal, PlusCircle, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 defineProps<{
@@ -83,12 +83,20 @@ function markAsPaid(id: string | number) {
                 <!-- Bills Header with New Bill Button -->
                 <div class="mb-6 flex items-center justify-between">
                     <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Bills</h2>
-                    <Link :href="route('bills.create')">
-                        <Button>
-                            <PlusCircle class="mr-2 h-4 w-4" />
-                            Add New Bill
-                        </Button>
-                    </Link>
+                    <div class="flex items-center gap-2">
+                        <Link :href="route('reports.team')">
+                            <Button variant="secondary" class="cursor-pointer">
+                                <ChartNoAxesCombined class="mr-2 h-4 w-4" />
+                                Report
+                            </Button>
+                        </Link>
+                        <Link :href="route('bills.create')">
+                            <Button class="cursor-pointer">
+                                <PlusCircle class="mr-2 h-4 w-4" />
+                                Add New Bill
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
 
                 <!-- Bills Tabs and Table -->
@@ -177,6 +185,12 @@ function markAsPaid(id: string | number) {
                                                 >
                                                     <CheckCheck class="mr-2 h-4 w-4" />
                                                     Mark as paid
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem class="flex items-center">
+                                                    <Link :href="route('reports.bills.show', bill.id)" class="flex w-full items-center gap-2">
+                                                        <ChartNoAxesCombined class="mr-2 h-4 w-4" />
+                                                        Report
+                                                    </Link>
                                                 </DropdownMenuItem>
                                                 <Confirm :modal="true" title="Are you sure?" :url="route('bills.destroy', bill.id)">
                                                     <DropdownMenuItem standalone class="text-destructive hover:text-destructive flex items-center">
