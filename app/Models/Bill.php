@@ -38,6 +38,10 @@ final class Bill extends Model
         'recurrence_period',
         'payment_url',
         'tags',
+        'has_trial',
+        'trial_start_date',
+        'trial_end_date',
+        'trial_status',
     ];
 
     /**
@@ -49,6 +53,9 @@ final class Bill extends Model
         'due_date' => 'date',
         'is_recurring' => 'boolean',
         'tags' => 'array',
+        'has_trial' => 'boolean',
+        'trial_start_date' => 'date',
+        'trial_end_date' => 'date',
     ];
 
     /**
@@ -158,6 +165,95 @@ final class Bill extends Model
     }
 
     /**
+     * Check if the bill is currently in trial period.
+     *
+     * @return bool
+     */
+    public function isInTrial()
+    {
+        if (!$this->has_trial || !$this->trial_start_date || !$this->trial_end_date) {
+            return false;
+        }
+
+        return $this->trial_status === 'active' 
+            && now()->between($this->trial_start_date, $this->trial_end_date);
+    }
+
+    /**
+     * Check if the trial period has expired.
+     *
+     * @return bool
+     */
+    public function hasTrialExpired()
+    {
+        if (!$this->has_trial || !$this->trial_end_date) {
+            return false;
+        }
+
+        return now()->gt($this->trial_end_date) && $this->trial_status !== 'converted';
+    }
+
+    /**
+     * Check if trial is ending soon (within specified days).
+     *
+     * @param int $days
+     * @return bool
+     */
+    public function isTrialEndingSoon($days = 3)
+    {
+        if (!$this->has_trial || !$this->trial_end_date || $this->trial_status !== 'active') {
+            return false;
+        }
+
+        return $this->trial_end_date->between(now(), now()->addDays($days));
+    }
+
+    /**
+     * Convert trial bill to regular bill.
+     *
+     * @return void
+     */
+    public function convertTrialToRegular()
+    {
+        if ($this->has_trial) {
+            $this->update([
+                'trial_status' => 'converted',
+                'status' => 'unpaid',
+            ]);
+        }
+    }
+
+    /**
+     * Mark trial as expired.
+     *
+     * @return void
+     */
+    public function markTrialAsExpired()
+    {
+        if ($this->has_trial) {
+            $this->update([
+                'trial_status' => 'expired',
+            ]);
+        }
+    }
+
+    /**
+     * Check if the bill should send trial notifications.
+     *
+     * @param int $days
+     * @return bool
+     */
+    public function shouldNotifyForTrial($days = 3)
+    {
+        if (!$this->has_trial || !$this->trial_end_date || $this->trial_status !== 'active') {
+            return false;
+        }
+
+        $targetDate = now()->addDays(intval($days));
+        return $this->trial_end_date->isSameDay($targetDate);
+    }
+
+    /**
      * Should notify the user about the bill.
      *
      * @param  int  $days
@@ -165,6 +261,11 @@ final class Bill extends Model
      */
     public function shouldNotify($days = 1)
     {
+        // Don't notify for bills that are in active trial period
+        if ($this->isInTrial()) {
+            return false;
+        }
+
         if ($days == 'due_day') {
             $days = 0;
         }
