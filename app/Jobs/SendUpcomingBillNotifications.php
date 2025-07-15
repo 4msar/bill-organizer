@@ -48,28 +48,15 @@ final class SendUpcomingBillNotifications implements ShouldQueue
     {
         $channels = $user->getNotificationChannels();
         
-        // Get bills with active trials
+        // Get bills with active trials (including recently expired ones)
         $trialBills = $user->bills
             ->where('has_trial', true)
             ->where('trial_status', 'active')
-            ->filter(fn ($bill) => $bill->trial_end_date && now()->lte($bill->trial_end_date))
+            ->filter(fn ($bill) => $bill->trial_end_date !== null)
             ->values();
 
         foreach ($trialBills as $bill) {
-            // Check for trial ending notifications (3 days, 1 day before)
-            foreach ([3, 1] as $daysBefore) {
-                if ($bill->shouldNotifyForTrial($daysBefore)) {
-                    // Skip if already notified for this trial period
-                    if ($bill->isAlreadyNotified("trial_ending_{$daysBefore}", $channels)) {
-                        continue;
-                    }
-
-                    $user->notify(new TrialEndingNotification($bill));
-                    $bill->markAsNotified("trial_ending_{$daysBefore}", $channels);
-                }
-            }
-
-            // Check for expired trials
+            // Check for expired trials first
             if ($bill->hasTrialExpired()) {
                 // Skip if already notified for trial expiration
                 if ($bill->isAlreadyNotified('trial_expired', $channels)) {
@@ -79,6 +66,22 @@ final class SendUpcomingBillNotifications implements ShouldQueue
                 $user->notify(new TrialExpiredNotification($bill));
                 $bill->markAsNotified('trial_expired', $channels);
                 $bill->markTrialAsExpired();
+                continue; // Skip trial ending notifications for expired trials
+            }
+
+            // Check for trial ending notifications (3 days, 1 day before) for active trials
+            if (now()->lte($bill->trial_end_date)) {
+                foreach ([3, 1] as $daysBefore) {
+                    if ($bill->shouldNotifyForTrial($daysBefore)) {
+                        // Skip if already notified for this trial period
+                        if ($bill->isAlreadyNotified("trial_ending_{$daysBefore}", $channels)) {
+                            continue;
+                        }
+
+                        $user->notify(new TrialEndingNotification($bill));
+                        $bill->markAsNotified("trial_ending_{$daysBefore}", $channels);
+                    }
+                }
             }
         }
     }
