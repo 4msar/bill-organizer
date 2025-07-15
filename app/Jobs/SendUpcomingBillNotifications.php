@@ -3,6 +3,8 @@
 namespace App\Jobs;
 
 use App\Models\User;
+use App\Notifications\TrialEndingNotification;
+use App\Notifications\TrialExpiredNotification;
 use App\Notifications\UpcomingBillNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,27 +36,78 @@ final class SendUpcomingBillNotifications implements ShouldQueue
             ->get();
 
         foreach ($users as $user) {
-            $preferences = $user->getMeta('early_reminder_days', []);
-            $channels = $user->getNotificationChannels();
+            $this->handleTrialNotifications($user);
+            $this->handleRegularBillNotifications($user);
+        }
+    }
 
-            foreach ($preferences as $daysBefore) {
-                // Get bills for the user due on the target date
-                $bills = $user->bills
-                    ->where('status', 'unpaid')
-                    ->filter(fn ($bill) => $bill->shouldNotify($daysBefore))
-                    ->values();
+    /**
+     * Handle trial-related notifications for the user.
+     */
+    private function handleTrialNotifications(User $user): void
+    {
+        $channels = $user->getNotificationChannels();
+        
+        // Get bills with active trials
+        $trialBills = $user->bills
+            ->where('has_trial', true)
+            ->where('trial_status', 'active')
+            ->filter(fn ($bill) => $bill->trial_end_date && now()->lte($bill->trial_end_date))
+            ->values();
 
-                foreach ($bills as $bill) {
-                    // Skip if the bill notification has already been sent for this reminder period
-                    if ($bill->isAlreadyNotified($daysBefore, $channels)) {
+        foreach ($trialBills as $bill) {
+            // Check for trial ending notifications (3 days, 1 day before)
+            foreach ([3, 1] as $daysBefore) {
+                if ($bill->shouldNotifyForTrial($daysBefore)) {
+                    // Skip if already notified for this trial period
+                    if ($bill->isAlreadyNotified("trial_ending_{$daysBefore}", $channels)) {
                         continue;
                     }
 
-                    // Notify the user about the upcoming bill
-                    $user->notify(new UpcomingBillNotification($bill));
-
-                    $bill->markAsNotified($daysBefore, $channels);
+                    $user->notify(new TrialEndingNotification($bill));
+                    $bill->markAsNotified("trial_ending_{$daysBefore}", $channels);
                 }
+            }
+
+            // Check for expired trials
+            if ($bill->hasTrialExpired()) {
+                // Skip if already notified for trial expiration
+                if ($bill->isAlreadyNotified('trial_expired', $channels)) {
+                    continue;
+                }
+
+                $user->notify(new TrialExpiredNotification($bill));
+                $bill->markAsNotified('trial_expired', $channels);
+                $bill->markTrialAsExpired();
+            }
+        }
+    }
+
+    /**
+     * Handle regular bill notifications for the user.
+     */
+    private function handleRegularBillNotifications(User $user): void
+    {
+        $preferences = $user->getMeta('early_reminder_days', []);
+        $channels = $user->getNotificationChannels();
+
+        foreach ($preferences as $daysBefore) {
+            // Get bills for the user due on the target date
+            $bills = $user->bills
+                ->where('status', 'unpaid')
+                ->filter(fn ($bill) => $bill->shouldNotify($daysBefore))
+                ->values();
+
+            foreach ($bills as $bill) {
+                // Skip if the bill notification has already been sent for this reminder period
+                if ($bill->isAlreadyNotified($daysBefore, $channels)) {
+                    continue;
+                }
+
+                // Notify the user about the upcoming bill
+                $user->notify(new UpcomingBillNotification($bill));
+
+                $bill->markAsNotified($daysBefore, $channels);
             }
         }
     }
