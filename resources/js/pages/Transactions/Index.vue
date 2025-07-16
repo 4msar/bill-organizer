@@ -11,6 +11,7 @@ import { PaginatedData } from '@/types';
 import { Bill, Transaction } from '@/types/model';
 import { Head, router } from '@inertiajs/vue3';
 import { CalendarIcon, Filter, RefreshCw } from 'lucide-vue-next';
+import { DateValue } from 'reka-ui';
 import { computed, ref } from 'vue';
 
 type Transactions = PaginatedData<Transaction>;
@@ -54,14 +55,16 @@ const formattedDateTo = computed((): string => {
     return formatDate(dateTo.value);
 });
 
-function updateDateFrom(date: Date): void {
-    dateFrom.value = date;
-    filters.value.date_from = date.toISOString().split('T')[0];
+function updateDateFrom(date?: DateValue): void {
+    const value = date ? date.toString() : new Date().toISOString().split('T')[0];
+    dateFrom.value = new Date(value);
+    filters.value.date_from = value;
 }
 
-function updateDateTo(date: Date): void {
-    dateTo.value = date;
-    filters.value.date_to = date.toISOString().split('T')[0];
+function updateDateTo(date?: DateValue): void {
+    const value = date ? date.toString() : new Date().toISOString().split('T')[0];
+    dateTo.value = new Date(value);
+    filters.value.date_to = value;
 }
 
 function applyFilters(): void {
@@ -150,15 +153,15 @@ function resetFilters(): void {
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            class="w-full justify-start text-left font-normal"
+                                            class="w-full justify-start overflow-hidden text-left font-normal"
                                             :class="!dateFrom ? 'text-muted-foreground' : ''"
                                         >
-                                            <CalendarIcon class="mr-2 h-4 w-4" />
+                                            <CalendarIcon class="h-4 w-4" />
                                             {{ formattedDateFrom }}
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent class="w-auto p-0">
-                                        <Calendar :selected-date="dateFrom" @update:selected-date="updateDateFrom" />
+                                        <Calendar :v-model="dateFrom" @update:model-value="updateDateFrom" />
                                     </PopoverContent>
                                 </Popover>
                             </div>
@@ -170,15 +173,15 @@ function resetFilters(): void {
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            class="w-full justify-start text-left font-normal"
+                                            class="w-full justify-start overflow-hidden text-left font-normal"
                                             :class="!dateTo ? 'text-muted-foreground' : ''"
                                         >
-                                            <CalendarIcon class="mr-2 h-4 w-4" />
+                                            <CalendarIcon class="h-4 w-4" />
                                             {{ formattedDateTo }}
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent class="w-auto p-0">
-                                        <Calendar :selected-date="dateTo" @update:selected-date="updateDateTo" />
+                                        <Calendar :v-model="dateTo" @update:model-value="updateDateTo" />
                                     </PopoverContent>
                                 </Popover>
                             </div>

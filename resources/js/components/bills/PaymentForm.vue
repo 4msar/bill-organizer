@@ -42,6 +42,7 @@ const form = useForm({
     notes: '',
     attachment: null as File | null,
     update_due_date: true,
+    nextDueDate: props.nextDueDate || undefined,
 });
 
 // Set payment date when calendar date changes
@@ -74,14 +75,21 @@ function cancel(): void {
 
 // Next due date formatting
 const nextDueDateFormatted = computed((): string => {
-    if (!props.nextDueDate) return '';
-    return formatDate(props.nextDueDate);
+    if (!form.nextDueDate) return '';
+    return formatDate(form.nextDueDate);
 });
 
 const payment_date = computed({
     get: () => (form.payment_date ? parseDate(format(form.payment_date, 'yyyy-MM-dd')) : undefined),
     set: (val) => val,
 });
+const userNextDueDate = computed({
+    get: () => (form.nextDueDate ? parseDate(format(form.nextDueDate, 'yyyy-MM-dd')) : undefined),
+    set: (val) => val,
+});
+function updateNextDueDate(date?: DateValue): void {
+    form.nextDueDate = date ? date.toString() : new Date().toISOString().split('T')[0];
+}
 </script>
 
 <template>
@@ -199,7 +207,24 @@ const payment_date = computed({
                             <FormDescription v-if="nextDueDate"> Next due date will be {{ nextDueDateFormatted }} </FormDescription>
                         </div>
                         <FormControl>
-                            <Switch v-model="form.update_due_date" />
+                            <div class="flex items-center space-x-2">
+                                <Popover>
+                                    <PopoverTrigger as-child class="inline-flex cursor-pointer items-center">
+                                        <Button type="button" variant="ghost" size="xs" class="size-5 p-2" title="Click to change next due date">
+                                            <CalendarIcon class="size-4" />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent class="w-auto p-0" align="start">
+                                        <Calendar
+                                            v-model="userNextDueDate"
+                                            calendar-label="Next Due Date"
+                                            initial-focus
+                                            @update:model-value="updateNextDueDate"
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                                <Switch v-model="form.update_due_date" />
+                            </div>
                         </FormControl>
                     </FormItem>
                 </FormField>

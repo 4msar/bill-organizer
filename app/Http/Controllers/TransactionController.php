@@ -92,8 +92,13 @@ final class TransactionController extends Controller
         $bill->status = 'paid';
 
         // If it's a recurring bill and update_due_date is true, calculate next due date
-        if ($bill->is_recurring && $request->boolean('update_due_date')) {
-            $nextDueDate = $bill->calculateNextDueDate();
+        if (
+            $bill->is_recurring &&
+            $request->boolean('update_due_date')
+        ) {
+            $nextDueDate = $bill->calculateNextDueDate(
+                $request->input('nextDueDate')
+            );
             if ($nextDueDate) {
                 // Create a new bill for the next due date
                 $bill->status = 'unpaid';
@@ -136,8 +141,9 @@ final class TransactionController extends Controller
         // If this was the only transaction for this bill, set bill back to unpaid
         $bill = Bill::find($billId);
         if ($bill && $bill->transactions()->count() === 0) {
-            $bill->status = 'unpaid';
-            $bill->save();
+            $bill->update([
+                'status' => 'unpaid',
+            ]);
         }
 
         return back()->with('success', 'Transaction deleted successfully.');

@@ -65,8 +65,8 @@ final class Bill extends Model
 
         self::creating(function (Bill $bill) {
             if ($bill->tags) {
-                $bill->tags = array_map(fn ($item) => strtolower(trim($item)), $bill->tags);
-                $bill->tags = array_filter($bill->tags, fn ($tag) => ! empty($tag));
+                $bill->tags = array_map(fn($item) => strtolower(trim($item)), $bill->tags);
+                $bill->tags = array_filter($bill->tags, fn($tag) => ! empty($tag));
             }
         });
     }
@@ -104,13 +104,68 @@ final class Bill extends Model
         return $this->belongsTo(Category::class);
     }
 
+    function getStatusAttribute($value)
+    {
+        // If status is explicitly set, return it
+        if ($value === 'paid') {
+            return $value;
+        }
+
+        // Only auto-calculate status for recurring bills
+        if (!$this->is_recurring || !$this->recurrence_period) {
+            return $value ?: 'unpaid';
+        }
+
+        $now = now();
+        $dueDate = Carbon::parse($this->due_date);
+
+        // Check if we're in the current period for this bill
+        $isCurrentPeriod = match ($this->recurrence_period) {
+            'weekly' => $dueDate->isSameWeek($now),
+            'monthly' => $dueDate->isSameMonth($now),
+            'yearly' => $dueDate->isSameYear($now),
+            default => false,
+        };
+
+        // If we're not in the current period, check if there are transactions for this period
+        if (!$isCurrentPeriod) {
+            $periodStart = match ($this->recurrence_period) {
+                'weekly' => $now->startOfWeek(),
+                'monthly' => $now->startOfMonth(),
+                'yearly' => $now->startOfYear(),
+                default => null,
+            };
+
+            $periodEnd = match ($this->recurrence_period) {
+                'weekly' => $now->copy()->endOfWeek(),
+                'monthly' => $now->copy()->endOfMonth(),
+                'yearly' => $now->copy()->endOfYear(),
+                default => null,
+            };
+
+            if ($periodStart && $periodEnd) {
+                $hasTransactionInPeriod = $this->transactions()
+                    ->whereBetween('created_at', [$periodStart, $periodEnd])
+                    ->exists();
+
+                return $hasTransactionInPeriod ? 'paid' : 'unpaid';
+            }
+        }
+
+        return $value ?: 'unpaid';
+    }
+
     /**
      * Calculate next due date based on recurrence period.
      */
-    public function calculateNextDueDate(): ?string
+    public function calculateNextDueDate($dueDate = null): ?string
     {
         if (! $this->is_recurring || ! $this->recurrence_period) {
             return null;
+        }
+
+        if ($dueDate) {
+            return Carbon::parse($dueDate);
         }
 
         $currentDueDate = Carbon::parse($this->due_date);
@@ -202,7 +257,7 @@ final class Bill extends Model
             ->pluck('tags')
             ->filter()
             ->flatten()
-            ->map(fn ($tag) => strtolower(trim($tag)))
+            ->map(fn($tag) => strtolower(trim($tag)))
             ->unique()
             ->values();
     }
