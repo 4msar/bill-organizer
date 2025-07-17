@@ -61,4 +61,15 @@ final class Team extends Model
     {
         return $this->belongsToMany(User::class, self::PivotTableName)->distinct();
     }
+
+    /**
+     * Get the current team for the user.
+     *
+     * @return self
+     */
+    public static function current(): self
+    {
+        $user = Auth::user();
+        return $user->activeTeam;
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Notifications\UpcomingBillNotification;
+use App\Notifications\TrialEndNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -26,9 +27,15 @@ final class SendUpcomingBillNotifications implements ShouldQueue
         // Get all users with notification preferences
         $users = User::query()
             ->whereHas('meta', function ($query) {
-                $query->where(fn ($q) => $q->where('name', 'email_notification')->where('value', '1'));
+                $query->where(
+                    fn($q) => $q->where('name', 'email_notification')
+                        ->where('value', '1')
+                );
 
-                $query->orWhere(fn ($q) => $q->where('name', 'web_notification')->where('value', '1'));
+                $query->orWhere(
+                    fn($q) => $q->where('name', 'web_notification')
+                        ->where('value', '1')
+                );
             })
             ->with(['bills', 'meta', 'bills.meta'])
             ->get();
@@ -41,7 +48,7 @@ final class SendUpcomingBillNotifications implements ShouldQueue
                 // Get bills for the user due on the target date
                 $bills = $user->bills
                     ->where('status', 'unpaid')
-                    ->filter(fn ($bill) => $bill->shouldNotify($daysBefore))
+                    ->filter(fn($bill) => $bill->shouldNotify($daysBefore))
                     ->values();
 
                 foreach ($bills as $bill) {
@@ -54,6 +61,25 @@ final class SendUpcomingBillNotifications implements ShouldQueue
                     $user->notify(new UpcomingBillNotification($bill));
 
                     $bill->markAsNotified($daysBefore, $channels);
+                }
+
+                // Handle trial end notifications
+                $trialBills = $user->bills
+                    ->where('has_trial', true)
+                    ->where('status', 'unpaid')
+                    ->filter(fn($bill) => $bill->shouldNotifyTrialEnd($daysBefore))
+                    ->values();
+
+                foreach ($trialBills as $bill) {
+                    // Skip if the trial end notification has already been sent for this reminder period
+                    if ($bill->isAlreadyNotifiedTrialEnd($daysBefore, $channels)) {
+                        continue;
+                    }
+
+                    // Notify the user about the trial ending
+                    $user->notify(new TrialEndNotification($bill));
+
+                    $bill->markAsNotifiedTrialEnd($daysBefore, $channels);
                 }
             }
         }

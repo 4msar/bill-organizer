@@ -73,7 +73,7 @@ const summaryText = computed(() => {
         </CardHeader>
 
         <CardContent class="pt-0 pb-1">
-            <div class="border-muted-foreground/25 bg-muted/30 mb-4 rounded-md">
+            <div class="border-muted-foreground/25 mb-4 rounded-md">
                 <p class="text-muted-foreground line-clamp-3 text-sm">
                     {{ summaryText || 'No content available' }}
                 </p>

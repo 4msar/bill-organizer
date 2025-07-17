@@ -37,7 +37,7 @@ const emit = defineEmits<Emits>();
 const form = useForm({
     bill_id: props.bill.id,
     amount: props.bill.amount,
-    payment_date: new Date().toISOString().split('T')[0],
+    payment_date: new Date(props.bill.due_date as string).toISOString().split('T')[0],
     payment_method: 'cash',
     notes: '',
     attachment: null as File | null,
@@ -116,7 +116,7 @@ function updateNextDueDate(date?: DateValue): void {
                         <div class="relative">
                             <span class="text-muted-foreground absolute inset-y-0 left-0 flex items-center pl-3">{{
                                 $page.props?.team?.current?.currency_symbol as string
-                            }}</span>
+                                }}</span>
                             <Input v-model="form.amount" type="number" min="0.01" step="0.01" class="pl-8" />
                         </div>
                     </FormControl>
@@ -127,7 +127,10 @@ function updateNextDueDate(date?: DateValue): void {
             <!-- Payment Date -->
             <FormField v-model="form.payment_date" name="payment_date">
                 <FormItem>
-                    <FormLabel>Payment Date</FormLabel>
+                    <FormLabel class="flex justify-between items-center">
+                        <span>Payment Date</span>
+                        <button class="cursor-pointer text-xs text-muted-foreground" type="button" @click="form.payment_date = new Date().toISOString().split('T')[0]">Today</button>
+                    </FormLabel>
                     <Popover>
                         <PopoverTrigger as-child>
                             <FormControl>
@@ -138,7 +141,8 @@ function updateNextDueDate(date?: DateValue): void {
                             </FormControl>
                         </PopoverTrigger>
                         <PopoverContent class="w-auto p-0" align="start">
-                            <Calendar v-model="payment_date" calendar-label="Payment Date" initial-focus @update:model-value="updatePaymentDate" />
+                            <Calendar v-model="payment_date" calendar-label="Payment Date" initial-focus
+                                @update:model-value="updatePaymentDate" />
                         </PopoverContent>
                     </Popover>
                     <FormMessage />
@@ -196,7 +200,8 @@ function updateNextDueDate(date?: DateValue): void {
                     <FileText class="h-4 w-4" />
                     <AlertTitle>Recurring Bill</AlertTitle>
                     <AlertDescription>
-                        This is a {{ bill.recurrence_period }} recurring bill. Would you like to automatically create the next bill?
+                        This is a {{ bill.recurrence_period }} recurring bill. Would you like to automatically create
+                        the next bill?
                     </AlertDescription>
                 </Alert>
 
@@ -204,23 +209,21 @@ function updateNextDueDate(date?: DateValue): void {
                     <FormItem class="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div class="space-y-0.5">
                             <FormLabel>Create Next Bill</FormLabel>
-                            <FormDescription v-if="nextDueDate"> Next due date will be {{ nextDueDateFormatted }} </FormDescription>
+                            <FormDescription v-if="nextDueDate"> Next due date will be {{ nextDueDateFormatted }}
+                            </FormDescription>
                         </div>
                         <FormControl>
                             <div class="flex items-center space-x-2">
                                 <Popover>
                                     <PopoverTrigger as-child class="inline-flex cursor-pointer items-center">
-                                        <Button type="button" variant="ghost" size="xs" class="size-5 p-2" title="Click to change next due date">
+                                        <Button type="button" variant="ghost" size="xs" class="size-5 p-2"
+                                            title="Click to change next due date">
                                             <CalendarIcon class="size-4" />
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent class="w-auto p-0" align="start">
-                                        <Calendar
-                                            v-model="userNextDueDate"
-                                            calendar-label="Next Due Date"
-                                            initial-focus
-                                            @update:model-value="updateNextDueDate"
-                                        />
+                                        <Calendar v-model="userNextDueDate" calendar-label="Next Due Date" initial-focus
+                                            @update:model-value="updateNextDueDate" />
                                     </PopoverContent>
                                 </Popover>
                                 <Switch v-model="form.update_due_date" />

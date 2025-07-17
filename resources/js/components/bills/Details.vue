@@ -27,6 +27,8 @@ const isPastDue = computed((): boolean => {
                     <CardTitle class="flex flex-wrap items-center gap-2">
                         {{ bill.title }}
                         <Badge v-if="bill.is_recurring" variant="outline">Recurring</Badge>
+                        <Badge v-if="bill.has_trial" variant="outline" class="bg-blue-50 text-blue-700 border-blue-200">
+                            Trial</Badge>
                         <Badge :variant="bill.status === 'paid' ? 'secondary' : 'default'">
                             {{ bill.status === 'paid' ? 'Paid' : 'Unpaid' }}
                         </Badge>
@@ -41,11 +43,20 @@ const isPastDue = computed((): boolean => {
 
         <CardContent>
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div>
-                    <h3 class="text-muted-foreground mb-1 text-sm font-medium">Due Date</h3>
+                <div class="border border-neutral-700 text-neutral-700 dark:text-foreground rounded-md p-2">
+                    <h3 class="mb-1 text-sm font-medium">Due Date</h3>
                     <p class="flex items-center" :class="{ 'text-destructive': isPastDue }">
                         <CalendarIcon class="mr-2 h-4 w-4" />
                         {{ formatDate(bill.due_date as string) }}
+                    </p>
+                </div>
+
+                <div v-if="bill.has_trial && bill.trial_start_date && bill.trial_end_date"
+                    class="border border-blue-700 text-blue-700 rounded-md p-2">
+                    <h3 class="mb-1 text-sm font-medium">Trial Period</h3>
+                    <p class="flex items-center text-sm">
+                        <CalendarIcon class="mr-2 h-4 w-4" />
+                        {{ formatDate(bill.trial_start_date) }} - {{ formatDate(bill.trial_end_date) }}
                     </p>
                 </div>
 
@@ -53,7 +64,8 @@ const isPastDue = computed((): boolean => {
                     <h3 class="text-muted-foreground mb-1 text-sm font-medium">Recurrence</h3>
                     <p class="flex items-center">
                         <RotateCcw class="mr-2 h-4 w-4" />
-                        {{ bill.recurrence_period ? bill.recurrence_period.charAt(0).toUpperCase() + bill.recurrence_period.slice(1) : '' }}
+                        {{ bill.recurrence_period ? bill.recurrence_period.charAt(0).toUpperCase() +
+                        bill.recurrence_period.slice(1) : '' }}
                     </p>
                 </div>
 
@@ -80,10 +92,8 @@ const isPastDue = computed((): boolean => {
             </div>
         </CardContent>
 
-        <CardFooter
-            v-if="bill.status === 'unpaid'"
-            :class="cn('flex flex-wrap items-center gap-2', bill.payment_url ? 'justify-between' : 'justify-end')"
-        >
+        <CardFooter v-if="bill.status === 'unpaid'"
+            :class="cn('flex flex-wrap items-center gap-2', bill.payment_url ? 'justify-between' : 'justify-end')">
             <a v-if="bill.payment_url" :href="bill.payment_url" target="_blank" rel="noopener noreferrer">
                 <Button variant="secondary">
                     <Link2 class="mr-2 h-4 w-4" />

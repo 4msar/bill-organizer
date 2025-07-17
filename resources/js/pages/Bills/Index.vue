@@ -131,20 +131,26 @@ function markAsPaid(id: string | number) {
                                 >
                                     <TableCell class="font-medium">
                                         {{ bill.title }}
-                                        <span v-if="bill.is_recurring" class="ml-2">
-                                            <Badge variant="outline">Recurring</Badge>
-                                        </span>
+                                        <div class="flex flex-wrap gap-1 mt-1">
+                                            <Badge v-if="bill.is_recurring" variant="outline" class="text-xs">Recurring</Badge>
+                                            <Badge v-if="bill.has_trial" variant="outline" class="text-xs bg-blue-50 text-blue-700 border-blue-200">Trial</Badge>
+                                        </div>
                                     </TableCell>
                                     <TableCell>{{ bill.category?.name || 'Uncategorized' }}</TableCell>
                                     <TableCell>{{ formatCurrency(bill.amount, $page.props?.team?.current?.currency as string) }}</TableCell>
                                     <TableCell>
-                                        <span
-                                            :class="{
-                                                'text-destructive': new Date(bill.due_date as string) < new Date() && bill.status === 'unpaid',
-                                            }"
-                                        >
-                                            {{ formatDate(bill.due_date as string) }}
-                                        </span>
+                                        <div>
+                                            <span
+                                                :class="{
+                                                    'text-destructive': new Date(bill.due_date as string) < new Date() && bill.status === 'unpaid',
+                                                }"
+                                            >
+                                                {{ formatDate(bill.due_date as string) }}
+                                            </span>
+                                            <div v-if="bill.has_trial && bill.trial_end_date" class="text-xs text-muted-foreground">
+                                                Trial ends: {{ formatDate(bill.trial_end_date) }}
+                                            </div>
+                                        </div>
                                     </TableCell>
                                     <TableCell>
                                         <Badge :variant="bill.status === 'paid' ? 'secondary' : 'default'">

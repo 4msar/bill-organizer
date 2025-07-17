@@ -9,7 +9,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-final class UpcomingBillNotification extends Notification
+final class TrialEndNotification extends Notification
 {
     use Queueable;
 
@@ -40,10 +40,10 @@ final class UpcomingBillNotification extends Notification
         $amount = $this->bill->amount;
 
         return (new MailMessage())
-            ->subject('Reminder: Upcoming Bill Due')
+            ->subject('Trial Period Ending Soon')
             ->greeting("Hello {$notifiable->name},")
-            ->line("This is a reminder that your bill, {$this->bill->title}, is due on {$this->bill->due_date->format('M d, Y')}.")
-            ->line("Amount: {$currency}{$amount}")
+            ->line("Your trial period for {$this->bill->title} ends on {$this->bill->trial_end_date->format('M d, Y')}.")
+            ->line("After the trial ends, your first payment of {$currency}{$amount} will be due on {$this->bill->due_date->format('M d, Y')}.")
             ->action('View Bill', route('bills.show', $this->bill->id))
             ->line('Thank you for using our application!');
     }
@@ -56,6 +56,7 @@ final class UpcomingBillNotification extends Notification
         return [
             'bill_id' => $this->bill->id,
             'title' => $this->bill->title,
+            'trial_end_date' => $this->bill->trial_end_date,
             'due_date' => $this->bill->due_date,
             'amount' => $this->bill->amount,
         ];
@@ -63,11 +64,11 @@ final class UpcomingBillNotification extends Notification
 
     public static function getDescription($notification): string
     {
-        $date = Carbon::parse($notification->data['due_date'])->format('d M, Y');
+        $trialEndDate = Carbon::parse($notification->data['trial_end_date'])->format('d M, Y');
+        $dueDate = Carbon::parse($notification->data['due_date'])->format('d M, Y');
 
-        return "Your \"{$notification->data['title']}\" bill is due on {$date}, amount of " . self::getAmount($notification) . ".";
+        return "Trial period for \"{$notification->data['title']}\" ends on {$trialEndDate}. First payment of " . self::getAmount($notification) . " due on {$dueDate}.";
     }
-
 
     public static function getAmount($notification): string
     {

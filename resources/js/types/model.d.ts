@@ -30,6 +30,9 @@ export interface Bill extends Model {
     tags: string[]; // Array of tags
     amount: number;
     due_date?: string;
+    trial_start_date?: string;
+    trial_end_date?: string;
+    has_trial: boolean;
     status: 'paid' | 'unpaid';
     is_recurring: boolean;
     recurrence_period: 'weekly' | 'monthly' | 'yearly' | null;

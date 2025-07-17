@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Notifications\TrialEndNotification;
 use App\Notifications\UpcomingBillNotification;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -39,6 +40,7 @@ final class NotificationResource extends JsonResource
     {
         return match ($this->type) {
             UpcomingBillNotification::class => "Upcoming Bill ({$this->data['title']})",
+            TrialEndNotification::class => "Trial End ({$this->data['title']})",
             default => 'Notification'
         };
     }
@@ -50,6 +52,7 @@ final class NotificationResource extends JsonResource
     {
         return match ($this->type) {
             UpcomingBillNotification::class => UpcomingBillNotification::getDescription($this),
+            TrialEndNotification::class => TrialEndNotification::getDescription($this),
             default => 'You have a new notification.'
         };
     }
@@ -61,6 +64,7 @@ final class NotificationResource extends JsonResource
     {
         return match ($this->type) {
             UpcomingBillNotification::class => route('bills.show', $this->data['bill_id']),
+            TrialEndNotification::class => route('bills.show', $this->data['bill_id']),
             default => null
         };
     }

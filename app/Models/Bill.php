@@ -33,6 +33,9 @@ final class Bill extends Model
         'description',
         'amount',
         'due_date',
+        'trial_start_date',
+        'trial_end_date',
+        'has_trial',
         'status',
         'is_recurring',
         'recurrence_period',
@@ -47,6 +50,9 @@ final class Bill extends Model
      */
     protected $casts = [
         'due_date' => 'date',
+        'trial_start_date' => 'date',
+        'trial_end_date' => 'date',
+        'has_trial' => 'boolean',
         'is_recurring' => 'boolean',
         'tags' => 'array',
     ];
@@ -230,6 +236,70 @@ final class Bill extends Model
     }
 
     /**
+     * Should notify the user about the trial end.
+     *
+     * @param  int  $days
+     * @return bool
+     */
+    public function shouldNotifyTrialEnd($days = 1)
+    {
+        if (!$this->has_trial || !$this->trial_end_date) {
+            return false;
+        }
+
+        if ($days == 'trial_end_day') {
+            $days = 0;
+        }
+
+        $targetDate = now()->addDays(intval($days));
+
+        return $this->trial_end_date->isSameDay($targetDate);
+    }
+
+    /**
+     * Check if the bill is currently in trial period.
+     *
+     * @return bool
+     */
+    public function isInTrial()
+    {
+        if (!$this->has_trial || !$this->trial_start_date || !$this->trial_end_date) {
+            return false;
+        }
+
+        $now = now();
+        return $now->between($this->trial_start_date, $this->trial_end_date);
+    }
+
+    /**
+     * Check if the trial has ended.
+     *
+     * @return bool
+     */
+    public function isTrialEnded()
+    {
+        if (!$this->has_trial || !$this->trial_end_date) {
+            return false;
+        }
+
+        return now()->isAfter($this->trial_end_date);
+    }
+
+    /**
+     * Get the effective due date (trial end date if in trial, otherwise regular due date).
+     *
+     * @return \Carbon\Carbon
+     */
+    public function getEffectiveDueDate()
+    {
+        if ($this->isInTrial()) {
+            return $this->trial_end_date;
+        }
+
+        return $this->due_date;
+    }
+
+    /**
      * Scope a query to only include unpaid bills.
      */
     public function scopeUnpaid($query)
@@ -313,6 +383,42 @@ final class Bill extends Model
 
             $this->setMeta("{$channel}_notification", array_merge($previousData, [
                 "notified:$daysBefore" => now()->toDateTimeString(),
+            ]));
+        }
+    }
+
+    /**
+     * Check if the bill trial end is already notified for a specific reminder period.
+     *
+     * @param  int  $daysBefore  Number of days before the trial end date
+     * @param  array  $channels  Notification channels (e.g., ['mail', 'database'])
+     */
+    public function isAlreadyNotifiedTrialEnd($daysBefore, array $channels = []): bool
+    {
+        foreach ($channels as $channel) {
+            $data = $this->getMeta("{$channel}_trial_notification", []);
+
+            if (is_array($data) && array_key_exists("trial_notified:$daysBefore", $data)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Mark the bill trial end as notified for a specific reminder period.
+     *
+     * @param  int  $daysBefore  Number of days before the trial end date
+     * @param  array  $channels  Notification channels (e.g., ['mail', 'database'])
+     */
+    public function markAsNotifiedTrialEnd($daysBefore, array $channels = []): void
+    {
+        foreach ($channels as $channel) {
+            $previousData = $this->getMeta($channel, []);
+
+            $this->setMeta("{$channel}_trial_notification", array_merge($previousData, [
+                "trial_notified:$daysBefore" => now()->toDateTimeString(),
             ]));
         }
     }

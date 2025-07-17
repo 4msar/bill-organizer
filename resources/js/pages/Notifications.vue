@@ -38,17 +38,17 @@ const extractType = (notification: NotificationData) => {
 </script>
 
 <template>
-    <AppLayout
-        :breadcrumbs="[
+    <AppLayout :breadcrumbs="[
             {
                 title: 'Notifications',
                 href: route('notifications.index'),
             },
-        ]"
-    >
+        ]">
+
         <Head title="Notifications" />
         <div class="space-y-6 px-4 py-6">
-            <HeadingSmall title="Notifications" description="Latest notifications" class="flex items-center justify-between">
+            <HeadingSmall title="Notifications" description="Latest notifications"
+                class="flex items-center justify-between">
                 <Button @click="markAllAsRead" class="flex items-center" v-if="page.props.items.data.length > 0">
                     <Inbox class="mr-2 h-4 w-4" />
                     Mark All as Read
@@ -62,32 +62,30 @@ const extractType = (notification: NotificationData) => {
 
             <!-- Notifications List -->
             <div class="space-y-4" v-if="page.props.items.data.length > 0">
-                <div
-                    v-for="notification in page.props.items.data"
-                    :key="notification.id"
-                    class="group rounded-md border p-4"
-                    :class="{ 'bg-background': notification.read_at === null }"
-                >
+                <div v-for="notification in page.props.items.data" :key="notification.id"
+                    class="group rounded-md border p-4 bg-background"
+                    :class="{ 'bg-neutral-100': notification.read_at === null }">
                     <div class="flex w-full items-center justify-between">
-                        <Link
-                            v-if="notification.url"
-                            :href="notification.url"
-                            class="text-primary text-sm transition-all hover:underline dark:text-white"
-                        >
-                            <h3 class="w-full flex-1 text-lg font-semibold">{{ notification.title || 'Notification' }}</h3>
+                        <Link v-if="notification.url" :href="notification.url"
+                            class="text-primary text-sm transition-all hover:underline dark:text-white">
+                        <h3 class="w-full flex-1 text-lg font-semibold">{{ notification.title || 'Notification' }}</h3>
                         </Link>
-                        <h3 v-else class="w-full flex-1 text-lg font-semibold">{{ notification.title || 'Notification' }}</h3>
+                        <h3 v-else class="w-full flex-1 text-lg font-semibold">{{ notification.title || 'Notification'
+                            }}</h3>
 
                         <Badge variant="secondary" class="ml-2">
                             {{ extractType(notification) }}
                         </Badge>
                     </div>
-                    <p v-if="notification.description" class="text-muted-foreground text-sm">{{ notification.description }}</p>
+                    <p v-if="notification.description" class="text-muted-foreground text-sm">{{ notification.description
+                        }}</p>
                     <div class="relative mt-2 flex items-center justify-between">
                         <p class="text-muted-foreground mt-1 text-sm">{{ notification.created_time }}</p>
                         <div class="flex group-hover:flex sm:hidden">
                             <Confirm :url="route('notifications.delete', notification.id)" title="Are you sure?" modal>
-                                <span class="cursor-pointer text-sm text-red-500 transition-all duration-150 hover:text-red-700"> Delete </span>
+                                <span
+                                    class="cursor-pointer text-sm text-red-500 transition-all duration-150 hover:text-red-700">
+                                    Delete </span>
                             </Confirm>
                         </div>
                     </div>

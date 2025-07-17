@@ -13,6 +13,9 @@ final class BillController extends Controller
         'title' => ['required', 'string', 'max:255'],
         'amount' => ['required', 'numeric', 'min:1'],
         'due_date' => ['required', 'date'],
+        'trial_start_date' => ['date', 'nullable'],
+        'trial_end_date' => ['date', 'nullable', 'after:trial_start_date'],
+        'has_trial' => ['boolean', 'nullable'],
         'category_id' => ['integer', 'nullable'],
         'description' => ['string', 'nullable'],
         'is_recurring' => ['boolean', 'nullable'],
@@ -26,7 +29,7 @@ final class BillController extends Controller
         $bills = Bill::with('category')->orderBy('due_date', 'asc')->get();
 
         $unpaidBills = $bills->where('status', 'unpaid')->filter(
-            fn ($item) => $item->due_date->isCurrentMonth()
+            fn($item) => $item->due_date->isCurrentMonth()
         );
 
         return inertia('Bills/Index', [
@@ -34,11 +37,11 @@ final class BillController extends Controller
             'total_unpaid' => $unpaidBills->sum('amount'),
             'unpaid_count' => $unpaidBills->count(),
             'upcoming_count' => $bills
-                ->filter(fn ($item) => $item->isUpcoming())
+                ->filter(fn($item) => $item->isUpcoming())
                 ->count(),
             'paid_count' => $bills
                 ->where('status', 'paid')
-                ->filter(fn ($item) => $item->due_date->isCurrentMonth())
+                ->filter(fn($item) => $item->due_date->isCurrentMonth())
                 ->count(),
         ]);
     }
