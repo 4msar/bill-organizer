@@ -30,13 +30,14 @@ function markAsPaid(id: string | number) {
 </script>
 
 <template>
-    <AppLayout :breadcrumbs="[
+    <AppLayout
+        :breadcrumbs="[
             {
                 title: 'Bills',
                 href: route('bills.index'),
             },
-        ]">
-
+        ]"
+    >
         <Head title="Bills" />
 
         <div class="py-6">
@@ -53,8 +54,7 @@ function markAsPaid(id: string | number) {
                             <div class="text-2xl font-bold">
                                 {{ formatCurrency(total_unpaid, $page.props?.team?.current?.currency as string) }}
                             </div>
-                            <p class="text-muted-foreground text-xs">{{ unpaid_count }} unpaid bill{{ unpaid_count !== 1
-                                ? 's' : '' }}</p>
+                            <p class="text-muted-foreground text-xs">{{ unpaid_count }} unpaid bill{{ unpaid_count !== 1 ? 's' : '' }}</p>
                         </CardContent>
                     </Card>
 
@@ -87,10 +87,10 @@ function markAsPaid(id: string | number) {
                     <div class="flex items-center gap-2">
                         <SearchForm :url="route('bills.index')" class="w-full" />
                         <Link :href="route('bills.create')">
-                        <Button>
-                            <PlusCircle class="mr-2 h-4 w-4" />
-                            Add New Bill
-                        </Button>
+                            <Button>
+                                <PlusCircle class="mr-2 h-4 w-4" />
+                                Add New Bill
+                            </Button>
                         </Link>
                     </div>
                 </div>
@@ -121,35 +121,39 @@ function markAsPaid(id: string | number) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                <TableRow v-for="bill in bills.filter((bill) => {
+                                <TableRow
+                                    v-for="bill in bills.filter((bill) => {
                                         if (activeTab === 'upcoming')
                                             return new Date(bill.due_date as string) > new Date() && bill.status === 'unpaid';
                                         if (activeTab === 'all') return true;
                                         if (activeTab === 'unpaid') return bill.status === 'unpaid';
                                         if (activeTab === 'paid') return bill.status === 'paid';
-                                    })" :key="bill.id" @click.stop="router.visit(route('bills.show', bill.id))"
-                                    class="hover:bg-muted/50 cursor-pointer">
+                                    })"
+                                    :key="bill.id"
+                                    @click.stop="router.visit(route('bills.show', bill.id))"
+                                    class="hover:bg-muted/50 cursor-pointer"
+                                >
                                     <TableCell class="font-medium">
                                         {{ bill.title }}
-                                        <div class="flex flex-wrap gap-1 mt-1">
-                                            <Badge v-if="bill.is_recurring" variant="outline" class="text-xs">Recurring
-                                            </Badge>
-                                            <Badge v-if="bill.has_trial" variant="outline"
-                                                class="text-xs bg-blue-50 text-blue-700 border-blue-200">Trial</Badge>
+                                        <div class="mt-1 flex flex-wrap gap-1">
+                                            <Badge v-if="bill.is_recurring" variant="outline" class="text-xs">Recurring </Badge>
+                                            <Badge v-if="bill.has_trial" variant="outline" class="border-blue-200 bg-blue-50 text-xs text-blue-700"
+                                                >Trial</Badge
+                                            >
                                         </div>
                                     </TableCell>
                                     <TableCell>{{ bill.category?.name || 'Uncategorized' }}</TableCell>
-                                    <TableCell>{{ formatCurrency(bill.amount, $page.props?.team?.current?.currency as
-                                        string) }}</TableCell>
+                                    <TableCell>{{ formatCurrency(bill.amount, $page.props?.team?.current?.currency as string) }}</TableCell>
                                     <TableCell>
                                         <div>
-                                            <span :class="{
+                                            <span
+                                                :class="{
                                                     'text-destructive': new Date(bill.due_date as string) < new Date() && bill.status === 'unpaid',
-                                                }">
+                                                }"
+                                            >
                                                 {{ formatDate(bill.due_date as string) }}
                                             </span>
-                                            <div v-if="bill.has_trial && bill.trial_end_date"
-                                                class="text-xs text-muted-foreground">
+                                            <div v-if="bill.has_trial && bill.trial_end_date" class="text-muted-foreground text-xs">
                                                 Trial ends: {{ formatDate(bill.trial_end_date) }}
                                             </div>
                                         </div>
@@ -167,28 +171,27 @@ function markAsPaid(id: string | number) {
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuItem>
-                                                    <Link :href="route('bills.show', bill.id)"
-                                                        class="flex w-full items-center gap-2">
-                                                    <Eye class="mr-2 h-4 w-4" />
-                                                    View details
+                                                    <Link :href="route('bills.show', bill.id)" class="flex w-full items-center gap-2">
+                                                        <Eye class="mr-2 h-4 w-4" />
+                                                        View details
                                                     </Link>
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem class="flex items-center">
-                                                    <Link :href="route('bills.edit', bill.id)"
-                                                        class="flex w-full items-center gap-2">
-                                                    <Edit class="mr-2 h-4 w-4" />
-                                                    Edit
+                                                    <Link :href="route('bills.edit', bill.id)" class="flex w-full items-center gap-2">
+                                                        <Edit class="mr-2 h-4 w-4" />
+                                                        Edit
                                                     </Link>
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem v-if="bill.status === 'unpaid'"
-                                                    @click.stop="markAsPaid(bill.id)" class="flex items-center">
+                                                <DropdownMenuItem
+                                                    v-if="bill.status === 'unpaid'"
+                                                    @click.stop="markAsPaid(bill.id)"
+                                                    class="flex items-center"
+                                                >
                                                     <CheckCheck class="mr-2 h-4 w-4" />
                                                     Mark as paid
                                                 </DropdownMenuItem>
-                                                <Confirm :modal="true" title="Are you sure?"
-                                                    :url="route('bills.destroy', bill.id)">
-                                                    <DropdownMenuItem standalone
-                                                        class="text-destructive hover:text-destructive flex items-center">
+                                                <Confirm :modal="true" title="Are you sure?" :url="route('bills.destroy', bill.id)">
+                                                    <DropdownMenuItem standalone class="text-destructive hover:text-destructive flex items-center">
                                                         <Trash2 class="mr-2 h-4 w-4" />
                                                         Delete
                                                     </DropdownMenuItem>

@@ -35,7 +35,7 @@ const form = useForm({
     content: props.note?.content || '',
     is_pinned: Boolean(props.note?.is_pinned || false),
     is_team_note: Boolean(props.note?.user_id === null),
-    related: props.note?.related?.map(item=>item.notable_id) || [],
+    related: props.note?.related?.map((item) => item.notable_id) || [],
 });
 
 const handleSubmit = async () => {
@@ -61,7 +61,7 @@ watch(
             form.content = newNote.content || '';
             form.is_pinned = Boolean(newNote.is_pinned || false);
             form.is_team_note = Boolean(newNote.user_id === null);
-            form.related = newNote.related?.map(item=>item.notable_id) || [];
+            form.related = newNote.related?.map((item) => item.notable_id) || [];
         } else {
             form.reset();
         }

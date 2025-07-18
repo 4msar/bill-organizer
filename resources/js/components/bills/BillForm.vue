@@ -20,7 +20,18 @@ import { Label } from '../ui/label';
 
 export type BillData = Pick<
     Bill,
-    'title' | 'description' | 'amount' | 'payment_url' | 'due_date' | 'trial_start_date' | 'trial_end_date' | 'has_trial' | 'category_id' | 'is_recurring' | 'recurrence_period' | 'tags'
+    | 'title'
+    | 'description'
+    | 'amount'
+    | 'payment_url'
+    | 'due_date'
+    | 'trial_start_date'
+    | 'trial_end_date'
+    | 'has_trial'
+    | 'category_id'
+    | 'is_recurring'
+    | 'recurrence_period'
+    | 'tags'
 > & {
     id?: number;
 };
@@ -52,17 +63,17 @@ const form = useForm<BillData>({
 });
 
 const formattedDate = computed((): string => {
-    if(!form.due_date) return "";
+    if (!form.due_date) return '';
     return formatDate(form.due_date?.toString() || '');
 });
 
 const formattedTrialStartDate = computed((): string => {
-    if(!form.trial_start_date) return "";
+    if (!form.trial_start_date) return '';
     return formatDate(form.trial_start_date?.toString() || '');
 });
 
 const formattedTrialEndDate = computed((): string => {
-    if(!form.trial_end_date) return "";
+    if (!form.trial_end_date) return '';
     return formatDate(form.trial_end_date?.toString() || '');
 });
 
@@ -88,7 +99,7 @@ function updateTrialEndDate(date?: DateValue): void {
         form.due_date = date.toString();
     } else {
         form.trial_end_date = undefined;
-        form.due_date = today(getLocalTimeZone()).toString()
+        form.due_date = today(getLocalTimeZone()).toString();
     }
 }
 
@@ -160,9 +171,8 @@ function submit(): void {
                             <div class="relative">
                                 <span class="text-muted-foreground absolute inset-y-0 left-0 flex items-center pl-3">{{
                                     $page.props?.team.current?.currency_symbol as string
-                                    }}</span>
-                                <Input v-model="form.amount" type="number" min="0" step="1" placeholder="0.00"
-                                    class="pl-8" />
+                                }}</span>
+                                <Input v-model="form.amount" type="number" min="0" step="1" placeholder="0.00" class="pl-8" />
                             </div>
                         </FormControl>
                         <FormMessage :message="form.errors.amount" />
@@ -176,16 +186,24 @@ function submit(): void {
                         <Popover>
                             <PopoverTrigger as-child>
                                 <FormControl>
-                                    <Button variant="outline" class="w-full pl-3 text-left font-normal"
-                                        :class="!form.due_date ? 'text-muted-foreground' : ''">
+                                    <Button
+                                        variant="outline"
+                                        class="w-full pl-3 text-left font-normal"
+                                        :class="!form.due_date ? 'text-muted-foreground' : ''"
+                                    >
                                         <CalendarIcon class="mr-2 h-4 w-4" />
                                         {{ formattedDate || 'Select date' }}
                                     </Button>
                                 </FormControl>
                             </PopoverTrigger>
                             <PopoverContent class="w-auto p-0" align="start">
-                                <Calendar v-model="date" calendar-label="Due Date" initial-focus
-                                    :min-value="today(getLocalTimeZone())" @update:model-value="updateDueDate" />
+                                <Calendar
+                                    v-model="date"
+                                    calendar-label="Due Date"
+                                    initial-focus
+                                    :min-value="today(getLocalTimeZone())"
+                                    @update:model-value="updateDueDate"
+                                />
                             </PopoverContent>
                         </Popover>
                         <FormMessage :message="form.errors.due_date" />
@@ -228,12 +246,16 @@ function submit(): void {
                 <!-- Tags -->
                 <div>
                     <Label class="mb-2">Tags (Optional)</Label>
-                    <TagInput v-model="form.tags" placeholder="Add tags (e.g. utilities, groceries)" :options="
+                    <TagInput
+                        v-model="form.tags"
+                        placeholder="Add tags (e.g. utilities, groceries)"
+                        :options="
                             tags.map((item) => ({
                                 value: item.toLowerCase(),
                                 label: capitalize(item),
                             }))
-                        " />
+                        "
+                    />
                 </div>
             </div>
 
@@ -287,7 +309,6 @@ function submit(): void {
                     </FormItem>
                 </FormField>
 
-
                 <!-- Trial Dates (conditional) -->
                 <div v-if="form.has_trial" class="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <!-- Trial Start Date -->
@@ -297,17 +318,24 @@ function submit(): void {
                             <Popover>
                                 <PopoverTrigger as-child>
                                     <FormControl>
-                                        <Button variant="outline" class="w-full pl-3 text-left font-normal"
-                                            :class="!form.trial_start_date ? 'text-muted-foreground' : ''">
+                                        <Button
+                                            variant="outline"
+                                            class="w-full pl-3 text-left font-normal"
+                                            :class="!form.trial_start_date ? 'text-muted-foreground' : ''"
+                                        >
                                             <CalendarIcon class="mr-2 h-4 w-4" />
                                             {{ formattedTrialStartDate || 'Select date' }}
                                         </Button>
                                     </FormControl>
                                 </PopoverTrigger>
                                 <PopoverContent class="w-auto p-0" align="start">
-                                    <Calendar v-model="trialStartDate" calendar-label="Trial Start Date" initial-focus
+                                    <Calendar
+                                        v-model="trialStartDate"
+                                        calendar-label="Trial Start Date"
+                                        initial-focus
                                         :min-value="today(getLocalTimeZone())"
-                                        @update:model-value="updateTrialStartDate" />
+                                        @update:model-value="updateTrialStartDate"
+                                    />
                                 </PopoverContent>
                             </Popover>
                             <FormMessage :message="form.errors.trial_start_date" />
@@ -321,17 +349,24 @@ function submit(): void {
                             <Popover>
                                 <PopoverTrigger as-child>
                                     <FormControl>
-                                        <Button variant="outline" class="w-full pl-3 text-left font-normal"
-                                            :class="!form.trial_end_date ? 'text-muted-foreground' : ''">
+                                        <Button
+                                            variant="outline"
+                                            class="w-full pl-3 text-left font-normal"
+                                            :class="!form.trial_end_date ? 'text-muted-foreground' : ''"
+                                        >
                                             <CalendarIcon class="mr-2 h-4 w-4" />
                                             {{ formattedTrialEndDate || 'Select date' }}
                                         </Button>
                                     </FormControl>
                                 </PopoverTrigger>
                                 <PopoverContent class="w-auto p-0" align="start">
-                                    <Calendar v-model="trialEndDate" calendar-label="Trial End Date" initial-focus
+                                    <Calendar
+                                        v-model="trialEndDate"
+                                        calendar-label="Trial End Date"
+                                        initial-focus
                                         :min-value="trialStartDate || today(getLocalTimeZone())"
-                                        @update:model-value="updateTrialEndDate" />
+                                        @update:model-value="updateTrialEndDate"
+                                    />
                                 </PopoverContent>
                             </Popover>
                             <FormMessage :message="form.errors.trial_end_date" />
@@ -345,8 +380,7 @@ function submit(): void {
                 <FormItem>
                     <FormLabel>Description (Optional)</FormLabel>
                     <FormControl>
-                        <Textarea v-model="form.description" placeholder="Add any additional details about this bill"
-                            rows="3" />
+                        <Textarea v-model="form.description" placeholder="Add any additional details about this bill" rows="3" />
                     </FormControl>
                     <FormMessage :message="form.errors.description" />
                 </FormItem>
