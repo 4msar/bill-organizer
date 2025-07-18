@@ -26,7 +26,21 @@ final class BillController extends Controller
 
     public function index()
     {
-        $bills = Bill::with('category')->orderBy('due_date', 'asc')->get();
+        $bills = Bill::with('category')
+            ->when(request('search'), function ($query) {
+                $search = request('search', '');
+
+                if (str_contains($search, ':')) {
+                    [$column, $value] = explode(':', request('search', ''));
+                    if ($column && $value && in_fillable($column, Bill::class)) {
+                        return $query->where($column, 'like', '%' . $value . '%');
+                    }
+                }
+
+                $query->where('title', 'like', '%' . $search . '%');
+            })
+            ->orderBy('due_date', 'asc')
+            ->get();
 
         $unpaidBills = $bills->where('status', 'unpaid')->filter(
             fn($item) => $item->due_date->isCurrentMonth()
