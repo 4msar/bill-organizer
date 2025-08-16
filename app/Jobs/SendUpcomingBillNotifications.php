@@ -37,7 +37,7 @@ final class SendUpcomingBillNotifications implements ShouldQueue
                         ->where('value', '1')
                 );
             })
-            ->with(['bills', 'meta', 'bills.meta'])
+            ->with(['bills', 'meta', 'bills.meta', 'bills.team'])
             ->get();
 
         foreach ($users as $user) {

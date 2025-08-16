@@ -21,6 +21,7 @@ final class TrialEndNotification extends Notification
     public function __construct(Bill $bill)
     {
         $this->bill = $bill;
+        $this->bill->load('team'); // Ensure the team is loaded for currency symbol
     }
 
     /**
