@@ -13,7 +13,7 @@ trait HasTeam
      */
     public function team()
     {
-        return $this->belongsTo(Team::class);
+        return $this->belongsTo(Team::class)->withoutGlobalScope('user');
     }
 
     /**
