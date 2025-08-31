@@ -37,7 +37,8 @@ final class UpcomingBillNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        $currency = $bill->team->currency_symbol ?? '$';
+        $this->bill->load('team');
+        $currency = $this->bill->team->currency_symbol ?? '$';
         $amount = $this->bill->amount;
 
         return (new MailMessage())
