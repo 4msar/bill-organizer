@@ -40,16 +40,24 @@ final class TeamInvitation extends Mailable
     public function content(): Content
     {
         return new Content(
-            htmlString: (new MailMessage())
-                ->subject('You have been invited to join a team')
-                ->line("{$this->sender->name} has invited you to join the team '{$this->team->name}'.")
-                ->action('Join Team', URL::signedRoute(
-                    'team.join',
-                    ['teamId' => $this->team->id, 'email' => $this->email],
-                    now()->addDays(30) // Link valid for 30 days
-                ))
-                ->line('Thank you for using our application!')
-                ->render()
+            htmlString: return (new MailMessage())
+                            ->subject('You’ve Been Invited to Join a Team')
+                            ->greeting("Hi there,")
+                            ->line("Good news! 🎉")
+                            ->line("{$this->sender->name} has invited you to join the **{$this->team->name}** team.")
+                            ->line("Being part of the team will give you access to shared features, collaboration tools, and a unified workspace.")
+                            ->action(
+                                'Join Team',
+                                URL::signedRoute(
+                                    'team.join',
+                                    ['teamId' => $this->team->id, 'email' => $this->email],
+                                    now()->addDays(30) // Link valid for 30 days
+                                )
+                            )
+                            ->line("If you weren’t expecting this invitation or have any questions, feel free to reach out — we’re here to help!")
+                            ->line('Excited to have you with us! 💛')
+                            ->salutation("Warm regards,\nBill Organizer Team")
+                            ->render();
         );
     }
 

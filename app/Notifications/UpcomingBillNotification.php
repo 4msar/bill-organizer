@@ -42,12 +42,19 @@ final class UpcomingBillNotification extends Notification
         $amount = $this->bill->amount;
 
         return (new MailMessage())
-            ->subject('Reminder: Upcoming Bill Due')
-            ->greeting("Hello {$notifiable->name},")
-            ->line("This is a reminder that your bill, {$this->bill->title}, is due on {$this->bill->due_date->format('M d, Y')}.")
-            ->line("Amount: {$currency}{$amount}")
-            ->action('View Bill', route('bills.show', $this->bill->id))
-            ->line('Thank you for using our application!');
+                ->subject('Upcoming Bill Reminder : ' . $this->bill->title)
+                ->greeting('Hi ' . $notifiable->name . ',')
+                ->line("Just a quick heads-up! 🌼")
+                ->line("Your bill for **{$this->bill->title}** is coming up, and it’s due on **{$this->bill->due_date->format('M d, Y')}**.")
+                ->line('Here’s a quick summary:')
+                ->line('-----------------------------------------')
+                ->line("Amount: {$currency}{$amount}")
+                ->line("Status: Pending")
+                ->line('-----------------------------------------')
+                ->action('View Bill', route('bills.show', $this->bill->id))
+                ->line('If you have any questions or need help with anything, feel free to reach out — we’re always happy to assist.')
+                ->line('Thanks for being with us! 💛')
+                ->salutation("Warm regards,\nBill Organizer Team");
     }
 
     /**
