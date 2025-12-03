@@ -11,8 +11,6 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { Head, router } from '@inertiajs/vue3';
 import {
-    ArrowDown,
-    ArrowUp,
     BarChart3,
     Calendar as CalendarIcon,
     CircleDollarSign,
