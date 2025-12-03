@@ -17,10 +17,10 @@ final class ReportController extends Controller
     public function index(Request $request)
     {
         // Get date range from request, default to current month
-        $startDate = $request->input('start_date') 
+        $startDate = $request->input('start_date')
             ? Carbon::parse($request->input('start_date'))->startOfDay()
             : Carbon::now()->startOfMonth();
-        
+
         $endDate = $request->input('end_date')
             ? Carbon::parse($request->input('end_date'))->endOfDay()
             : Carbon::now()->endOfMonth();
@@ -99,12 +99,12 @@ final class ReportController extends Controller
         // Monthly trend for the past 12 months
         $monthlyTrend = [];
         $startOfTrend = Carbon::now()->subMonths(11)->startOfMonth();
-        
+
         for ($i = 0; $i < 12; $i++) {
             $monthDate = $startOfTrend->copy()->addMonths($i);
             $monthStart = $monthDate->copy()->startOfMonth();
             $monthEnd = $monthDate->copy()->endOfMonth();
-            
+
             $monthlyTrend[] = [
                 'month' => $monthDate->format('M Y'),
                 'total_bills' => Bill::whereBetween('due_date', [$monthStart, $monthEnd])->count(),
@@ -117,12 +117,12 @@ final class ReportController extends Controller
         // Yearly comparison
         $currentYear = Carbon::now()->year;
         $yearlyComparison = [];
-        
+
         for ($i = 0; $i < 3; $i++) {
             $year = $currentYear - $i;
             $yearStart = Carbon::createFromDate($year, 1, 1)->startOfYear();
             $yearEnd = Carbon::createFromDate($year, 12, 31)->endOfYear();
-            
+
             $yearlyComparison[] = [
                 'year' => $year,
                 'total_bills' => Bill::whereBetween('due_date', [$yearStart, $yearEnd])->count(),
@@ -146,4 +146,3 @@ final class ReportController extends Controller
         ]);
     }
 }
-

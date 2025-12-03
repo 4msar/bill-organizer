@@ -15,9 +15,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 final class Bill extends Model
 {
     use HasFactory;
+
     // for check the notification are sent or not
     use HasMetaData;
-
     use HasTeam;
 
     /**
@@ -71,8 +71,8 @@ final class Bill extends Model
 
         self::creating(function (Bill $bill) {
             if ($bill->tags) {
-                $bill->tags = array_map(fn($item) => strtolower(trim($item)), $bill->tags);
-                $bill->tags = array_filter($bill->tags, fn($tag) => ! empty($tag));
+                $bill->tags = array_map(fn ($item) => strtolower(trim($item)), $bill->tags);
+                $bill->tags = array_filter($bill->tags, fn ($tag) => ! empty($tag));
             }
         });
     }
@@ -110,7 +110,7 @@ final class Bill extends Model
         return $this->belongsTo(Category::class);
     }
 
-    function getStatusAttribute($value)
+    public function getStatusAttribute($value)
     {
         // If status is explicitly set, return it
         if ($value === 'paid') {
@@ -118,7 +118,7 @@ final class Bill extends Model
         }
 
         // Only auto-calculate status for recurring bills
-        if (!$this->is_recurring || !$this->recurrence_period) {
+        if (! $this->is_recurring || ! $this->recurrence_period) {
             return $value ?: 'unpaid';
         }
 
@@ -134,7 +134,7 @@ final class Bill extends Model
         };
 
         // If we're not in the current period, check if there are transactions for this period
-        if (!$isCurrentPeriod) {
+        if (! $isCurrentPeriod) {
             $periodStart = match ($this->recurrence_period) {
                 'weekly' => $now->startOfWeek(),
                 'monthly' => $now->startOfMonth(),
@@ -243,7 +243,7 @@ final class Bill extends Model
      */
     public function shouldNotifyTrialEnd($days = 1)
     {
-        if (!$this->has_trial || !$this->trial_end_date) {
+        if (! $this->has_trial || ! $this->trial_end_date) {
             return false;
         }
 
@@ -263,11 +263,12 @@ final class Bill extends Model
      */
     public function isInTrial()
     {
-        if (!$this->has_trial || !$this->trial_start_date || !$this->trial_end_date) {
+        if (! $this->has_trial || ! $this->trial_start_date || ! $this->trial_end_date) {
             return false;
         }
 
         $now = now();
+
         return $now->between($this->trial_start_date, $this->trial_end_date);
     }
 
@@ -278,7 +279,7 @@ final class Bill extends Model
      */
     public function isTrialEnded()
     {
-        if (!$this->has_trial || !$this->trial_end_date) {
+        if (! $this->has_trial || ! $this->trial_end_date) {
             return false;
         }
 
@@ -327,7 +328,7 @@ final class Bill extends Model
             ->pluck('tags')
             ->filter()
             ->flatten()
-            ->map(fn($tag) => strtolower(trim($tag)))
+            ->map(fn ($tag) => strtolower(trim($tag)))
             ->unique()
             ->values();
     }

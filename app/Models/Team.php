@@ -64,12 +64,11 @@ final class Team extends Model
 
     /**
      * Get the current team for the user.
-     *
-     * @return self
      */
     public static function current(): self
     {
         $user = Auth::user();
+
         return $user->activeTeam;
     }
 }

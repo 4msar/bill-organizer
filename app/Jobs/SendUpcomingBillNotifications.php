@@ -3,8 +3,8 @@
 namespace App\Jobs;
 
 use App\Models\User;
-use App\Notifications\UpcomingBillNotification;
 use App\Notifications\TrialEndNotification;
+use App\Notifications\UpcomingBillNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -28,12 +28,12 @@ final class SendUpcomingBillNotifications implements ShouldQueue
         $users = User::query()
             ->whereHas('meta', function ($query) {
                 $query->where(
-                    fn($q) => $q->where('name', 'email_notification')
+                    fn ($q) => $q->where('name', 'email_notification')
                         ->where('value', '1')
                 );
 
                 $query->orWhere(
-                    fn($q) => $q->where('name', 'web_notification')
+                    fn ($q) => $q->where('name', 'web_notification')
                         ->where('value', '1')
                 );
             })
@@ -48,7 +48,7 @@ final class SendUpcomingBillNotifications implements ShouldQueue
                 // Get bills for the user due on the target date
                 $bills = $user->bills
                     ->where('status', 'unpaid')
-                    ->filter(fn($bill) => $bill->shouldNotify($daysBefore))
+                    ->filter(fn ($bill) => $bill->shouldNotify($daysBefore))
                     ->values();
 
                 foreach ($bills as $bill) {
@@ -67,7 +67,7 @@ final class SendUpcomingBillNotifications implements ShouldQueue
                 $trialBills = $user->bills
                     ->where('has_trial', true)
                     ->where('status', 'unpaid')
-                    ->filter(fn($bill) => $bill->shouldNotifyTrialEnd($daysBefore))
+                    ->filter(fn ($bill) => $bill->shouldNotifyTrialEnd($daysBefore))
                     ->values();
 
                 foreach ($trialBills as $bill) {
