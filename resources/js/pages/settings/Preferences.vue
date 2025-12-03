@@ -47,7 +47,7 @@ const form = useForm<NotificationSettings>({
     web_notification: Boolean(user.metas?.web_notification ?? true),
     enable_notes: Boolean(user.metas?.enable_notes ?? false),
     enable_calendar: Boolean(user.metas?.enable_calendar ?? true),
-
+    enable_reports: Boolean(user.metas?.enable_reports ?? false),
     /**
      * early reminder days
      *
@@ -125,6 +125,18 @@ const submit = () => {
                         </div>
                         <div>
                             <Switch :model-value="form.enable_notes" @update:model-value="(value) => (form.enable_notes = value)" />
+                        </div>
+                    </div>
+                    <div class="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div class="space-y-0.5">
+                            <Label class="text-base"> Reports </Label>
+                            <p class="text-sm">
+                                Enable the reports feature to view reports and analytics. This is an experimental feature and may not be fully
+                                functional.
+                            </p>
+                        </div>
+                        <div>
+                            <Switch :model-value="form.enable_reports" @update:model-value="(value) => (form.enable_reports = value)" />
                         </div>
                     </div>
 

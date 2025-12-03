@@ -70,6 +70,9 @@ const filterFeatures = (item: NavItem) => {
     if (item.title === 'Calendar' && !page.props.auth.user.metas.enable_calendar) {
         return false;
     }
+    if (item.title === 'Reports' && !page.props.auth.user.metas.enable_reports) {
+        return false;
+    }
     return true;
 };
 
