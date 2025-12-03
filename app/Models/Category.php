@@ -19,7 +19,7 @@ final class Category extends Model
      *
      * @var array
      */
-    protected $fillable = ['team_id', 'user_id', 'name', 'description', 'icon'];
+    protected $fillable = ['team_id', 'user_id', 'name', 'description', 'icon', 'color'];
 
     /**
      * Get the user that owns the category.
