@@ -5,7 +5,7 @@ import NavUser from '@/components/shared/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { SharedData, type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Calendar1, Currency, LayoutGrid, Notebook, Receipt, Settings2, SunMoon, Tags } from 'lucide-vue-next';
+import { BarChart3, Calendar1, Currency, LayoutGrid, Notebook, Receipt, Settings2, SunMoon, Tags } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import TeamSwitcher from './TeamSwitcher.vue';
 
@@ -29,6 +29,11 @@ const mainNavItems: NavItem[] = [
         title: 'Transactions',
         href: '/transactions',
         icon: Receipt,
+    },
+    {
+        title: 'Reports',
+        href: route('reports.index'),
+        icon: BarChart3,
     },
     {
         title: 'Calendar',
