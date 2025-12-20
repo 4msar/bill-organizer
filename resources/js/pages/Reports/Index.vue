@@ -10,16 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { Head, router } from '@inertiajs/vue3';
-import {
-    BarChart3,
-    Calendar as CalendarIcon,
-    CircleDollarSign,
-    CreditCard,
-    DollarSign,
-    FileText,
-    TrendingUp,
-    Wallet,
-} from 'lucide-vue-next';
+import { BarChart3, Calendar as CalendarIcon, CircleDollarSign, CreditCard, DollarSign, FileText, TrendingUp, Wallet } from 'lucide-vue-next';
 import { DateValue } from 'reka-ui';
 import { computed, ref } from 'vue';
 
@@ -179,7 +170,7 @@ const lifetimePaymentRate = computed((): number => {
     <AppLayout>
         <Head title="Reports" />
 
-        <div class="p-6 space-y-6">
+        <div class="space-y-6 p-6">
             <!-- Header -->
             <div>
                 <h1 class="text-3xl font-bold tracking-tight">Reports & Analytics</h1>
@@ -224,7 +215,7 @@ const lifetimePaymentRate = computed((): number => {
                             </Popover>
                         </div>
 
-                        <Button @click="applyFilters" class="sm:w-auto w-full">
+                        <Button @click="applyFilters" class="w-full sm:w-auto">
                             <BarChart3 class="mr-2 h-4 w-4" />
                             Apply Filters
                         </Button>
@@ -260,17 +251,13 @@ const lifetimePaymentRate = computed((): number => {
                             <Card>
                                 <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                                     <CardTitle class="text-sm font-medium">Total Bills</CardTitle>
-                                    <FileText class="h-4 w-4 text-muted-foreground" />
+                                    <FileText class="text-muted-foreground h-4 w-4" />
                                 </CardHeader>
                                 <CardContent>
                                     <div class="text-2xl font-bold">{{ dateRangeStats.total_bills_count }}</div>
-                                    <div class="flex items-center gap-2 text-xs text-muted-foreground">
-                                        <Badge variant="outline" class="text-green-600">
-                                            {{ dateRangeStats.paid_bills_count }} Paid
-                                        </Badge>
-                                        <Badge variant="outline" class="text-amber-600">
-                                            {{ dateRangeStats.unpaid_bills_count }} Unpaid
-                                        </Badge>
+                                    <div class="text-muted-foreground flex items-center gap-2 text-xs">
+                                        <Badge variant="outline" class="text-green-600"> {{ dateRangeStats.paid_bills_count }} Paid </Badge>
+                                        <Badge variant="outline" class="text-amber-600"> {{ dateRangeStats.unpaid_bills_count }} Unpaid </Badge>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -278,11 +265,11 @@ const lifetimePaymentRate = computed((): number => {
                             <Card>
                                 <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                                     <CardTitle class="text-sm font-medium">Total Bills Amount</CardTitle>
-                                    <DollarSign class="h-4 w-4 text-muted-foreground" />
+                                    <DollarSign class="text-muted-foreground h-4 w-4" />
                                 </CardHeader>
                                 <CardContent>
                                     <div class="text-2xl font-bold">{{ formatCurrency(dateRangeStats.total_bills_amount) }}</div>
-                                    <p class="text-xs text-muted-foreground">All bills in period</p>
+                                    <p class="text-muted-foreground text-xs">All bills in period</p>
                                 </CardContent>
                             </Card>
 
@@ -295,7 +282,7 @@ const lifetimePaymentRate = computed((): number => {
                                     <div class="text-2xl font-bold text-green-600">
                                         {{ formatCurrency(dateRangeStats.paid_amount) }}
                                     </div>
-                                    <div class="flex items-center gap-1 text-xs text-muted-foreground">
+                                    <div class="text-muted-foreground flex items-center gap-1 text-xs">
                                         <TrendingUp class="h-3 w-3" />
                                         {{ paymentRate.toFixed(1) }}% payment rate
                                     </div>
@@ -311,7 +298,7 @@ const lifetimePaymentRate = computed((): number => {
                                     <div class="text-2xl font-bold text-amber-600">
                                         {{ formatCurrency(dateRangeStats.unpaid_amount) }}
                                     </div>
-                                    <p class="text-xs text-muted-foreground">Outstanding amount</p>
+                                    <p class="text-muted-foreground text-xs">Outstanding amount</p>
                                 </CardContent>
                             </Card>
                         </div>
@@ -336,7 +323,7 @@ const lifetimePaymentRate = computed((): number => {
                                     <TableRow v-for="method in paymentMethodBreakdown" :key="method.method">
                                         <TableCell class="font-medium">
                                             <div class="flex items-center gap-2">
-                                                <CreditCard class="h-4 w-4 text-muted-foreground" />
+                                                <CreditCard class="text-muted-foreground h-4 w-4" />
                                                 {{ method.method }}
                                             </div>
                                         </TableCell>
@@ -366,13 +353,10 @@ const lifetimePaymentRate = computed((): number => {
                                     class="flex items-center justify-between rounded-lg border p-4"
                                 >
                                     <div class="flex items-center gap-3">
-                                        <div
-                                            class="h-10 w-10 rounded-full"
-                                            :style="{ backgroundColor: category.color || '#6366f1' }"
-                                        ></div>
+                                        <div class="h-10 w-10 rounded-full" :style="{ backgroundColor: category.color || '#6366f1' }"></div>
                                         <div>
                                             <h3 class="font-semibold">{{ category.name }}</h3>
-                                            <p class="text-sm text-muted-foreground">
+                                            <p class="text-muted-foreground text-sm">
                                                 {{ category.total_bills }} bills
                                                 <span class="ml-2">
                                                     ({{ category.paid_bills }} paid, {{ category.total_bills - category.paid_bills }} unpaid)
@@ -382,15 +366,11 @@ const lifetimePaymentRate = computed((): number => {
                                     </div>
                                     <div class="text-right">
                                         <div class="text-lg font-bold">{{ formatCurrency(category.total_amount) }}</div>
-                                        <div class="text-sm text-green-600">
-                                            {{ formatCurrency(category.paid_amount) }} paid
-                                        </div>
+                                        <div class="text-sm text-green-600">{{ formatCurrency(category.paid_amount) }} paid</div>
                                     </div>
                                 </div>
                             </div>
-                            <div v-else class="py-8 text-center text-muted-foreground">
-                                No category data available for the selected period
-                            </div>
+                            <div v-else class="text-muted-foreground py-8 text-center">No category data available for the selected period</div>
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -476,17 +456,13 @@ const lifetimePaymentRate = computed((): number => {
                             <Card>
                                 <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                                     <CardTitle class="text-sm font-medium">Total Bills</CardTitle>
-                                    <FileText class="h-4 w-4 text-muted-foreground" />
+                                    <FileText class="text-muted-foreground h-4 w-4" />
                                 </CardHeader>
                                 <CardContent>
                                     <div class="text-2xl font-bold">{{ lifetimeStats.total_bills_count }}</div>
-                                    <div class="flex items-center gap-2 text-xs text-muted-foreground">
-                                        <Badge variant="outline" class="text-green-600">
-                                            {{ lifetimeStats.paid_bills_count }} Paid
-                                        </Badge>
-                                        <Badge variant="outline" class="text-amber-600">
-                                            {{ lifetimeStats.unpaid_bills_count }} Unpaid
-                                        </Badge>
+                                    <div class="text-muted-foreground flex items-center gap-2 text-xs">
+                                        <Badge variant="outline" class="text-green-600"> {{ lifetimeStats.paid_bills_count }} Paid </Badge>
+                                        <Badge variant="outline" class="text-amber-600"> {{ lifetimeStats.unpaid_bills_count }} Unpaid </Badge>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -494,11 +470,11 @@ const lifetimePaymentRate = computed((): number => {
                             <Card>
                                 <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                                     <CardTitle class="text-sm font-medium">Total Bills Amount</CardTitle>
-                                    <DollarSign class="h-4 w-4 text-muted-foreground" />
+                                    <DollarSign class="text-muted-foreground h-4 w-4" />
                                 </CardHeader>
                                 <CardContent>
                                     <div class="text-2xl font-bold">{{ formatCurrency(lifetimeStats.total_bills_amount) }}</div>
-                                    <p class="text-xs text-muted-foreground">All bills ever created</p>
+                                    <p class="text-muted-foreground text-xs">All bills ever created</p>
                                 </CardContent>
                             </Card>
 
@@ -511,7 +487,7 @@ const lifetimePaymentRate = computed((): number => {
                                     <div class="text-2xl font-bold text-green-600">
                                         {{ formatCurrency(lifetimeStats.total_paid_amount) }}
                                     </div>
-                                    <div class="flex items-center gap-1 text-xs text-muted-foreground">
+                                    <div class="text-muted-foreground flex items-center gap-1 text-xs">
                                         <TrendingUp class="h-3 w-3" />
                                         {{ lifetimePaymentRate.toFixed(1) }}% payment rate
                                     </div>
@@ -527,7 +503,7 @@ const lifetimePaymentRate = computed((): number => {
                                     <div class="text-2xl font-bold text-amber-600">
                                         {{ formatCurrency(lifetimeStats.total_unpaid_amount) }}
                                     </div>
-                                    <p class="text-xs text-muted-foreground">Outstanding amount</p>
+                                    <p class="text-muted-foreground text-xs">Outstanding amount</p>
                                 </CardContent>
                             </Card>
                         </div>
@@ -543,31 +519,31 @@ const lifetimePaymentRate = computed((): number => {
                             <div class="grid gap-4 md:grid-cols-2">
                                 <div class="space-y-2">
                                     <div class="flex justify-between">
-                                        <span class="text-sm text-muted-foreground">Total Bills Created</span>
+                                        <span class="text-muted-foreground text-sm">Total Bills Created</span>
                                         <span class="font-semibold">{{ lifetimeStats.total_bills_count }}</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-sm text-muted-foreground">Bills Paid</span>
+                                        <span class="text-muted-foreground text-sm">Bills Paid</span>
                                         <span class="font-semibold text-green-600">{{ lifetimeStats.paid_bills_count }}</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-sm text-muted-foreground">Bills Unpaid</span>
+                                        <span class="text-muted-foreground text-sm">Bills Unpaid</span>
                                         <span class="font-semibold text-amber-600">{{ lifetimeStats.unpaid_bills_count }}</span>
                                     </div>
                                 </div>
                                 <div class="space-y-2">
                                     <div class="flex justify-between">
-                                        <span class="text-sm text-muted-foreground">Total Amount</span>
+                                        <span class="text-muted-foreground text-sm">Total Amount</span>
                                         <span class="font-semibold">{{ formatCurrency(lifetimeStats.total_bills_amount) }}</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-sm text-muted-foreground">Total Paid</span>
+                                        <span class="text-muted-foreground text-sm">Total Paid</span>
                                         <span class="font-semibold text-green-600">
                                             {{ formatCurrency(lifetimeStats.total_paid_amount) }}
                                         </span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-sm text-muted-foreground">Total Unpaid</span>
+                                        <span class="text-muted-foreground text-sm">Total Unpaid</span>
                                         <span class="font-semibold text-amber-600">
                                             {{ formatCurrency(lifetimeStats.total_unpaid_amount) }}
                                         </span>
@@ -586,4 +562,3 @@ const lifetimePaymentRate = computed((): number => {
         </div>
     </AppLayout>
 </template>
-
