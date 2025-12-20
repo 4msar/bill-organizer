@@ -170,14 +170,20 @@ export function useNoteExport() {
             return `"${value.replace(/"/g, '""')}"`;
         }
 
-        return `"${value}"`;
+        return value;
     }
 
     /**
      * Sanitize filename by removing invalid characters
+     * Allows alphanumeric, spaces, dots, hyphens, and underscores
+     * Removes path separators and other dangerous characters
      */
     function sanitizeFilename(filename: string): string {
-        return filename.replace(/[^a-z0-9_\-]/gi, '_').substring(0, 100);
+        return filename
+            .replace(/[/\\:*?"<>|]/g, '') // Remove dangerous characters
+            .replace(/\s+/g, ' ') // Normalize whitespace
+            .trim()
+            .substring(0, 100);
     }
 
     /**
@@ -191,15 +197,22 @@ export function useNoteExport() {
      * Download file to browser
      */
     function downloadFile(content: string, filename: string, mimeType: string) {
-        const blob = new Blob([content], { type: mimeType });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        try {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Failed to download file:', error);
+            // Fallback: try to open content in new window
+            const text = `Failed to download file. Error: ${error instanceof Error ? error.message : 'Unknown error'}`;
+            alert(text);
+        }
     }
 
     return {
