@@ -1,10 +1,20 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { ExportFormat, useNoteExport } from '@/composables/useNoteExport';
 import { formatDate } from '@/lib/utils';
 import { Note } from '@/types/model';
-import { MoreVertical, Pencil, Pin, Trash } from 'lucide-vue-next';
+import { Download, MoreVertical, Pencil, Pin, Trash } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { Badge } from '../ui/badge';
 
@@ -19,10 +29,13 @@ const emit = defineEmits<{
     pin: [note: Note];
 }>();
 
+const { exportNote } = useNoteExport();
+
 const handleView = () => emit('view', props.note);
 const handleEdit = () => emit('edit', props.note);
 const handleDelete = () => emit('delete', props.note);
 const handlePin = () => emit('pin', props.note);
+const handleExport = (format: ExportFormat) => exportNote(props.note, format);
 const queryParams = new URLSearchParams(window.location.search);
 const summaryText = computed(() => {
     if (!props.note.content) return '';
@@ -62,6 +75,18 @@ const summaryText = computed(() => {
                             <Pin class="mr-2 h-4 w-4" />
                             {{ note.is_pinned ? 'Pinned' : 'Pin' }}
                         </DropdownMenuItem>
+                        <DropdownMenuSub>
+                            <DropdownMenuSubTrigger>
+                                <Download class="mr-2 h-4 w-4" />
+                                Export
+                            </DropdownMenuSubTrigger>
+                            <DropdownMenuSubContent>
+                                <DropdownMenuItem @click="handleExport('json')"> Export as JSON </DropdownMenuItem>
+                                <DropdownMenuItem @click="handleExport('markdown')"> Export as Markdown </DropdownMenuItem>
+                                <DropdownMenuItem @click="handleExport('csv')"> Export as CSV </DropdownMenuItem>
+                                <DropdownMenuItem @click="handleExport('txt')"> Export as Text </DropdownMenuItem>
+                            </DropdownMenuSubContent>
+                        </DropdownMenuSub>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem @click="handleDelete" class="text-destructive">
                             <Trash class="mr-2 h-4 w-4" />

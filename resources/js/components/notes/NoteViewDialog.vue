@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { ExportFormat, useNoteExport } from '@/composables/useNoteExport';
 import { formatDate, getLink } from '@/lib/utils';
 import { Note } from '@/types/model';
 import { Link } from '@inertiajs/vue3';
-import { Pencil, Pin, Trash } from 'lucide-vue-next';
+import { Download, Pencil, Pin, Trash } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { Badge } from '../ui/badge';
 
@@ -23,6 +25,8 @@ const emit = defineEmits<{
     delete: [note: Note];
     pin: [note: Note];
 }>();
+
+const { exportNote } = useNoteExport();
 
 const handleClose = () => {
     emit('update:open', false);
@@ -43,6 +47,12 @@ const handleDelete = () => {
 const handlePin = () => {
     if (props.note) {
         emit('pin', props.note);
+    }
+};
+
+const handleExport = (format: ExportFormat) => {
+    if (props.note) {
+        exportNote(props.note, format);
     }
 };
 
@@ -100,6 +110,20 @@ const formattedContent = computed(() => {
                         <Pin class="mr-2 h-4 w-4" />
                         {{ note?.is_pinned ? 'Unpin' : 'Pin' }}
                     </Button>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                            <Button variant="outline" size="sm">
+                                <Download class="mr-2 h-4 w-4" />
+                                Export
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start">
+                            <DropdownMenuItem @click="handleExport('json')"> Export as JSON </DropdownMenuItem>
+                            <DropdownMenuItem @click="handleExport('markdown')"> Export as Markdown </DropdownMenuItem>
+                            <DropdownMenuItem @click="handleExport('csv')"> Export as CSV </DropdownMenuItem>
+                            <DropdownMenuItem @click="handleExport('txt')"> Export as Text </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                     <Button variant="outline" size="sm" @click="handleDelete" class="text-destructive hover:text-destructive">
                         <Trash class="mr-2 h-4 w-4" />
                         Delete

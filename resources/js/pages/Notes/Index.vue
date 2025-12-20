@@ -5,15 +5,19 @@ import NoteViewDialog from '@/components/notes/NoteViewDialog.vue';
 import Heading from '@/components/shared/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { ExportFormat, useNoteExport } from '@/composables/useNoteExport';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Note } from '@/types/model';
 import { Head, router } from '@inertiajs/vue3';
-import { Filter, Plus, StickyNote } from 'lucide-vue-next';
+import { Download, Filter, Plus, StickyNote } from 'lucide-vue-next';
 import { ref } from 'vue';
 
-defineProps<{
+const props = defineProps<{
     notes: Array<Note>;
 }>();
+
+const { exportNotes } = useNoteExport();
 
 // Dialog states
 const showCreateDialog = ref(false);
@@ -68,6 +72,11 @@ function handlePinFromView(note: Note) {
 function onDialogSuccess() {
     // Dialog will close automatically, Inertia will refresh the page data
 }
+
+function handleExport(format: ExportFormat) {
+    exportNotes(props.notes, format);
+}
+
 const queryParams = new URLSearchParams(window.location.search);
 const handleFilter = () => {
     router.visit(
@@ -98,6 +107,20 @@ const handleFilter = () => {
                             <Filter class="mr-2 h-4 w-4" />
                             {{ queryParams.get('team') === 'all' ? 'Current Team Notes' : 'All Teams Notes' }}
                         </Button>
+                        <DropdownMenu v-if="notes.length > 0">
+                            <DropdownMenuTrigger as-child>
+                                <Button variant="outline">
+                                    <Download class="mr-2 h-4 w-4" />
+                                    Export Notes
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem @click="handleExport('json')"> Export as JSON </DropdownMenuItem>
+                                <DropdownMenuItem @click="handleExport('markdown')"> Export as Markdown </DropdownMenuItem>
+                                <DropdownMenuItem @click="handleExport('csv')"> Export as CSV </DropdownMenuItem>
+                                <DropdownMenuItem @click="handleExport('txt')"> Export as Text </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                         <Button @click="handleCreateNote">
                             <Plus class="mr-2 h-4 w-4" />
                             New Note
