@@ -71,8 +71,8 @@ final class Bill extends Model
 
         self::creating(function (Bill $bill) {
             if ($bill->tags) {
-                $bill->tags = array_map(fn($item) => strtolower(trim($item)), $bill->tags);
-                $bill->tags = array_filter($bill->tags, fn($tag) => ! empty($tag));
+                $bill->tags = array_map(fn ($item) => strtolower(trim($item)), $bill->tags);
+                $bill->tags = array_filter($bill->tags, fn ($tag) => ! empty($tag));
             }
         });
     }
@@ -341,7 +341,7 @@ final class Bill extends Model
             ->pluck('tags')
             ->filter()
             ->flatten()
-            ->map(fn($tag) => strtolower(trim($tag)))
+            ->map(fn ($tag) => strtolower(trim($tag)))
             ->unique()
             ->values();
     }

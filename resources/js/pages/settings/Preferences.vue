@@ -107,7 +107,9 @@ const submit = () => {
 
                     <div class="grid gap-2">
                         <Label for="excluded-teams" class="flex items-center space-x-3"> Exclude Teams from Notifications </Label>
-                        <p class="text-sm text-muted-foreground">Select teams for which you do not want to receive notifications. By default, all teams are enabled.</p>
+                        <p class="text-muted-foreground text-sm">
+                            Select teams for which you do not want to receive notifications. By default, all teams are enabled.
+                        </p>
                         <Select v-model="form.excluded_notification_teams" multiple>
                             <SelectTrigger class="!h-auto w-full text-left whitespace-normal">
                                 <SelectValue placeholder="All teams enabled" />

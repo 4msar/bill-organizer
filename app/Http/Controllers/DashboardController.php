@@ -148,7 +148,7 @@ final class DashboardController extends Controller
             'currentMonthStats' => [
                 'dueBills' => $dueBillsThisMonth,
                 'paidBills' => $paidBillsThisMonth,
-            ]
+            ],
         ]);
     }
 
