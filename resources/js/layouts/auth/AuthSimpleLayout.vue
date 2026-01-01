@@ -28,6 +28,7 @@ defineProps<{
                 <slot />
             </div>
         </div>
+        <span class="text-muted-foreground px-1 text-xs">{{ $page.props.name }} - {{ $page.props.version }}</span>
     </div>
     <AlertNotification />
 </template>

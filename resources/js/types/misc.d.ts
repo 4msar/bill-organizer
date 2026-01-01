@@ -38,6 +38,7 @@ export type TeamData = {
 
 export interface SharedData extends PageProps {
     name: string;
+    version: string;
     quote: { message: string; author: string };
     auth: Auth;
     team: TeamData;

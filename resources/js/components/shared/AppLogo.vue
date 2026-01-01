@@ -10,5 +10,6 @@ import AppLogoIcon from '@/components/shared/AppLogoIcon.vue';
     </div>
     <div class="ml-1 grid flex-1 text-left text-sm">
         <span class="mb-0.5 truncate leading-none font-semibold">{{ $page.props.name }}</span>
+        <span class="text-muted-foreground truncate text-xs leading-none">{{ $page.props.version }}</span>
     </div>
 </template>

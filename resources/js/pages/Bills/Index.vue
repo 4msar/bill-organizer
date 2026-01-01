@@ -81,9 +81,9 @@ function markAsPaid(id: string | number) {
                 </div>
 
                 <!-- Bills Header with New Bill Button -->
-                <div class="mb-6 flex items-center justify-between">
+                <div class="mb-6 flex flex-wrap items-start justify-between md:items-center">
                     <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Bills</h2>
-                    <div class="flex items-center gap-2">
+                    <div class="flex flex-wrap items-center gap-2">
                         <SearchForm :url="route('bills.index')" class="w-full">
                             <template #default="{ searchHandler, queryParams }">
                                 <Select

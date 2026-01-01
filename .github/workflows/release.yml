@@ -96,7 +96,12 @@ jobs:
           
           echo "New version: $NEW_VERSION"
           echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "version_number=${MAJOR}.${MINOR}.${NEW_PATCH}" >> $GITHUB_OUTPUT
+          echo "version_number=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create version file
+        run: |
+          echo "${{ steps.version.outputs.version_number }}" > public/version.txt
+          echo "✅ Created version.txt with version ${{ steps.version.outputs.version_number }}"
 
       - name: Create production archive
         run: |
