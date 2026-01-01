@@ -39,7 +39,6 @@ jobs:
           [ -e yarn.lock ] && rm yarn.lock
           [ -e composer.lock ] && rm composer.lock
 
-
       - name: Install Node Dependencies
         run: |
           # FIXME: Remove when deps are resolved
@@ -60,6 +59,12 @@ jobs:
 
       - name: Build Assets
         run: npm run build
+
+      - name: Clear cache
+        run: |
+          php artisan view:clear
+          php artisan cache:clear
+          php artisan config:clear
 
       - name: Tests
         run: ./vendor/bin/pest
