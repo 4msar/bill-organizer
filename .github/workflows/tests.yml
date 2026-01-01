@@ -51,6 +51,12 @@ jobs:
       - name: Copy Environment File
         run: cp .env.example .env
 
+      - name: Set Up Database
+        run: touch database/database.sqlite
+
+      - name: Run Migrations
+        run: php artisan migrate --force
+
       - name: Generate Application Key
         run: php artisan key:generate
 
