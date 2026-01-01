@@ -30,6 +30,7 @@ const days = {
 const {
     props: {
         auth: { user },
+        team: { items: teams },
     },
 } = usePage<SharedData>();
 
@@ -39,6 +40,7 @@ interface NotificationSettings {
     early_reminder_days: (number | string)[];
     enable_notes: boolean;
     enable_calendar: boolean;
+    excluded_notification_teams: number[];
     [key: string]: any;
 }
 
@@ -58,6 +60,7 @@ const form = useForm<NotificationSettings>({
      * 30 days before due date
      */
     early_reminder_days: user.metas?.early_reminder_days ? [...((user.metas.early_reminder_days as number[]) ?? [])] : [],
+    excluded_notification_teams: user.metas?.excluded_notification_teams ? [...((user.metas.excluded_notification_teams as number[]) ?? [])] : [],
 });
 
 const submit = () => {
@@ -97,6 +100,21 @@ const submit = () => {
                             <SelectContent>
                                 <SelectItem v-for="(label, value) in days" :key="value" :value="value">
                                     <span>{{ label }}</span>
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div class="grid gap-2">
+                        <Label for="excluded-teams" class="flex items-center space-x-3"> Exclude Teams from Notifications </Label>
+                        <p class="text-sm text-muted-foreground">Select teams for which you do not want to receive notifications. By default, all teams are enabled.</p>
+                        <Select v-model="form.excluded_notification_teams" multiple>
+                            <SelectTrigger class="!h-auto w-full text-left whitespace-normal">
+                                <SelectValue placeholder="All teams enabled" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem v-for="team in teams" :key="team.id" :value="team.id">
+                                    <span>{{ team.name }}</span>
                                 </SelectItem>
                             </SelectContent>
                         </Select>

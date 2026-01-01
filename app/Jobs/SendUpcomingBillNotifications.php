@@ -43,12 +43,14 @@ final class SendUpcomingBillNotifications implements ShouldQueue
         foreach ($users as $user) {
             $preferences = $user->getMeta('early_reminder_days', []);
             $channels = $user->getNotificationChannels();
+            $excludedTeams = $user->getMeta('excluded_notification_teams', []);
 
             foreach ($preferences as $daysBefore) {
                 // Get bills for the user due on the target date
                 $bills = $user->bills
                     ->where('status', 'unpaid')
                     ->filter(fn ($bill) => $bill->shouldNotify($daysBefore))
+                    ->filter(fn ($bill) => ! in_array($bill->team_id, $excludedTeams))
                     ->values();
 
                 foreach ($bills as $bill) {
@@ -68,6 +70,7 @@ final class SendUpcomingBillNotifications implements ShouldQueue
                     ->where('has_trial', true)
                     ->where('status', 'unpaid')
                     ->filter(fn ($bill) => $bill->shouldNotifyTrialEnd($daysBefore))
+                    ->filter(fn ($bill) => ! in_array($bill->team_id, $excludedTeams))
                     ->values();
 
                 foreach ($trialBills as $bill) {
