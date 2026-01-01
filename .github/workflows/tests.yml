@@ -63,8 +63,8 @@ jobs:
       - name: Clear cache
         run: |
           php artisan view:clear
-          php artisan cache:clear
           php artisan config:clear
+          php artisan route:clear
 
       - name: Tests
         run: ./vendor/bin/pest
