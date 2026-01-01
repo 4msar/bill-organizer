@@ -130,23 +130,34 @@ const userName = props.auth.user.name || 'User';
                 <!-- Welcome Header -->
                 <div class="mb-8">
                     <h1 class="text-3xl font-bold tracking-tight">{{ greeting }}, {{ userName }}</h1>
-                    <p class="text-muted-foreground">
-                        Here's an overview of your bills for
-                        {{
-                            new Date().toLocaleDateString('en-US', {
-                                month: 'long',
-                                year: 'numeric',
-                            })
-                        }}
-                    </p>
+                    <p class="text-muted-foreground">Here's an overview of your bills for current month and year.</p>
                 </div>
 
                 <!-- Stats Cards -->
                 <div class="mb-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <!-- Due This Month -->
+                    <Card>
+                        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle class="text-sm font-medium">Due This Month</CardTitle>
+                            <CalendarDays class="text-muted-foreground h-4 w-4" />
+                        </CardHeader>
+                        <CardContent>
+                            <div class="text-2xl font-bold">
+                                {{ formatCurrency(stats.amountDueThisMonth, $page.props?.team?.current?.currency as string) }}
+                            </div>
+                            <div class="text-muted-foreground mt-1 text-xs">
+                                {{ new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) }}
+                            </div>
+                        </CardContent>
+                    </Card>
+
                     <!-- Total Bills -->
                     <Card>
                         <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle class="text-sm font-medium">Total Bills</CardTitle>
+                            <CardTitle class="text-sm font-medium">
+                                Total Bills
+                                <small class="text-muted-foreground"> (this year) </small>
+                            </CardTitle>
                             <CreditCard class="text-muted-foreground h-4 w-4" />
                         </CardHeader>
                         <CardContent>
@@ -162,7 +173,10 @@ const userName = props.auth.user.name || 'User';
                     <!-- Total Due -->
                     <Card>
                         <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle class="text-sm font-medium">Total Due</CardTitle>
+                            <CardTitle class="text-sm font-medium">
+                                Total Due
+                                <small class="text-muted-foreground"> (this year) </small>
+                            </CardTitle>
                             <DollarSign class="text-muted-foreground h-4 w-4" />
                         </CardHeader>
                         <CardContent>
@@ -173,26 +187,13 @@ const userName = props.auth.user.name || 'User';
                         </CardContent>
                     </Card>
 
-                    <!-- Due This Month -->
-                    <Card>
-                        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle class="text-sm font-medium">Due This Month</CardTitle>
-                            <CalendarDays class="text-muted-foreground h-4 w-4" />
-                        </CardHeader>
-                        <CardContent>
-                            <div class="text-2xl font-bold">
-                                {{ formatCurrency(stats.amountDueThisMonth, $page.props?.team?.current?.currency as string) }}
-                            </div>
-                            <div class="text-muted-foreground mt-1 text-xs">
-                                {{ new Date().toLocaleDateString('en-US', { month: 'long' }) }}
-                            </div>
-                        </CardContent>
-                    </Card>
-
                     <!-- Paid Amount -->
                     <Card>
                         <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle class="text-sm font-medium">Total Paid</CardTitle>
+                            <CardTitle class="text-sm font-medium">
+                                Total Paid
+                                <small class="text-muted-foreground"> (this year) </small>
+                            </CardTitle>
                             <Wallet class="text-muted-foreground h-4 w-4" />
                         </CardHeader>
                         <CardContent>
