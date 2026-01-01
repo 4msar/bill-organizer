@@ -42,6 +42,10 @@ interface Props {
     recentBills: Bill[];
     upcomingBills: Bill[];
     chartData: ChartData;
+    currentMonthStats: {
+        dueBills: Bill[];
+        paidBills: Bill[];
+    };
 }
 
 const { stats, categories, recentBills, upcomingBills, ...props } = defineProps<Props & SharedData>();
@@ -102,6 +106,78 @@ const chartSeries = computed(() => {
         name: item.category,
         data: item.data,
     }));
+});
+
+// Current month stats chart
+const currentMonthChartOptions = ref({
+    chart: {
+        type: 'line',
+        toolbar: {
+            show: false,
+        },
+    },
+    stroke: {
+        curve: 'smooth',
+        width: 3,
+    },
+    xaxis: {
+        type: 'datetime',
+    },
+    yaxis: {
+        labels: {
+            formatter: (value: number) => formatCurrency(value, props.team?.current?.currency as string),
+        },
+    },
+    legend: {
+        position: 'top',
+    },
+    tooltip: {
+        x: {
+            format: 'dd MMM',
+        },
+    },
+    colors: ['#ef4444', '#22c55e'],
+});
+
+const currentMonthChartSeries = computed(() => {
+    // Group due bills by date
+    const dueBillsByDate: Record<string, number> = {};
+    props.currentMonthStats.dueBills.forEach((bill) => {
+        const date = new Date(bill.due_date as string).toISOString().split('T')[0];
+        dueBillsByDate[date] = (dueBillsByDate[date] || 0) + parseFloat(bill.amount.toString());
+    });
+
+    // Group paid bills by date
+    const paidBillsByDate: Record<string, number> = {};
+    props.currentMonthStats.paidBills.forEach((bill) => {
+        const date = new Date(bill.due_date as string).toISOString().split('T')[0];
+        paidBillsByDate[date] = (paidBillsByDate[date] || 0) + parseFloat(bill.amount.toString());
+    });
+
+    // Get all unique dates and sort them
+    const allDates = Array.from(new Set([...Object.keys(dueBillsByDate), ...Object.keys(paidBillsByDate)])).sort();
+
+    // Create series data
+    const dueData = allDates.map((date) => ({
+        x: new Date(date).getTime(),
+        y: dueBillsByDate[date] || 0,
+    }));
+
+    const paidData = allDates.map((date) => ({
+        x: new Date(date).getTime(),
+        y: paidBillsByDate[date] || 0,
+    }));
+
+    return [
+        {
+            name: 'Due Bills',
+            data: dueData,
+        },
+        {
+            name: 'Paid Bills',
+            data: paidData,
+        },
+    ];
 });
 
 // Calculate payment progress
@@ -207,9 +283,10 @@ const userName = props.auth.user.name || 'User';
 
                 <!-- Bills and Categories Tabs -->
                 <Tabs defaultValue="upcoming" class="mb-8">
-                    <TabsList class="grid w-full grid-cols-2">
+                    <TabsList class="grid w-full grid-cols-3">
                         <TabsTrigger value="upcoming">Upcoming Bills</TabsTrigger>
                         <TabsTrigger value="recent">Recent Bills</TabsTrigger>
+                        <TabsTrigger value="categories">Categorized Bills</TabsTrigger>
                     </TabsList>
 
                     <!-- Upcoming Bills Tab -->
@@ -332,47 +409,72 @@ const userName = props.auth.user.name || 'User';
                             </CardFooter>
                         </Card>
                     </TabsContent>
+                    <!-- Categorized Bills Tab -->
+                    <TabsContent value="categories">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Categories</CardTitle>
+                                <CardDescription> Overview of your spending categories </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Category</TableHead>
+                                            <TableHead>Bills</TableHead>
+                                            <TableHead class="text-right">Amount Due</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        <TableRow v-for="category in categories" :key="category.id">
+                                            <TableCell class="font-medium">{{ category.name }}</TableCell>
+                                            <TableCell>
+                                                {{ category.paid_bills_count + category.unpaid_bills_count }}
+                                                <span class="text-muted-foreground"> ({{ category.unpaid_bills_count }} unpaid) </span>
+                                            </TableCell>
+                                            <TableCell class="text-right">
+                                                {{ formatCurrency(category.total_amount, $page.props?.team?.current?.currency as string) }}
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow v-if="categories.length === 0">
+                                            <TableCell colspan="3" class="text-muted-foreground py-4 text-center"> No categories yet </TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                            <CardFooter>
+                                <Button variant="outline" asChild class="w-full">
+                                    <Link :href="route('categories.index')"> Manage Categories </Link>
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </TabsContent>
                 </Tabs>
 
-                <!-- Categories Overview -->
+                <!-- Charts Overview -->
                 <div class="mb-8 grid gap-4 md:grid-cols-2">
-                    <!-- Categories Card -->
+                    <!-- Unpaid and paid Bills chart for current months -->
                     <Card>
                         <CardHeader>
-                            <CardTitle>Categories</CardTitle>
-                            <CardDescription> Overview of your spending categories </CardDescription>
+                            <CardTitle>Current month stats</CardTitle>
+                            <CardDescription>Current month paid and unpaid bills by date</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Category</TableHead>
-                                        <TableHead>Bills</TableHead>
-                                        <TableHead class="text-right">Amount Due</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    <TableRow v-for="category in categories" :key="category.id">
-                                        <TableCell class="font-medium">{{ category.name }}</TableCell>
-                                        <TableCell>
-                                            {{ category.paid_bills_count + category.unpaid_bills_count }}
-                                            <span class="text-muted-foreground"> ({{ category.unpaid_bills_count }} unpaid) </span>
-                                        </TableCell>
-                                        <TableCell class="text-right">
-                                            {{ formatCurrency(category.total_amount, $page.props?.team?.current?.currency as string) }}
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow v-if="categories.length === 0">
-                                        <TableCell colspan="3" class="text-muted-foreground py-4 text-center"> No categories yet </TableCell>
-                                    </TableRow>
-                                </TableBody>
-                            </Table>
+                            <!-- For ApexCharts, we need to add the library to the project -->
+                            <div class="flex h-[300px] w-full items-center justify-center">
+                                <div
+                                    v-if="
+                                        currentMonthChartSeries.length > 0 &&
+                                        (currentMonthStats.dueBills.length > 0 || currentMonthStats.paidBills.length > 0)
+                                    "
+                                    class="h-full w-full"
+                                >
+                                    <apexchart type="line" height="300" :options="currentMonthChartOptions" :series="currentMonthChartSeries">
+                                    </apexchart>
+                                </div>
+                                <div v-else class="text-muted-foreground text-center">Not enough data to display chart</div>
+                            </div>
                         </CardContent>
-                        <CardFooter>
-                            <Button variant="outline" asChild class="w-full">
-                                <Link :href="route('categories.index')"> Manage Categories </Link>
-                            </Button>
-                        </CardFooter>
                     </Card>
 
                     <!-- Spending Chart -->
@@ -384,7 +486,7 @@ const userName = props.auth.user.name || 'User';
                         <CardContent>
                             <!-- For ApexCharts, we need to add the library to the project -->
                             <div class="flex h-[300px] w-full items-center justify-center">
-                                <div v-if="chartSeries.length > 0" class="h-full w-full">
+                                <div v-if="currentMonthStats.dueBills.length > 0 || currentMonthStats.paidBills.length > 0" class="h-full w-full">
                                     <!-- This is a placeholder for ApexCharts -->
                                     <!-- In a real implementation, you would use: -->
                                     <apexchart type="bar" height="300" :options="chartOptions" :series="chartSeries"> </apexchart>

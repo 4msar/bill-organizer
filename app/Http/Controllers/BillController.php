@@ -33,7 +33,7 @@ final class BillController extends Controller
                 if (str_contains($search, ':')) {
                     [$column, $value] = explode(':', request('search', ''));
                     if ($column && $value && in_fillable($column, Bill::class)) {
-                        return $query->where($column, $value);
+                        return $query->where($column, 'like', '%'.$value.'%');
                     }
                 }
 

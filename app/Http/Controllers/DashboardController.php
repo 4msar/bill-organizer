@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Bill;
 use App\Models\Category;
+use App\Models\Transaction;
 use Carbon\Carbon;
 use Inertia\Inertia;
 
@@ -29,9 +30,26 @@ final class DashboardController extends Controller
         // Due this month
         $startOfMonth = $now->copy()->startOfMonth();
         $endOfMonth = $now->copy()->endOfMonth();
-        $dueBillsThisMonth = Bill::unpaid()
-            ->whereBetween('due_date', [$startOfMonth, $endOfMonth])
+
+        $dueBillsThisMonth = Bill::whereBetween(
+            'due_date',
+            [$startOfMonth, $endOfMonth]
+        )
+            ->unpaid()
             ->get();
+
+        $paidBillsThisMonth = Bill::query()
+            ->whereHas(
+                'transactions',
+                function ($query) {
+                    $query->whereYear('payment_date', date('Y'))
+                        ->whereMonth('payment_date', date('m'));
+                }
+            )
+            ->orWhereBetween('due_date', [$startOfMonth, $endOfMonth])
+            ->paid()
+            ->get();
+
         $amountDueThisMonth = $dueBillsThisMonth->sum('amount');
 
         // Category statistics
@@ -85,12 +103,22 @@ final class DashboardController extends Controller
                 $startDate = Carbon::createFromDate($month['year'], $month['month_number'], 1)->startOfMonth();
                 $endDate = $startDate->copy()->endOfMonth();
 
-                $amount = Bill::where('category_id', $category->id)
-                    ->where('status', 'paid')
-                    ->whereBetween('updated_at', [$startDate, $endDate])
+                $amount = Transaction::whereHas(
+                    'bill',
+                    function ($query) use ($category) {
+                        $query->where('category_id', $category->id);
+                    }
+                )
+                    ->whereBetween('payment_date', [$startDate, $endDate])
                     ->sum('amount');
 
-                $monthlyCounts[] = $amount;
+                $billsWithNoTnx = Bill::where('category_id', $category->id)
+                    ->whereBetween('due_date', [$startDate, $endDate])
+                    ->where('status', 'paid')
+                    ->whereDoesntHave('transactions')
+                    ->sum('amount');
+
+                $monthlyCounts[] = round($amount + $billsWithNoTnx, 1);
             }
 
             $monthlySpendingByCategory[] = [
@@ -117,6 +145,10 @@ final class DashboardController extends Controller
                 'months' => array_column($months, 'month'),
                 'series' => $monthlySpendingByCategory,
             ],
+            'currentMonthStats' => [
+                'dueBills' => $dueBillsThisMonth,
+                'paidBills' => $paidBillsThisMonth,
+            ]
         ]);
     }
 
