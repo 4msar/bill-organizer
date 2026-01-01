@@ -32,7 +32,7 @@ final class PreferenceController extends Controller
             'enable_notes' => ['nullable', 'boolean'],
             'enable_calendar' => ['nullable', 'boolean'],
             'enable_reports' => ['nullable', 'boolean'],
-            'excluded_notification_teams' => ['array'],
+            'excluded_notification_teams' => ['nullable', 'array'],
             'excluded_notification_teams.*' => ['integer', 'exists:teams,id'],
         ]);
 
