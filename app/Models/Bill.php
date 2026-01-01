@@ -71,8 +71,8 @@ final class Bill extends Model
 
         self::creating(function (Bill $bill) {
             if ($bill->tags) {
-                $bill->tags = array_map(fn ($item) => strtolower(trim($item)), $bill->tags);
-                $bill->tags = array_filter($bill->tags, fn ($tag) => ! empty($tag));
+                $bill->tags = array_map(fn($item) => strtolower(trim($item)), $bill->tags);
+                $bill->tags = array_filter($bill->tags, fn($tag) => ! empty($tag));
             }
         });
     }
@@ -309,6 +309,19 @@ final class Bill extends Model
     }
 
     /**
+     * Scope a query to only include bills due in the current month.
+     */
+    public function scopeCurrentMonth($query)
+    {
+        $now = now();
+
+        return $query->whereBetween('due_date', [
+            $now->copy()->startOfMonth(),
+            $now->copy()->endOfMonth(),
+        ]);
+    }
+
+    /**
      * Scope a query to only include paid bills.
      */
     public function scopePaid($query)
@@ -328,7 +341,7 @@ final class Bill extends Model
             ->pluck('tags')
             ->filter()
             ->flatten()
-            ->map(fn ($tag) => strtolower(trim($tag)))
+            ->map(fn($tag) => strtolower(trim($tag)))
             ->unique()
             ->values();
     }

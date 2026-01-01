@@ -5,14 +5,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import { Bill } from '@/types/model';
+import { Bill, Category } from '@/types/model';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Calendar, CheckCheck, Clock, DollarSign, Edit, Eye, MoreHorizontal, PlusCircle, Trash2 } from 'lucide-vue-next';
-import { ref } from 'vue';
 
 defineProps<{
     bills: Array<Bill>;
@@ -20,9 +20,8 @@ defineProps<{
     unpaid_count: number;
     upcoming_count: number;
     paid_count: number;
+    categories: Category[];
 }>();
-
-const activeTab = ref('all');
 
 function markAsPaid(id: string | number) {
     router.patch(route('bills.pay', id));
@@ -85,7 +84,48 @@ function markAsPaid(id: string | number) {
                 <div class="mb-6 flex items-center justify-between">
                     <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Bills</h2>
                     <div class="flex items-center gap-2">
-                        <SearchForm :url="route('bills.index')" class="w-full" />
+                        <SearchForm :url="route('bills.index')" class="w-full">
+                            <template #default="{ searchHandler, queryParams }">
+                                <Select
+                                    :default-value="queryParams.category"
+                                    v-on:update:model-value="(value) => searchHandler({ category: (value as string) ?? '' })"
+                                    class="w-full"
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem :value="null">All</SelectItem>
+                                        <SelectItem v-for="category in categories" :key="category.id" :value="`${category.id}`">
+                                            {{ category.name }}
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <Select
+                                    :default-value="queryParams.status"
+                                    v-on:update:model-value="(value) => searchHandler({ status: (value as string) ?? '' })"
+                                    class="w-full"
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem :value="null">All</SelectItem>
+                                        <SelectItem value="paid">Paid</SelectItem>
+                                        <SelectItem value="unpaid">Unpaid</SelectItem>
+                                        <SelectItem value="upcoming">Upcoming</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <!-- Calendar picker with month and year only -->
+                                <Input
+                                    type="month"
+                                    class="w-auto"
+                                    :value="queryParams.date"
+                                    :default-value="queryParams.date"
+                                    @update:model-value="(value) => searchHandler({ date: value })"
+                                />
+                            </template>
+                        </SearchForm>
                         <Link :href="route('bills.create')">
                             <Button>
                                 <PlusCircle class="mr-2 h-4 w-4" />
@@ -98,14 +138,7 @@ function markAsPaid(id: string | number) {
                 <!-- Bills Tabs and Table -->
                 <Card>
                     <CardHeader>
-                        <Tabs v-model="activeTab" class="w-full">
-                            <TabsList class="grid w-full max-w-md grid-cols-4">
-                                <TabsTrigger value="all">All Bills</TabsTrigger>
-                                <TabsTrigger value="unpaid">Unpaid</TabsTrigger>
-                                <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-                                <TabsTrigger value="paid">Paid</TabsTrigger>
-                            </TabsList>
-                        </Tabs>
+                        <CardTitle>All Bills</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <Table>
@@ -122,13 +155,7 @@ function markAsPaid(id: string | number) {
                             </TableHeader>
                             <TableBody>
                                 <TableRow
-                                    v-for="bill in bills.filter((bill) => {
-                                        if (activeTab === 'upcoming')
-                                            return new Date(bill.due_date as string) > new Date() && bill.status === 'unpaid';
-                                        if (activeTab === 'all') return true;
-                                        if (activeTab === 'unpaid') return bill.status === 'unpaid';
-                                        if (activeTab === 'paid') return bill.status === 'paid';
-                                    })"
+                                    v-for="bill in bills"
                                     :key="bill.id"
                                     @click.stop="router.visit(route('bills.show', bill.id))"
                                     class="hover:bg-muted/50 cursor-pointer"
