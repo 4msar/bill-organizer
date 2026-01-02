@@ -137,9 +137,9 @@ const features = [
                         </p>
                     </div>
                     <div class="flex space-x-6">
-                        <a href="#" class="text-muted-foreground hover:text-foreground transition-colors"> Terms </a>
-                        <a href="#" class="text-muted-foreground hover:text-foreground transition-colors"> Privacy </a>
-                        <a href="#" class="text-muted-foreground hover:text-foreground transition-colors"> Contact </a>
+                        <Link :href="route('legal.terms')" class="text-muted-foreground hover:text-foreground transition-colors"> Terms </Link>
+                        <Link :href="route('legal.privacy')" class="text-muted-foreground hover:text-foreground transition-colors"> Privacy </Link>
+                        <Link :href="route('legal.contact')" class="text-muted-foreground hover:text-foreground transition-colors"> Contact </Link>
                     </div>
                 </div>
             </div>

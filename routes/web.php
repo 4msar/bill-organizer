@@ -3,6 +3,7 @@
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LegalController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReportController;
@@ -14,6 +15,10 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
+
+Route::get('/terms', [LegalController::class, 'terms'])->name('legal.terms');
+Route::get('/privacy', [LegalController::class, 'privacy'])->name('legal.privacy');
+Route::get('/contact', [LegalController::class, 'contact'])->name('legal.contact');
 
 Route::get('join/team/{teamId}', [TeamController::class, 'join'])->name('team.join')->middleware(['guest', 'signed']);
 
