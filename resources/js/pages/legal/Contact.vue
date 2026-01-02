@@ -31,8 +31,7 @@ import { Head, Link } from '@inertiajs/vue3';
             <div class="container mx-auto max-w-4xl px-4">
                 <h1 class="text-foreground mb-4 text-4xl font-bold">Contact Us</h1>
                 <p class="text-muted-foreground mb-8 text-lg">
-                    We'd love to hear from you! Whether you have questions, feedback, or need support, there are
-                    several ways to get in touch.
+                    We'd love to hear from you! Whether you have questions, feedback, or need support, there are several ways to get in touch.
                 </p>
 
                 <div class="grid gap-6 md:grid-cols-2">
@@ -47,15 +46,10 @@ import { Head, Link } from '@inertiajs/vue3';
                         </CardHeader>
                         <CardContent>
                             <p class="text-muted-foreground mb-4 text-sm">
-                                Bill Organizer is an open-source project. Explore the codebase, read documentation, and
-                                stay updated with the latest changes.
+                                Bill Organizer is an open-source project. Explore the codebase, read documentation, and stay updated with the latest
+                                changes.
                             </p>
-                            <a
-                                href="https://github.com/4msar/bill-organizer"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="inline-block"
-                            >
+                            <a href="https://github.com/4msar/bill-organizer" target="_blank" rel="noopener noreferrer" class="inline-block">
                                 <Button variant="outline" class="w-full">
                                     Visit Repository
                                     <span class="ml-2">→</span>
@@ -75,15 +69,10 @@ import { Head, Link } from '@inertiajs/vue3';
                         </CardHeader>
                         <CardContent>
                             <p class="text-muted-foreground mb-4 text-sm">
-                                Use our GitHub issue tracker to report bugs, request features, or ask technical
-                                questions. Please check existing issues before creating a new one.
+                                Use our GitHub issue tracker to report bugs, request features, or ask technical questions. Please check existing
+                                issues before creating a new one.
                             </p>
-                            <a
-                                href="https://github.com/4msar/bill-organizer/issues"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="inline-block"
-                            >
+                            <a href="https://github.com/4msar/bill-organizer/issues" target="_blank" rel="noopener noreferrer" class="inline-block">
                                 <Button variant="outline" class="w-full">
                                     Open Issue Tracker
                                     <span class="ml-2">→</span>
@@ -104,15 +93,9 @@ import { Head, Link } from '@inertiajs/vue3';
                         <CardContent>
                             <p class="text-muted-foreground mb-4 text-sm">
                                 Bill Organizer is maintained by
-                                <strong>4msar</strong>. You can reach out directly through GitHub for project-related
-                                inquiries.
+                                <strong>4msar</strong>. You can reach out directly through GitHub for project-related inquiries.
                             </p>
-                            <a
-                                href="https://github.com/4msar"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="inline-block"
-                            >
+                            <a href="https://github.com/4msar" target="_blank" rel="noopener noreferrer" class="inline-block">
                                 <Button variant="outline" class="w-full">
                                     View GitHub Profile
                                     <span class="ml-2">→</span>
@@ -132,8 +115,8 @@ import { Head, Link } from '@inertiajs/vue3';
                         </CardHeader>
                         <CardContent>
                             <p class="text-muted-foreground mb-4 text-sm">
-                                We welcome contributions! Check out our repository for contribution guidelines, open
-                                issues labeled "good first issue", and ways to help.
+                                We welcome contributions! Check out our repository for contribution guidelines, open issues labeled "good first
+                                issue", and ways to help.
                             </p>
                             <a
                                 href="https://github.com/4msar/bill-organizer/blob/main/CONTRIBUTING.md"
@@ -158,26 +141,11 @@ import { Head, Link } from '@inertiajs/vue3';
                             <div class="text-muted-foreground space-y-4 text-sm">
                                 <p>When reporting a bug, please include:</p>
                                 <ol class="ml-6 list-decimal space-y-2">
-                                    <li>
-                                        <strong>Clear description:</strong> Explain what you expected to happen and what
-                                        actually happened
-                                    </li>
-                                    <li>
-                                        <strong>Steps to reproduce:</strong> Provide detailed steps so we can recreate
-                                        the issue
-                                    </li>
-                                    <li>
-                                        <strong>Environment details:</strong> Browser version, operating system, and any
-                                        relevant configuration
-                                    </li>
-                                    <li>
-                                        <strong>Screenshots:</strong> If applicable, include screenshots or error
-                                        messages
-                                    </li>
-                                    <li>
-                                        <strong>Expected behavior:</strong> Describe what you think should happen
-                                        instead
-                                    </li>
+                                    <li><strong>Clear description:</strong> Explain what you expected to happen and what actually happened</li>
+                                    <li><strong>Steps to reproduce:</strong> Provide detailed steps so we can recreate the issue</li>
+                                    <li><strong>Environment details:</strong> Browser version, operating system, and any relevant configuration</li>
+                                    <li><strong>Screenshots:</strong> If applicable, include screenshots or error messages</li>
+                                    <li><strong>Expected behavior:</strong> Describe what you think should happen instead</li>
                                 </ol>
                             </div>
                         </CardContent>
@@ -192,23 +160,11 @@ import { Head, Link } from '@inertiajs/vue3';
                             <div class="text-muted-foreground space-y-4 text-sm">
                                 <p>When requesting a feature, please include:</p>
                                 <ol class="ml-6 list-decimal space-y-2">
-                                    <li>
-                                        <strong>Use case:</strong> Explain the problem you're trying to solve
-                                    </li>
-                                    <li>
-                                        <strong>Proposed solution:</strong> Describe how you envision the feature
-                                        working
-                                    </li>
-                                    <li>
-                                        <strong>Alternatives:</strong> Mention any alternative solutions you've
-                                        considered
-                                    </li>
-                                    <li>
-                                        <strong>Benefits:</strong> Explain how this feature would benefit users
-                                    </li>
-                                    <li>
-                                        <strong>Examples:</strong> If possible, provide examples from other applications
-                                    </li>
+                                    <li><strong>Use case:</strong> Explain the problem you're trying to solve</li>
+                                    <li><strong>Proposed solution:</strong> Describe how you envision the feature working</li>
+                                    <li><strong>Alternatives:</strong> Mention any alternative solutions you've considered</li>
+                                    <li><strong>Benefits:</strong> Explain how this feature would benefit users</li>
+                                    <li><strong>Examples:</strong> If possible, provide examples from other applications</li>
                                 </ol>
                             </div>
                         </CardContent>
@@ -221,10 +177,7 @@ import { Head, Link } from '@inertiajs/vue3';
                     <Card>
                         <CardContent class="pt-6">
                             <div class="text-muted-foreground space-y-3 text-sm">
-                                <p>
-                                    Bill Organizer is an open-source community project. We ask all contributors and
-                                    users to:
-                                </p>
+                                <p>Bill Organizer is an open-source community project. We ask all contributors and users to:</p>
                                 <ul class="ml-6 list-disc space-y-1">
                                     <li>Be respectful and considerate in all interactions</li>
                                     <li>Search existing issues before creating new ones</li>
@@ -245,7 +198,7 @@ import { Head, Link } from '@inertiajs/vue3';
                             href="https://github.com/4msar/bill-organizer"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="text-primary hover:underline flex items-center gap-2 text-sm"
+                            class="text-primary flex items-center gap-2 text-sm hover:underline"
                         >
                             <span>→</span>
                             Project Repository
@@ -254,7 +207,7 @@ import { Head, Link } from '@inertiajs/vue3';
                             href="https://github.com/4msar/bill-organizer/issues"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="text-primary hover:underline flex items-center gap-2 text-sm"
+                            class="text-primary flex items-center gap-2 text-sm hover:underline"
                         >
                             <span>→</span>
                             Issue Tracker
@@ -263,7 +216,7 @@ import { Head, Link } from '@inertiajs/vue3';
                             href="https://github.com/4msar/bill-organizer/pulls"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="text-primary hover:underline flex items-center gap-2 text-sm"
+                            class="text-primary flex items-center gap-2 text-sm hover:underline"
                         >
                             <span>→</span>
                             Pull Requests
@@ -272,16 +225,16 @@ import { Head, Link } from '@inertiajs/vue3';
                             href="https://github.com/4msar/bill-organizer/discussions"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="text-primary hover:underline flex items-center gap-2 text-sm"
+                            class="text-primary flex items-center gap-2 text-sm hover:underline"
                         >
                             <span>→</span>
                             Discussions
                         </a>
-                        <Link :href="route('legal.terms')" class="text-primary hover:underline flex items-center gap-2 text-sm">
+                        <Link :href="route('legal.terms')" class="text-primary flex items-center gap-2 text-sm hover:underline">
                             <span>→</span>
                             Terms of Service
                         </Link>
-                        <Link :href="route('legal.privacy')" class="text-primary hover:underline flex items-center gap-2 text-sm">
+                        <Link :href="route('legal.privacy')" class="text-primary flex items-center gap-2 text-sm hover:underline">
                             <span>→</span>
                             Privacy Policy
                         </Link>
@@ -294,9 +247,7 @@ import { Head, Link } from '@inertiajs/vue3';
         <footer class="border-border/40 border-t py-8">
             <div class="container mx-auto px-4">
                 <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
-                    <div class="text-muted-foreground text-sm">
-                        © {{ new Date().getFullYear() }} {{ $page.props.name }}. All rights reserved.
-                    </div>
+                    <div class="text-muted-foreground text-sm">© {{ new Date().getFullYear() }} {{ $page.props.name }}. All rights reserved.</div>
                     <div class="flex space-x-6">
                         <Link :href="route('legal.terms')" class="text-muted-foreground hover:text-foreground text-sm transition-colors">
                             Terms
