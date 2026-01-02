@@ -109,12 +109,8 @@ final class User extends Authenticatable implements MustVerifyEmail
             $this->setMeta('early_reminder_days', [7, 15, 30]);
         }
 
-        if ($this->getMeta('enable_notes') === null) {
-            $this->setMeta('enable_notes', false);
-        }
-
-        if ($this->getMeta('enable_calendar') === null) {
-            $this->setMeta('enable_calendar', true);
+        if ($this->getMeta('enable_reports') === null) {
+            $this->setMeta('enable_reports', false);
         }
     }
 

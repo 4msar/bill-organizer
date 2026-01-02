@@ -24,15 +24,20 @@ const isPastDue = computed((): boolean => {
         <CardHeader>
             <div class="flex flex-col items-start justify-between space-y-2 space-x-2 sm:flex-row">
                 <div class="space-y-2">
-                    <CardTitle class="flex flex-wrap items-center gap-2">
+                    <CardTitle class="text-lg font-semibold">
                         {{ bill.title }}
-                        <Badge v-if="bill.is_recurring" variant="outline">Recurring</Badge>
-                        <Badge v-if="bill.has_trial" variant="outline" class="border-blue-200 bg-blue-50 text-blue-700"> Trial</Badge>
-                        <Badge :variant="bill.status === 'paid' ? 'secondary' : 'default'">
-                            {{ bill.status === 'paid' ? 'Paid' : 'Unpaid' }}
-                        </Badge>
                     </CardTitle>
-                    <CardDescription v-if="bill.category"> Category: {{ bill.category.name }} </CardDescription>
+                    <CardDescription v-if="bill.category">
+                        <span class="mb-2 flex w-full flex-wrap items-center gap-2">
+                            <Badge v-if="bill.is_recurring" variant="outline">Recurring</Badge>
+                            <Badge v-if="bill.has_trial" variant="outline" class="border-blue-200 bg-blue-50 text-blue-700"> Trial</Badge>
+                            <Badge :variant="bill.status === 'paid' ? 'secondary' : 'default'">
+                                {{ bill.status === 'paid' ? 'Paid' : 'Unpaid' }}
+                            </Badge>
+                        </span>
+
+                        <span>Category: {{ bill.category.name }}</span>
+                    </CardDescription>
                 </div>
                 <div class="text-2xl font-bold">
                     {{ formatCurrency(bill.amount, $page.props?.team?.current?.currency as string) }}
@@ -92,11 +97,8 @@ const isPastDue = computed((): boolean => {
             </div>
         </CardContent>
 
-        <CardFooter
-            v-if="bill.status === 'unpaid'"
-            :class="cn('flex flex-wrap items-center gap-2', bill.payment_url ? 'justify-between' : 'justify-end')"
-        >
-            <a v-if="bill.payment_url" :href="bill.payment_url" target="_blank" rel="noopener noreferrer">
+        <CardFooter :class="cn('flex flex-wrap items-center gap-2', bill.payment_url ? 'justify-between' : 'justify-end')">
+            <a v-if="bill.status === 'unpaid' && bill.payment_url" :href="bill.payment_url" target="_blank" rel="noopener noreferrer">
                 <Button variant="secondary">
                     <Link2 class="mr-2 h-4 w-4" />
                     Go to Payment Page

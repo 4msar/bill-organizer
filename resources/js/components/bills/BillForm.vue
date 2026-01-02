@@ -387,9 +387,12 @@ function submit(): void {
             </FormField>
 
             <!-- Submit Button -->
-            <Button type="submit" class="w-full" :disabled="form.processing">
-                {{ props.bill.id ? 'Update Bill' : 'Add Bill' }}
-            </Button>
+            <div class="flex justify-end gap-4">
+                <Button type="submit" class="w-auto" :disabled="form.processing">
+                    {{ props.bill.id ? 'Update Bill' : 'Add Bill' }}
+                </Button>
+                <slot />
+            </div>
         </div>
     </Form>
 </template>

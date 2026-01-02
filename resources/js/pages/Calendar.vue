@@ -10,7 +10,7 @@ import { useEvents } from '@/composables/useEvents';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Bill, Category, SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/vue3';
-import { Pen, ScanEye } from 'lucide-vue-next';
+import { Ban, Pen, ScanEye } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const { props } = usePage<
@@ -39,7 +39,7 @@ const handleNewEventClick = (date: Date) => {
 
 const bill = computed(() => bills.value.find((item) => item.id.toString() === selectedEvent.value?.id?.toString()));
 
-const billItemFormData = computed<BillData>(() => {
+const billItemFormData = computed<Partial<BillData>>(() => {
     return selectedEvent.value && bill.value
         ? {
               title: bill.value?.title,
@@ -124,40 +124,44 @@ const handleDialogClose = () => {
         </div>
         <Dialog :open="Boolean(openNewEventDialog)" @update:open="handleDialogClose">
             <DialogContent class="max-h-3/4 overflow-y-auto sm:max-w-2xl md:max-h-max">
-                <DialogHeader class="text-left">
-                    <DialogTitle>{{ selectedEvent?.id ? 'Edit Bill' : 'Create Bill' }}</DialogTitle>
-                    <DialogDescription> Enter your bill details. </DialogDescription>
-                </DialogHeader>
-
                 <template v-if="selectedEvent?.id && bill && !editSelectedEvent">
-                    <Details :bill="bill">
+                    <Details :bill="bill" class="border-none shadow-none">
                         <template #footer>
+                            <Link class="w-auto justify-self-end" :href="route('bills.show', bill.id)">
+                                <Button variant="outline">
+                                    <ScanEye class="mr-1 size-4" />
+                                    Details
+                                </Button>
+                            </Link>
                             <Button @click="editSelectedEvent = true">
                                 <Pen class="mr-1 size-4" />
                                 Edit
                             </Button>
                         </template>
                     </Details>
-
-                    <Link v-if="bill.status !== 'unpaid'" class="w-auto justify-self-end" :href="route('bills.show', bill.id)">
-                        <Button>
-                            <ScanEye class="mr-1 size-4" />
-                            Details
-                        </Button>
-                    </Link>
                 </template>
 
-                <BillForm
-                    v-else
-                    :categories="props.categories"
-                    :submit-url="editSelectedEvent && bill ? route('bills.update', bill.id) : route('bills.store')"
-                    :submit-method="editSelectedEvent && bill ? 'put' : 'post'"
-                    :options="{
-                        onSuccess: () => handleDialogClose(),
-                    }"
-                    :tags="props.tags"
-                    :bill="billItemFormData"
-                />
+                <template v-else>
+                    <DialogHeader class="text-left">
+                        <DialogTitle>{{ selectedEvent?.id ? 'Edit Bill' : 'Create Bill' }}</DialogTitle>
+                        <DialogDescription> Enter your bill details. </DialogDescription>
+                    </DialogHeader>
+                    <BillForm
+                        :categories="props.categories"
+                        :submit-url="editSelectedEvent && bill ? route('bills.update', bill.id) : route('bills.store')"
+                        :submit-method="editSelectedEvent && bill ? 'put' : 'post'"
+                        :options="{
+                            onSuccess: () => handleDialogClose(),
+                        }"
+                        :tags="props.tags"
+                        :bill="billItemFormData as BillData"
+                    >
+                        <Button variant="destructive" type="button" @click="editSelectedEvent = false" v-if="selectedEvent?.id && editSelectedEvent">
+                            <Ban class="mr-1 size-4" />
+                            Cancel
+                        </Button>
+                    </BillForm>
+                </template>
             </DialogContent>
         </Dialog>
     </AppLayout>

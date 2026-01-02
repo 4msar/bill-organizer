@@ -34,21 +34,17 @@ const {
     },
 } = usePage<SharedData>();
 
-interface NotificationSettings {
+interface SettingsForm {
     email_notification: boolean;
     web_notification: boolean;
     early_reminder_days: (number | string)[];
-    enable_notes: boolean;
-    enable_calendar: boolean;
     excluded_notification_teams: number[];
     [key: string]: any;
 }
 
-const form = useForm<NotificationSettings>({
+const form = useForm<SettingsForm>({
     email_notification: Boolean(user.metas?.email_notification ?? true),
     web_notification: Boolean(user.metas?.web_notification ?? true),
-    enable_notes: Boolean(user.metas?.enable_notes ?? false),
-    enable_calendar: Boolean(user.metas?.enable_calendar ?? true),
     enable_reports: Boolean(user.metas?.enable_reports ?? false),
     /**
      * early reminder days
@@ -126,27 +122,6 @@ const submit = () => {
 
                     <HeadingSmall title="Feature Settings" description="Enable or disabled some experimental features." />
 
-                    <div class="flex flex-row items-center justify-between rounded-lg border p-4">
-                        <div class="space-y-0.5">
-                            <Label class="text-base"> Calendar </Label>
-                            <p class="text-sm">Enable the Calendar feature to view bills and reminders in a calendar format.</p>
-                        </div>
-                        <div>
-                            <Switch :model-value="form.enable_calendar" @update:model-value="(value) => (form.enable_calendar = value)" />
-                        </div>
-                    </div>
-                    <div class="flex flex-row items-center justify-between rounded-lg border p-4">
-                        <div class="space-y-0.5">
-                            <Label class="text-base"> Notes </Label>
-                            <p class="text-sm">
-                                Enable the notes feature to add notes and linked to bills. This is an experimental feature and may not be fully
-                                functional.
-                            </p>
-                        </div>
-                        <div>
-                            <Switch :model-value="form.enable_notes" @update:model-value="(value) => (form.enable_notes = value)" />
-                        </div>
-                    </div>
                     <div class="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div class="space-y-0.5">
                             <Label class="text-base"> Reports </Label>

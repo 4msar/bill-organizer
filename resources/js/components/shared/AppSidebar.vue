@@ -64,12 +64,6 @@ const page = usePage<SharedData>();
 
 const filterFeatures = (item: NavItem) => {
     // Filter out items based on feature flags or conditions
-    if (item.title === 'Notes' && !page.props.auth.user.metas.enable_notes) {
-        return false;
-    }
-    if (item.title === 'Calendar' && !page.props.auth.user.metas.enable_calendar) {
-        return false;
-    }
     if (item.title === 'Reports' && !page.props.auth.user.metas.enable_reports) {
         return false;
     }

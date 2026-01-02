@@ -29,8 +29,6 @@ final class PreferenceController extends Controller
             'email_notification' => ['nullable', 'boolean'],
             'web_notification' => ['nullable', 'boolean'],
             'early_reminder_days' => ['array'],
-            'enable_notes' => ['nullable', 'boolean'],
-            'enable_calendar' => ['nullable', 'boolean'],
             'enable_reports' => ['nullable', 'boolean'],
             'excluded_notification_teams' => ['nullable', 'array'],
             'excluded_notification_teams.*' => ['integer', 'exists:teams,id'],
@@ -48,8 +46,6 @@ final class PreferenceController extends Controller
         $user->setMeta('excluded_notification_teams', $request->input('excluded_notification_teams', []));
 
         // Enable or disable features
-        $user->setMeta('enable_notes', $request->input('enable_notes', false));
-        $user->setMeta('enable_calendar', $request->input('enable_calendar', false));
         $user->setMeta('enable_reports', $request->input('enable_reports', false));
 
         return redirect()->back()->with('success', 'Application preferences updated successfully.');
