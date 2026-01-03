@@ -1,37 +1,74 @@
 <script setup lang="ts">
-import AppLogo from '@/components/shared/AppLogo.vue';
+import DashboardMockPreview from '@/components/pages/DashboardMockPreview.vue';
+import Footer from '@/components/pages/Footer.vue';
+import Header from '@/components/pages/Header.vue';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { SharedData } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { Card, CardContent } from '@/components/ui/card';
+import { Head, Link } from '@inertiajs/vue3';
+import { ArrowRight, BarChart3, Bell, Calendar, Check, Github, Receipt, Shield, Sparkles, Star, TrendingUp, Users } from 'lucide-vue-next';
 
-const page = usePage<SharedData>();
-
-// Check if user is logged in
-const isAuthenticated = computed(() => page.props.auth.user);
-
-// Features list
-const features = [
+// Core features
+const coreFeatures = [
     {
-        title: 'Easy Bill Management',
-        description: 'Organize and track all your bills in one place with a simple and intuitive interface.',
-        icon: '📝',
+        icon: Receipt,
+        title: 'Bill Tracking',
+        description: 'Track all your recurring bills and subscriptions in one central dashboard.',
     },
     {
-        title: 'Payment Reminders',
-        description: 'Never miss a payment with automated reminders and notifications.',
-        icon: '🔔',
+        icon: Bell,
+        title: 'Smart Reminders',
+        description: 'Get notified before due dates so you never miss a payment.',
     },
     {
-        title: 'Expense Analytics',
-        description: 'Visualize your spending patterns with comprehensive analytics and reports.',
-        icon: '📊',
+        icon: BarChart3,
+        title: 'Spending Analytics',
+        description: 'Visualize your spending patterns with detailed charts and reports.',
     },
     {
-        title: 'Secure Storage',
-        description: 'All your financial data is encrypted and stored securely.',
-        icon: '🔒',
+        icon: Users,
+        title: 'Team Sharing',
+        description: 'Collaborate with family or team members on shared expenses.',
+    },
+    {
+        icon: Calendar,
+        title: 'Calendar View',
+        description: 'See all your upcoming payments in an intuitive calendar format.',
+    },
+    {
+        icon: Shield,
+        title: 'Secure & Private',
+        description: 'Your data is encrypted and never shared with third parties.',
+    },
+];
+
+// Stats
+const stats = [
+    { value: '100%', label: 'Free & Open Source' },
+    { value: '∞', label: 'Unlimited Bills' },
+    { value: '24/7', label: 'Always Available' },
+    { value: '0', label: 'Ads or Tracking' },
+];
+
+// How it works steps
+const steps = [
+    {
+        step: '01',
+        title: 'Add Your Bills',
+        description: 'Enter your recurring bills, subscriptions, and expenses with due dates.',
+        icon: Receipt,
+    },
+    {
+        step: '02',
+        title: 'Get Reminders',
+        description: 'Receive timely notifications before payment due dates arrive.',
+        icon: Bell,
+    },
+    {
+        step: '03',
+        title: 'Track & Analyze',
+        description: 'Monitor your spending trends and optimize your budget.',
+        icon: TrendingUp,
     },
 ];
 </script>
@@ -42,107 +79,218 @@ const features = [
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     </Head>
 
-    <div class="bg-background flex min-h-screen flex-col">
+    <div class="bg-background min-h-screen">
         <!-- Navigation -->
-        <header class="border-border/40 border-b">
-            <div class="container mx-auto flex items-center justify-between px-4 py-4">
-                <!-- Logo -->
-                <Link href="/" class="flex items-center space-x-2">
-                    <AppLogo class="text-black dark:text-white" />
-                </Link>
-
-                <!-- Auth Links -->
-                <nav class="flex items-center gap-4">
-                    <template v-if="isAuthenticated">
-                        <Link :href="route('dashboard')">
-                            <Button variant="default">Dashboard</Button>
-                        </Link>
-                    </template>
-                    <template v-else>
-                        <Link :href="route('login')">
-                            <Button variant="ghost">Log in</Button>
-                        </Link>
-                        <Link :href="route('register')">
-                            <Button variant="default">Register</Button>
-                        </Link>
-                    </template>
-                </nav>
-            </div>
-        </header>
+        <Header />
 
         <!-- Hero Section -->
-        <section class="py-20 md:py-32">
-            <div class="container mx-auto px-4 text-center">
-                <h1 class="text-foreground mb-6 text-4xl font-bold tracking-tight md:text-6xl">
-                    Simplify Your <span class="text-primary">Bill Management</span>
-                </h1>
-                <p class="text-muted-foreground mx-auto mb-12 max-w-3xl text-xl md:text-2xl">
-                    Keep track of all your bills, set reminders, and organize your finances in one place.
-                </p>
-                <div class="flex flex-col justify-center gap-4 sm:flex-row">
-                    <Link :href="route('register')">
-                        <Button size="lg" class="w-full sm:w-auto">Get Started</Button>
-                    </Link>
-                    <a href="https://github.com/4msar/bill-organizer" target="_blank">
-                        <Button size="lg" variant="outline" class="w-full sm:w-auto">Learn More</Button>
-                    </a>
+        <section class="relative overflow-hidden pt-24 pb-16 sm:pt-32 sm:pb-24">
+            <!-- Gradient background -->
+            <div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+                <div
+                    class="bg-gradient-radial absolute -top-40 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full from-blue-500/30 via-purple-500/20 to-transparent blur-3xl sm:h-[500px] sm:w-[500px] lg:h-[600px] lg:w-[600px]"
+                />
+                <div
+                    class="bg-gradient-radial absolute top-20 -right-20 h-80 w-80 rounded-full from-emerald-500/25 via-cyan-500/15 to-transparent blur-2xl sm:h-96 sm:w-96"
+                />
+                <div
+                    class="bg-gradient-radial absolute -bottom-20 -left-20 h-72 w-72 rounded-full from-pink-500/20 via-rose-500/10 to-transparent blur-2xl sm:h-80 sm:w-80"
+                />
+            </div>
+
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="mx-auto max-w-4xl text-center">
+                    <!-- Badge -->
+                    <div class="mb-6 inline-flex items-center gap-2">
+                        <Badge variant="secondary" class="gap-1.5 px-3 py-1">
+                            <Sparkles class="h-3.5 w-3.5" />
+                            Open Source & Free Forever
+                        </Badge>
+                    </div>
+
+                    <!-- Main heading -->
+                    <h1 class="text-foreground mb-6 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+                        Take Control of Your
+                        <span class="relative">
+                            <span
+                                class="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent dark:from-blue-400 dark:via-purple-400 dark:to-pink-400"
+                            >
+                                Bills & Expenses
+                            </span>
+                        </span>
+                    </h1>
+
+                    <p class="text-muted-foreground mx-auto mb-8 max-w-2xl text-lg sm:text-xl">
+                        The simple, beautiful way to track your bills, set payment reminders, and understand where your money goes. No credit card
+                        required.
+                    </p>
+
+                    <!-- CTA buttons -->
+                    <div class="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
+                        <Link :href="route('register')">
+                            <Button size="lg" class="w-full gap-2 sm:w-auto">
+                                Start Free
+                                <ArrowRight class="h-4 w-4" />
+                            </Button>
+                        </Link>
+                        <a href="https://github.com/4msar/bill-organizer" target="_blank" rel="noopener noreferrer">
+                            <Button size="lg" variant="outline" class="w-full gap-2 sm:w-auto">
+                                <Github class="h-4 w-4" />
+                                Star on GitHub
+                            </Button>
+                        </a>
+                    </div>
+
+                    <!-- Trust indicators -->
+                    <div class="mt-10 flex flex-wrap items-center justify-center gap-6 text-sm">
+                        <div class="text-muted-foreground flex items-center gap-2">
+                            <Check class="text-primary h-4 w-4" />
+                            Free forever
+                        </div>
+                        <div class="text-muted-foreground flex items-center gap-2">
+                            <Check class="text-primary h-4 w-4" />
+                            No credit card needed
+                        </div>
+                        <div class="text-muted-foreground flex items-center gap-2">
+                            <Check class="text-primary h-4 w-4" />
+                            Self-hostable
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Preview -->
+                <DashboardMockPreview />
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="border-border/40 border-y py-12 sm:py-16">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-2 gap-8 md:grid-cols-4">
+                    <div v-for="stat in stats" :key="stat.label" class="text-center">
+                        <div class="text-foreground text-3xl font-bold sm:text-4xl">{{ stat.value }}</div>
+                        <div class="text-muted-foreground mt-1 text-sm">{{ stat.label }}</div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Features Section -->
-        <section class="bg-muted/50 py-20">
-            <div class="container mx-auto px-4">
-                <h2 class="text-foreground mb-16 text-center text-3xl font-bold md:text-4xl">Everything you need to manage your bills</h2>
+        <section class="py-16 sm:py-24">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="mx-auto mb-12 max-w-3xl text-center sm:mb-16">
+                    <Badge variant="outline" class="mb-4">Features</Badge>
+                    <h2 class="text-foreground mb-4 text-3xl font-bold tracking-tight sm:text-4xl">Everything you need to manage bills</h2>
+                    <p class="text-muted-foreground text-lg">A complete toolkit designed to help you stay organized and never miss a payment.</p>
+                </div>
 
-                <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-                    <Card v-for="(feature, index) in features" :key="index" class="border-border/50">
-                        <CardHeader>
-                            <div class="mb-4 text-4xl">{{ feature.icon }}</div>
-                            <CardTitle>{{ feature.title }}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p class="text-muted-foreground">{{ feature.description }}</p>
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <Card
+                        v-for="feature in coreFeatures"
+                        :key="feature.title"
+                        class="group bg-card/50 hover:bg-card border-border/50 hover:border-border transition-all duration-200 hover:shadow-md"
+                    >
+                        <CardContent class="p-6">
+                            <div
+                                class="bg-primary/10 text-primary group-hover:bg-primary/20 mb-4 flex h-11 w-11 items-center justify-center rounded-lg transition-colors"
+                            >
+                                <component :is="feature.icon" class="h-5 w-5" />
+                            </div>
+                            <h3 class="text-foreground mb-2 text-lg font-semibold">{{ feature.title }}</h3>
+                            <p class="text-muted-foreground text-sm leading-relaxed">{{ feature.description }}</p>
                         </CardContent>
                     </Card>
                 </div>
             </div>
         </section>
 
-        <!-- CTA Section -->
-        <section class="py-20">
-            <div class="container mx-auto px-4">
-                <div class="bg-primary/5 border-primary/20 rounded-xl border p-8 text-center md:p-12">
-                    <h2 class="text-foreground mb-6 text-3xl font-bold md:text-4xl">Ready to get organized?</h2>
-                    <p class="text-muted-foreground mx-auto mb-8 max-w-2xl text-xl">
-                        Join thousands of users who have simplified their bill management process.
+        <!-- How it Works Section -->
+        <section class="bg-muted/30 border-border/40 border-y py-16 sm:py-24">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="mx-auto mb-12 max-w-3xl text-center sm:mb-16">
+                    <Badge variant="outline" class="mb-4">How It Works</Badge>
+                    <h2 class="text-foreground mb-4 text-3xl font-bold tracking-tight sm:text-4xl">Get started in minutes</h2>
+                    <p class="text-muted-foreground text-lg">Three simple steps to take control of your finances.</p>
+                </div>
+
+                <div class="grid gap-8 md:grid-cols-3">
+                    <div v-for="item in steps" :key="item.step" class="relative text-center">
+                        <div class="bg-primary/10 text-primary mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl">
+                            <component :is="item.icon" class="h-7 w-7" />
+                        </div>
+                        <div class="text-primary mb-2 text-sm font-semibold">Step {{ item.step }}</div>
+                        <h3 class="text-foreground mb-2 text-xl font-semibold">{{ item.title }}</h3>
+                        <p class="text-muted-foreground text-sm leading-relaxed">{{ item.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Open Source Section -->
+        <section class="py-16 sm:py-24">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-900">
+                    <div class="relative px-6 py-12 sm:px-12 sm:py-16">
+                        <!-- Background pattern -->
+                        <div class="absolute inset-0 opacity-10">
+                            <div
+                                class="absolute inset-0 bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)] bg-[size:24px_24px]"
+                            />
+                        </div>
+
+                        <div class="relative flex flex-col items-center gap-8 lg:flex-row lg:justify-between">
+                            <div class="max-w-xl text-center lg:text-left">
+                                <div class="mb-4 flex items-center justify-center gap-2 lg:justify-start">
+                                    <Github class="h-6 w-6 text-white" />
+                                    <span class="text-sm font-medium text-white/80">Open Source</span>
+                                </div>
+                                <h2 class="mb-4 text-3xl font-bold text-white sm:text-4xl">Built by the community, for the community</h2>
+                                <p class="text-lg text-white/70">
+                                    Bill Organizer is 100% open source. Contribute, customize, or self-host it yourself. Your data, your rules.
+                                </p>
+                            </div>
+
+                            <div class="flex flex-col gap-3 sm:flex-row">
+                                <a href="https://github.com/4msar/bill-organizer" target="_blank" rel="noopener noreferrer">
+                                    <Button size="lg" variant="secondary" class="w-full gap-2 sm:w-auto">
+                                        <Star class="h-4 w-4" />
+                                        Star on GitHub
+                                    </Button>
+                                </a>
+                                <Link :href="route('register')">
+                                    <Button size="lg" class="w-full gap-2 bg-white text-slate-900 hover:bg-white/90 sm:w-auto">
+                                        Try It Free
+                                        <ArrowRight class="h-4 w-4" />
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA -->
+        <section class="border-border/40 border-t py-16 sm:py-24">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="mx-auto max-w-3xl text-center">
+                    <h2 class="text-foreground mb-4 text-3xl font-bold tracking-tight sm:text-4xl">Ready to simplify your bill management?</h2>
+                    <p class="text-muted-foreground mb-8 text-lg">
+                        Join users who have already taken control of their finances. Start for free today.
                     </p>
-                    <Link :href="route('register')">
-                        <Button size="lg">Create Free Account</Button>
-                    </Link>
+                    <div class="flex flex-col justify-center gap-3 sm:flex-row">
+                        <Link :href="route('register')">
+                            <Button size="lg" class="w-full gap-2 sm:w-auto">
+                                Create Free Account
+                                <ArrowRight class="h-4 w-4" />
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Footer -->
-        <footer class="border-border/40 border-t py-12">
-            <div class="container mx-auto px-4">
-                <div class="flex flex-col items-center justify-between md:flex-row">
-                    <div class="mb-6 md:mb-0">
-                        <Link href="/" class="flex items-center space-x-2">
-                            <AppLogo />
-                        </Link>
-                        <p class="text-muted-foreground mt-2 text-sm">
-                            © {{ new Date().getFullYear() }} {{ $page.props.name }}. All rights reserved.
-                        </p>
-                    </div>
-                    <div class="flex space-x-6">
-                        <Link :href="route('legal.terms')" class="text-muted-foreground hover:text-foreground transition-colors"> Terms </Link>
-                        <Link :href="route('legal.privacy')" class="text-muted-foreground hover:text-foreground transition-colors"> Privacy </Link>
-                        <Link :href="route('legal.contact')" class="text-muted-foreground hover:text-foreground transition-colors"> Contact </Link>
-                    </div>
-                </div>
-            </div>
-        </footer>
+        <Footer />
     </div>
 </template>
