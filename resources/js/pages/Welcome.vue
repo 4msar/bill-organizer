@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DashboardMockPreview from '@/components/pages/DashboardMockPreview.vue';
 import Footer from '@/components/pages/Footer.vue';
 import Header from '@/components/pages/Header.vue';
 import { Badge } from '@/components/ui/badge';
@@ -87,10 +88,13 @@ const steps = [
             <!-- Gradient background -->
             <div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
                 <div
-                    class="absolute -top-1/2 left-1/2 h-[800px] w-[800px] -translate-x-1/2 rounded-full bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 blur-3xl dark:from-blue-500/10 dark:via-purple-500/10 dark:to-pink-500/10"
+                    class="bg-gradient-radial absolute -top-40 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full from-blue-500/30 via-purple-500/20 to-transparent blur-3xl sm:h-[500px] sm:w-[500px] lg:h-[600px] lg:w-[600px]"
                 />
                 <div
-                    class="absolute top-1/4 right-0 h-[400px] w-[400px] rounded-full bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 blur-3xl dark:from-emerald-500/10 dark:to-cyan-500/10"
+                    class="bg-gradient-radial absolute top-20 -right-20 h-80 w-80 rounded-full from-emerald-500/25 via-cyan-500/15 to-transparent blur-2xl sm:h-96 sm:w-96"
+                />
+                <div
+                    class="bg-gradient-radial absolute -bottom-20 -left-20 h-72 w-72 rounded-full from-pink-500/20 via-rose-500/10 to-transparent blur-2xl sm:h-80 sm:w-80"
                 />
             </div>
 
@@ -155,55 +159,7 @@ const steps = [
                 </div>
 
                 <!-- Dashboard Preview -->
-                <div class="relative mx-auto mt-16 max-w-5xl">
-                    <div class="bg-card/50 rounded-xl border p-2 shadow-2xl backdrop-blur-sm sm:p-3">
-                        <div class="bg-muted/50 aspect-video overflow-hidden rounded-lg border">
-                            <div class="flex h-full flex-col">
-                                <!-- Mock header -->
-                                <div class="border-border/50 flex items-center gap-2 border-b px-4 py-2">
-                                    <div class="flex gap-1.5">
-                                        <div class="h-3 w-3 rounded-full bg-red-400/60" />
-                                        <div class="h-3 w-3 rounded-full bg-yellow-400/60" />
-                                        <div class="h-3 w-3 rounded-full bg-green-400/60" />
-                                    </div>
-                                    <div class="bg-muted ml-4 h-5 flex-1 rounded-md" />
-                                </div>
-                                <!-- Mock content -->
-                                <div class="flex flex-1 p-4">
-                                    <div class="hidden w-48 space-y-2 sm:block">
-                                        <div class="bg-primary/10 h-8 rounded-md" />
-                                        <div class="bg-muted h-6 rounded-md" />
-                                        <div class="bg-muted h-6 rounded-md" />
-                                        <div class="bg-muted h-6 rounded-md" />
-                                    </div>
-                                    <div class="flex-1 space-y-3 sm:ml-4">
-                                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                                            <div class="bg-card h-20 rounded-lg border p-3">
-                                                <div class="bg-muted mb-2 h-3 w-16 rounded" />
-                                                <div class="bg-primary/20 h-6 w-20 rounded" />
-                                            </div>
-                                            <div class="bg-card h-20 rounded-lg border p-3">
-                                                <div class="bg-muted mb-2 h-3 w-16 rounded" />
-                                                <div class="h-6 w-16 rounded bg-emerald-500/20" />
-                                            </div>
-                                            <div class="bg-card h-20 rounded-lg border p-3">
-                                                <div class="bg-muted mb-2 h-3 w-16 rounded" />
-                                                <div class="h-6 w-14 rounded bg-amber-500/20" />
-                                            </div>
-                                            <div class="bg-card h-20 rounded-lg border p-3">
-                                                <div class="bg-muted mb-2 h-3 w-16 rounded" />
-                                                <div class="h-6 w-20 rounded bg-blue-500/20" />
-                                            </div>
-                                        </div>
-                                        <div class="bg-card h-40 rounded-lg border" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Glow effect -->
-                    <div class="absolute inset-0 -z-10 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 blur-3xl" />
-                </div>
+                <DashboardMockPreview />
             </div>
         </section>
 
