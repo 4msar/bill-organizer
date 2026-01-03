@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import AppLogo from '@/components/shared/AppLogo.vue';
+import Footer from '@/components/pages/Footer.vue';
+import Header from '@/components/pages/Header.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Head, Link } from '@inertiajs/vue3';
@@ -10,21 +11,7 @@ import { Head, Link } from '@inertiajs/vue3';
 
     <div class="bg-background flex min-h-screen flex-col">
         <!-- Navigation -->
-        <header class="border-border/40 border-b">
-            <div class="container mx-auto flex items-center justify-between px-4 py-4">
-                <!-- Logo -->
-                <Link href="/" class="flex items-center space-x-2">
-                    <AppLogo class="text-black dark:text-white" />
-                </Link>
-
-                <!-- Navigation -->
-                <nav class="flex items-center gap-4">
-                    <Link :href="route('home')">
-                        <Button variant="ghost">Home</Button>
-                    </Link>
-                </nav>
-            </div>
-        </header>
+        <Header />
 
         <!-- Content -->
         <main class="flex-1 py-12">
@@ -244,23 +231,6 @@ import { Head, Link } from '@inertiajs/vue3';
         </main>
 
         <!-- Footer -->
-        <footer class="border-border/40 border-t py-8">
-            <div class="container mx-auto px-4">
-                <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
-                    <div class="text-muted-foreground text-sm">© {{ new Date().getFullYear() }} {{ $page.props.name }}. All rights reserved.</div>
-                    <div class="flex space-x-6">
-                        <Link :href="route('legal.terms')" class="text-muted-foreground hover:text-foreground text-sm transition-colors">
-                            Terms
-                        </Link>
-                        <Link :href="route('legal.privacy')" class="text-muted-foreground hover:text-foreground text-sm transition-colors">
-                            Privacy
-                        </Link>
-                        <Link :href="route('legal.contact')" class="text-muted-foreground hover:text-foreground text-sm transition-colors">
-                            Contact
-                        </Link>
-                    </div>
-                </div>
-            </div>
-        </footer>
+        <Footer />
     </div>
 </template>

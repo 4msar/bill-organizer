@@ -1,31 +1,11 @@
 <script setup lang="ts">
-import AppLogoIcon from '@/components/shared/AppLogoIcon.vue';
+import Footer from '@/components/pages/Footer.vue';
+import Header from '@/components/pages/Header.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { SharedData } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/vue3';
-import {
-    ArrowRight,
-    BarChart3,
-    Bell,
-    Calendar,
-    Check,
-    ChevronRight,
-    Github,
-    Receipt,
-    Shield,
-    Sparkles,
-    Star,
-    TrendingUp,
-    Users,
-} from 'lucide-vue-next';
-import { computed } from 'vue';
-
-const page = usePage<SharedData>();
-
-// Check if user is logged in
-const isAuthenticated = computed(() => page.props.auth.user);
+import { Head, Link } from '@inertiajs/vue3';
+import { ArrowRight, BarChart3, Bell, Calendar, Check, Github, Receipt, Shield, Sparkles, Star, TrendingUp, Users } from 'lucide-vue-next';
 
 // Core features
 const coreFeatures = [
@@ -100,51 +80,12 @@ const steps = [
 
     <div class="bg-background min-h-screen">
         <!-- Navigation -->
-        <header class="fixed top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
-            <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-                <Link href="/" class="flex items-center gap-2">
-                    <div class="bg-foreground flex h-8 w-8 items-center justify-center rounded-lg">
-                        <AppLogoIcon class="text-background h-5 w-5" />
-                    </div>
-                    <span class="text-foreground text-lg font-semibold">{{ $page.props.name }}</span>
-                </Link>
-
-                <nav class="flex items-center gap-2 sm:gap-3">
-                    <a
-                        href="https://github.com/4msar/bill-organizer"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="text-muted-foreground hover:text-foreground hidden transition-colors sm:flex"
-                    >
-                        <Github class="h-5 w-5" />
-                    </a>
-                    <template v-if="isAuthenticated">
-                        <Link :href="route('dashboard')">
-                            <Button>
-                                Dashboard
-                                <ChevronRight class="ml-1 h-4 w-4" />
-                            </Button>
-                        </Link>
-                    </template>
-                    <template v-else>
-                        <Link :href="route('login')">
-                            <Button variant="ghost" size="sm">Log in</Button>
-                        </Link>
-                        <Link :href="route('register')">
-                            <Button size="sm">Get Started</Button>
-                        </Link>
-                    </template>
-                </nav>
-            </div>
-        </header>
+        <Header />
 
         <!-- Hero Section -->
         <section class="relative overflow-hidden pt-24 pb-16 sm:pt-32 sm:pb-24">
             <!-- Gradient background -->
-            <div
-                class="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
-                aria-hidden="true"
-            >
+            <div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
                 <div
                     class="absolute -top-1/2 left-1/2 h-[800px] w-[800px] -translate-x-1/2 rounded-full bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 blur-3xl dark:from-blue-500/10 dark:via-purple-500/10 dark:to-pink-500/10"
                 />
@@ -167,15 +108,17 @@ const steps = [
                     <h1 class="text-foreground mb-6 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
                         Take Control of Your
                         <span class="relative">
-                            <span class="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent dark:from-blue-400 dark:via-purple-400 dark:to-pink-400">
+                            <span
+                                class="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent dark:from-blue-400 dark:via-purple-400 dark:to-pink-400"
+                            >
                                 Bills & Expenses
                             </span>
                         </span>
                     </h1>
 
                     <p class="text-muted-foreground mx-auto mb-8 max-w-2xl text-lg sm:text-xl">
-                        The simple, beautiful way to track your bills, set payment reminders, and understand where your money goes.
-                        No credit card required.
+                        The simple, beautiful way to track your bills, set payment reminders, and understand where your money goes. No credit card
+                        required.
                     </p>
 
                     <!-- CTA buttons -->
@@ -186,11 +129,7 @@ const steps = [
                                 <ArrowRight class="h-4 w-4" />
                             </Button>
                         </Link>
-                        <a
-                            href="https://github.com/4msar/bill-organizer"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
+                        <a href="https://github.com/4msar/bill-organizer" target="_blank" rel="noopener noreferrer">
                             <Button size="lg" variant="outline" class="w-full gap-2 sm:w-auto">
                                 <Github class="h-4 w-4" />
                                 Star on GitHub
@@ -245,15 +184,15 @@ const steps = [
                                             </div>
                                             <div class="bg-card h-20 rounded-lg border p-3">
                                                 <div class="bg-muted mb-2 h-3 w-16 rounded" />
-                                                <div class="bg-emerald-500/20 h-6 w-16 rounded" />
+                                                <div class="h-6 w-16 rounded bg-emerald-500/20" />
                                             </div>
                                             <div class="bg-card h-20 rounded-lg border p-3">
                                                 <div class="bg-muted mb-2 h-3 w-16 rounded" />
-                                                <div class="bg-amber-500/20 h-6 w-14 rounded" />
+                                                <div class="h-6 w-14 rounded bg-amber-500/20" />
                                             </div>
                                             <div class="bg-card h-20 rounded-lg border p-3">
                                                 <div class="bg-muted mb-2 h-3 w-16 rounded" />
-                                                <div class="bg-blue-500/20 h-6 w-20 rounded" />
+                                                <div class="h-6 w-20 rounded bg-blue-500/20" />
                                             </div>
                                         </div>
                                         <div class="bg-card h-40 rounded-lg border" />
@@ -285,12 +224,8 @@ const steps = [
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="mx-auto mb-12 max-w-3xl text-center sm:mb-16">
                     <Badge variant="outline" class="mb-4">Features</Badge>
-                    <h2 class="text-foreground mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
-                        Everything you need to manage bills
-                    </h2>
-                    <p class="text-muted-foreground text-lg">
-                        A complete toolkit designed to help you stay organized and never miss a payment.
-                    </p>
+                    <h2 class="text-foreground mb-4 text-3xl font-bold tracking-tight sm:text-4xl">Everything you need to manage bills</h2>
+                    <p class="text-muted-foreground text-lg">A complete toolkit designed to help you stay organized and never miss a payment.</p>
                 </div>
 
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -300,7 +235,9 @@ const steps = [
                         class="group bg-card/50 hover:bg-card border-border/50 hover:border-border transition-all duration-200 hover:shadow-md"
                     >
                         <CardContent class="p-6">
-                            <div class="bg-primary/10 text-primary mb-4 flex h-11 w-11 items-center justify-center rounded-lg transition-colors group-hover:bg-primary/20">
+                            <div
+                                class="bg-primary/10 text-primary group-hover:bg-primary/20 mb-4 flex h-11 w-11 items-center justify-center rounded-lg transition-colors"
+                            >
                                 <component :is="feature.icon" class="h-5 w-5" />
                             </div>
                             <h3 class="text-foreground mb-2 text-lg font-semibold">{{ feature.title }}</h3>
@@ -316,12 +253,8 @@ const steps = [
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="mx-auto mb-12 max-w-3xl text-center sm:mb-16">
                     <Badge variant="outline" class="mb-4">How It Works</Badge>
-                    <h2 class="text-foreground mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
-                        Get started in minutes
-                    </h2>
-                    <p class="text-muted-foreground text-lg">
-                        Three simple steps to take control of your finances.
-                    </p>
+                    <h2 class="text-foreground mb-4 text-3xl font-bold tracking-tight sm:text-4xl">Get started in minutes</h2>
+                    <p class="text-muted-foreground text-lg">Three simple steps to take control of your finances.</p>
                 </div>
 
                 <div class="grid gap-8 md:grid-cols-3">
@@ -340,34 +273,29 @@ const steps = [
         <!-- Open Source Section -->
         <section class="py-16 sm:py-24">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-900 overflow-hidden rounded-2xl">
+                <div class="overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-900">
                     <div class="relative px-6 py-12 sm:px-12 sm:py-16">
                         <!-- Background pattern -->
                         <div class="absolute inset-0 opacity-10">
-                            <div class="absolute inset-0 bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)] bg-[size:24px_24px]" />
+                            <div
+                                class="absolute inset-0 bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)] bg-[size:24px_24px]"
+                            />
                         </div>
-                        
+
                         <div class="relative flex flex-col items-center gap-8 lg:flex-row lg:justify-between">
                             <div class="max-w-xl text-center lg:text-left">
                                 <div class="mb-4 flex items-center justify-center gap-2 lg:justify-start">
                                     <Github class="h-6 w-6 text-white" />
                                     <span class="text-sm font-medium text-white/80">Open Source</span>
                                 </div>
-                                <h2 class="mb-4 text-3xl font-bold text-white sm:text-4xl">
-                                    Built by the community, for the community
-                                </h2>
+                                <h2 class="mb-4 text-3xl font-bold text-white sm:text-4xl">Built by the community, for the community</h2>
                                 <p class="text-lg text-white/70">
-                                    Bill Organizer is 100% open source. Contribute, customize, or self-host it yourself. 
-                                    Your data, your rules.
+                                    Bill Organizer is 100% open source. Contribute, customize, or self-host it yourself. Your data, your rules.
                                 </p>
                             </div>
-                            
+
                             <div class="flex flex-col gap-3 sm:flex-row">
-                                <a
-                                    href="https://github.com/4msar/bill-organizer"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
+                                <a href="https://github.com/4msar/bill-organizer" target="_blank" rel="noopener noreferrer">
                                     <Button size="lg" variant="secondary" class="w-full gap-2 sm:w-auto">
                                         <Star class="h-4 w-4" />
                                         Star on GitHub
@@ -390,9 +318,7 @@ const steps = [
         <section class="border-border/40 border-t py-16 sm:py-24">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="mx-auto max-w-3xl text-center">
-                    <h2 class="text-foreground mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
-                        Ready to simplify your bill management?
-                    </h2>
+                    <h2 class="text-foreground mb-4 text-3xl font-bold tracking-tight sm:text-4xl">Ready to simplify your bill management?</h2>
                     <p class="text-muted-foreground mb-8 text-lg">
                         Join users who have already taken control of their finances. Start for free today.
                     </p>
@@ -409,43 +335,6 @@ const steps = [
         </section>
 
         <!-- Footer -->
-        <footer class="border-border/40 border-t py-8 sm:py-12">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
-                    <div class="flex flex-col items-center gap-4 md:flex-row md:gap-6">
-                        <Link href="/" class="flex items-center gap-2">
-                            <div class="bg-foreground flex h-7 w-7 items-center justify-center rounded-md">
-                                <AppLogoIcon class="text-background h-4 w-4" />
-                            </div>
-                            <span class="text-foreground font-semibold">{{ $page.props.name }}</span>
-                        </Link>
-                        <p class="text-muted-foreground text-center text-sm md:text-left">
-                            © {{ new Date().getFullYear() }} {{ $page.props.name }}. All rights reserved.
-                        </p>
-                    </div>
-                    
-                    <nav class="flex flex-wrap items-center justify-center gap-6">
-                        <Link :href="route('legal.terms')" class="text-muted-foreground hover:text-foreground text-sm transition-colors">
-                            Terms
-                        </Link>
-                        <Link :href="route('legal.privacy')" class="text-muted-foreground hover:text-foreground text-sm transition-colors">
-                            Privacy
-                        </Link>
-                        <Link :href="route('legal.contact')" class="text-muted-foreground hover:text-foreground text-sm transition-colors">
-                            Contact
-                        </Link>
-                        <a
-                            href="https://github.com/4msar/bill-organizer"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm transition-colors"
-                        >
-                            <Github class="h-4 w-4" />
-                            GitHub
-                        </a>
-                    </nav>
-                </div>
-            </div>
-        </footer>
+        <Footer />
     </div>
 </template>
