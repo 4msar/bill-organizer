@@ -12,22 +12,22 @@ import TeamSwitcher from './TeamSwitcher.vue';
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: '/dashboard',
+        href: route('dashboard'),
         icon: LayoutGrid,
     },
     {
         title: 'Bills',
-        href: '/bills',
+        href: route('bills.index'),
         icon: Currency,
     },
     {
         title: 'Categories',
-        href: '/categories',
+        href: route('categories.index'),
         icon: Tags,
     },
     {
         title: 'Transactions',
-        href: '/transactions',
+        href: route('transactions.index'),
         icon: Receipt,
     },
     {

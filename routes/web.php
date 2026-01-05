@@ -30,8 +30,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::middleware(['auth', 'verified', 'team'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/calendar', [DashboardController::class, 'calendar'])->name('calendar')->middleware('feature:calendar');
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/calendar', [DashboardController::class, 'calendar'])->name('calendar');
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index')->middleware('feature:reports');
 
     // Team routes
     Route::controller(TeamController::class)->name('team.')->prefix('team')->group(function () {
@@ -76,7 +76,6 @@ Route::middleware(['auth', 'verified', 'team'])->group(function () {
     Route::controller(NoteController::class)
         ->prefix('notes')
         ->name('notes.')
-        ->middleware('feature:notes')
         ->group(function () {
             Route::get('/', 'index')->name('index');
             Route::post('/', 'store')->name('store');
