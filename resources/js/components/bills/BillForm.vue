@@ -194,6 +194,7 @@ function submit(): void {
                                 </SelectTrigger>
                             </FormControl>
                             <SelectContent>
+                                <SelectItem :value="null">Use Team Currency ({{ $page.props?.team.current?.currency as string }})</SelectItem>
                                 <SelectItem value="USD">USD - US Dollar</SelectItem>
                                 <SelectItem value="EUR">EUR - Euro</SelectItem>
                                 <SelectItem value="GBP">GBP - British Pound</SelectItem>
@@ -209,7 +210,7 @@ function submit(): void {
                             </SelectContent>
                         </Select>
                         <FormDescription>
-                            Leave empty to use team's base currency ({{ $page.props?.team.current?.currency as string }})
+                            Select a currency or use team's base currency
                         </FormDescription>
                         <FormMessage :message="form.errors.currency" />
                     </FormItem>

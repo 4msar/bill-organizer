@@ -443,10 +443,10 @@ final class Bill extends Model
      * Get the effective currency for the bill.
      * Falls back to team's base currency if not set.
      */
-    public function getCurrencyAttribute($value): string
+    public function getEffectiveCurrency(): string
     {
-        if ($value) {
-            return $value;
+        if ($this->currency) {
+            return $this->currency;
         }
 
         return $this->team?->currency ?? 'USD';

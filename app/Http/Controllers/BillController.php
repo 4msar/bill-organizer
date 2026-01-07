@@ -13,7 +13,7 @@ final class BillController extends Controller
     const ValidationRules = [
         'title' => ['required', 'string', 'max:255'],
         'amount' => ['required', 'numeric', 'min:1'],
-        'currency' => ['string', 'nullable', 'size:3'],
+        'currency' => ['string', 'nullable', 'size:3', 'in:USD,EUR,GBP,JPY,AUD,CAD,CHF,CNY,INR,BRL,MXN,SGD'],
         'base_amount' => ['numeric', 'nullable', 'min:0'],
         'due_date' => ['required', 'date'],
         'trial_start_date' => ['date', 'nullable'],
