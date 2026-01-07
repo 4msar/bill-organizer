@@ -170,7 +170,7 @@ function markAsPaid(id: string | number) {
                                         </div>
                                     </TableCell>
                                     <TableCell>{{ bill.category?.name || 'Uncategorized' }}</TableCell>
-                                    <TableCell>{{ formatCurrency(bill.amount, $page.props?.team?.current?.currency as string) }}</TableCell>
+                                    <TableCell>{{ formatCurrency(bill.amount, bill.currency || $page.props?.team?.current?.currency as string) }}</TableCell>
                                     <TableCell>
                                         <div>
                                             <span

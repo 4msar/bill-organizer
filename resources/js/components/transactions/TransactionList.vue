@@ -84,7 +84,7 @@ function openTransactionDetails(transaction: Transaction): void {
                                 </div>
                             </TableCell>
                             <TableCell class="font-medium">
-                                {{ formatCurrency(transaction.amount, $page.props?.team?.current?.currency as string) }}
+                                {{ formatCurrency(transaction.amount, transaction.bill?.currency || $page.props?.team?.current?.currency as string) }}
                             </TableCell>
                             <TableCell>
                                 <div class="flex items-center">

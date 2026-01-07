@@ -319,7 +319,7 @@ const userName = props.auth.user.name || 'User';
                                                     >Trial
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell>{{ formatCurrency(bill.amount, $page.props?.team?.current?.currency as string) }}</TableCell>
+                                            <TableCell>{{ formatCurrency(bill.amount, bill.currency || $page.props?.team?.current?.currency as string) }}</TableCell>
                                             <TableCell>
                                                 <span
                                                     :class="{
@@ -377,7 +377,7 @@ const userName = props.auth.user.name || 'User';
                                     <TableBody>
                                         <TableRow v-for="bill in recentBills" :key="bill.id">
                                             <TableCell class="font-medium">{{ bill.title }}</TableCell>
-                                            <TableCell>{{ formatCurrency(bill.amount, $page.props?.team?.current?.currency as string) }}</TableCell>
+                                            <TableCell>{{ formatCurrency(bill.amount, bill.currency || $page.props?.team?.current?.currency as string) }}</TableCell>
                                             <TableCell>
                                                 <Badge :variant="bill.status === 'paid' ? 'secondary' : 'default'">
                                                     {{ bill.status === 'paid' ? 'Paid' : 'Unpaid' }}

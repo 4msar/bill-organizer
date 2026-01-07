@@ -32,6 +32,8 @@ final class Bill extends Model
         'title',
         'description',
         'amount',
+        'currency',
+        'base_amount',
         'due_date',
         'trial_start_date',
         'trial_end_date',
@@ -435,5 +437,36 @@ final class Bill extends Model
                 "trial_notified:$daysBefore" => now()->toDateTimeString(),
             ]));
         }
+    }
+
+    /**
+     * Get the effective currency for the bill.
+     * Falls back to team's base currency if not set.
+     */
+    public function getCurrencyAttribute($value): string
+    {
+        if ($value) {
+            return $value;
+        }
+
+        return $this->team?->currency ?? 'USD';
+    }
+
+    /**
+     * Get the effective amount for display.
+     * Returns the amount in the bill's currency.
+     */
+    public function getDisplayAmount(): float
+    {
+        return $this->amount;
+    }
+
+    /**
+     * Get the base amount for reporting.
+     * Falls back to regular amount if not converted.
+     */
+    public function getBaseAmount(): float
+    {
+        return $this->base_amount ?? $this->amount;
     }
 }

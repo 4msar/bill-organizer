@@ -23,6 +23,8 @@ export type BillData = Pick<
     | 'title'
     | 'description'
     | 'amount'
+    | 'currency'
+    | 'base_amount'
     | 'payment_url'
     | 'due_date'
     | 'trial_start_date'
@@ -51,6 +53,8 @@ const form = useForm<BillData>({
     title: props.bill.title,
     description: props.bill.description,
     amount: props.bill.amount,
+    currency: props.bill.currency || null,
+    base_amount: props.bill.base_amount || null,
     due_date: props.bill.due_date,
     trial_start_date: props.bill.trial_start_date,
     trial_end_date: props.bill.trial_end_date,
@@ -179,6 +183,40 @@ function submit(): void {
                     </FormItem>
                 </FormField>
 
+                <!-- Currency -->
+                <FormField v-model="form.currency" name="currency">
+                    <FormItem>
+                        <FormLabel>Currency</FormLabel>
+                        <Select v-model="form.currency" class="w-full">
+                            <FormControl class="w-full">
+                                <SelectTrigger>
+                                    <SelectValue :placeholder="$page.props?.team.current?.currency as string || 'USD'" />
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                <SelectItem value="USD">USD - US Dollar</SelectItem>
+                                <SelectItem value="EUR">EUR - Euro</SelectItem>
+                                <SelectItem value="GBP">GBP - British Pound</SelectItem>
+                                <SelectItem value="JPY">JPY - Japanese Yen</SelectItem>
+                                <SelectItem value="AUD">AUD - Australian Dollar</SelectItem>
+                                <SelectItem value="CAD">CAD - Canadian Dollar</SelectItem>
+                                <SelectItem value="CHF">CHF - Swiss Franc</SelectItem>
+                                <SelectItem value="CNY">CNY - Chinese Yuan</SelectItem>
+                                <SelectItem value="INR">INR - Indian Rupee</SelectItem>
+                                <SelectItem value="BRL">BRL - Brazilian Real</SelectItem>
+                                <SelectItem value="MXN">MXN - Mexican Peso</SelectItem>
+                                <SelectItem value="SGD">SGD - Singapore Dollar</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FormDescription>
+                            Leave empty to use team's base currency ({{ $page.props?.team.current?.currency as string }})
+                        </FormDescription>
+                        <FormMessage :message="form.errors.currency" />
+                    </FormItem>
+                </FormField>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <!-- Due Date -->
                 <FormField v-model="form.due_date" name="due_date">
                     <FormItem>
@@ -231,6 +269,25 @@ function submit(): void {
                     </FormItem>
                 </FormField>
             </div>
+
+            <!-- Base Amount (optional, for manual conversion) -->
+            <FormField v-if="form.currency && form.currency !== $page.props?.team.current?.currency" v-model="form.base_amount" name="base_amount">
+                <FormItem>
+                    <FormLabel>Amount in Base Currency ({{ $page.props?.team.current?.currency as string }}) - Optional</FormLabel>
+                    <FormControl>
+                        <div class="relative">
+                            <span class="text-muted-foreground absolute inset-y-0 left-0 flex items-center pl-3">{{
+                                $page.props?.team.current?.currency_symbol as string
+                            }}</span>
+                            <Input v-model="form.base_amount" type="number" min="0" step="0.01" placeholder="Auto-calculated if left empty" class="pl-8" />
+                        </div>
+                    </FormControl>
+                    <FormDescription>
+                        For reporting purposes. Leave empty to use the same as amount.
+                    </FormDescription>
+                    <FormMessage :message="form.errors.base_amount" />
+                </FormItem>
+            </FormField>
 
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <!-- Payment URL -->
