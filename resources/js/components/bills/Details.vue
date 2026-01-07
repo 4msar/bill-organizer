@@ -40,7 +40,10 @@ const isPastDue = computed((): boolean => {
                     </CardDescription>
                 </div>
                 <div class="text-2xl font-bold">
-                    {{ formatCurrency(bill.amount, $page.props?.team?.current?.currency as string) }}
+                    {{ formatCurrency(bill.amount, bill.currency || $page.props?.team?.current?.currency as string) }}
+                    <span v-if="bill.currency && bill.currency !== $page.props?.team?.current?.currency" class="text-sm text-muted-foreground ml-2">
+                        (≈ {{ formatCurrency(bill.base_amount || bill.amount, $page.props?.team?.current?.currency as string) }} in base currency)
+                    </span>
                 </div>
             </div>
         </CardHeader>

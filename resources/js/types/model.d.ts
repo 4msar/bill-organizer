@@ -29,6 +29,8 @@ export interface Bill extends Model {
     description: string;
     tags: string[]; // Array of tags
     amount: number;
+    currency?: string | null;
+    base_amount?: number | null;
     due_date?: string;
     trial_start_date?: string;
     trial_end_date?: string;

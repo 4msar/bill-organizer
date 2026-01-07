@@ -103,7 +103,7 @@ function updateNextDueDate(date?: DateValue): void {
                         <p class="text-muted-foreground text-sm">Due: {{ formatDate(bill.due_date as string) }}</p>
                     </div>
                     <div class="text-xl font-bold">
-                        {{ formatCurrency(bill.amount, $page.props?.team?.current?.currency as string) }}
+                        {{ formatCurrency(bill.amount, bill.currency || $page.props?.team?.current?.currency as string) }}
                     </div>
                 </div>
             </div>
