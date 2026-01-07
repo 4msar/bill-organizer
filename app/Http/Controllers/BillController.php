@@ -10,22 +10,27 @@ use Illuminate\Support\Facades\Redirect;
 
 final class BillController extends Controller
 {
-    const ValidationRules = [
-        'title' => ['required', 'string', 'max:255'],
-        'amount' => ['required', 'numeric', 'min:1'],
-        'currency' => ['string', 'nullable', 'size:3', 'in:USD,EUR,GBP,JPY,AUD,CAD,CHF,CNY,INR,BRL,MXN,SGD'],
-        'base_amount' => ['numeric', 'nullable', 'min:0'],
-        'due_date' => ['required', 'date'],
-        'trial_start_date' => ['date', 'nullable'],
-        'trial_end_date' => ['date', 'nullable', 'after:trial_start_date'],
-        'has_trial' => ['boolean', 'nullable'],
-        'category_id' => ['integer', 'nullable'],
-        'description' => ['string', 'nullable'],
-        'is_recurring' => ['boolean', 'nullable'],
-        'recurrence_period' => ['string', 'nullable'],
-        'payment_url' => ['string', 'nullable'],
-        'tags' => ['array', 'nullable'],
-    ];
+    const SUPPORTED_CURRENCIES = ['USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'CNY', 'INR', 'BRL', 'MXN', 'SGD'];
+
+    public static function getValidationRules(): array
+    {
+        return [
+            'title' => ['required', 'string', 'max:255'],
+            'amount' => ['required', 'numeric', 'min:1'],
+            'currency' => ['string', 'nullable', 'size:3', 'in:'.implode(',', self::SUPPORTED_CURRENCIES)],
+            'base_amount' => ['numeric', 'nullable', 'min:0'],
+            'due_date' => ['required', 'date'],
+            'trial_start_date' => ['date', 'nullable'],
+            'trial_end_date' => ['date', 'nullable', 'after:trial_start_date'],
+            'has_trial' => ['boolean', 'nullable'],
+            'category_id' => ['integer', 'nullable'],
+            'description' => ['string', 'nullable'],
+            'is_recurring' => ['boolean', 'nullable'],
+            'recurrence_period' => ['string', 'nullable'],
+            'payment_url' => ['string', 'nullable'],
+            'tags' => ['array', 'nullable'],
+        ];
+    }
 
     public function index()
     {
@@ -87,7 +92,7 @@ final class BillController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate(self::ValidationRules);
+        $data = $request->validate(self::getValidationRules());
 
         Bill::create($data + [
             'team_id' => active_team_id(),
@@ -124,7 +129,7 @@ final class BillController extends Controller
 
     public function update(Request $request, Bill $bill)
     {
-        $data = $request->validate(self::ValidationRules);
+        $data = $request->validate(self::getValidationRules());
 
         $bill->update($data);
 
