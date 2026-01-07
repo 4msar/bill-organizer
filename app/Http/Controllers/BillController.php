@@ -7,6 +7,7 @@ use App\Models\Category;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rule;
 
 final class BillController extends Controller
 {
@@ -17,7 +18,7 @@ final class BillController extends Controller
         return [
             'title' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'numeric', 'min:1'],
-            'currency' => ['string', 'nullable', 'size:3', 'in:'.implode(',', self::SUPPORTED_CURRENCIES)],
+            'currency' => ['nullable', 'string', 'size:3', Rule::in(self::SUPPORTED_CURRENCIES)],
             'base_amount' => ['numeric', 'nullable', 'min:0'],
             'due_date' => ['required', 'date'],
             'trial_start_date' => ['date', 'nullable'],

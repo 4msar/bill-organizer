@@ -194,7 +194,7 @@ function submit(): void {
                                 </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                                <SelectItem :value="null">Use Team Currency ({{ $page.props?.team.current?.currency as string }})</SelectItem>
+                                <SelectItem value="">Use Team Currency ({{ $page.props?.team.current?.currency as string }})</SelectItem>
                                 <SelectItem value="USD">USD - US Dollar</SelectItem>
                                 <SelectItem value="EUR">EUR - Euro</SelectItem>
                                 <SelectItem value="GBP">GBP - British Pound</SelectItem>
@@ -280,11 +280,11 @@ function submit(): void {
                             <span class="text-muted-foreground absolute inset-y-0 left-0 flex items-center pl-3">{{
                                 $page.props?.team.current?.currency_symbol as string
                             }}</span>
-                            <Input v-model="form.base_amount" type="number" min="0" step="0.01" placeholder="Auto-calculated if left empty" class="pl-8" />
+                            <Input v-model="form.base_amount" type="number" min="0" step="0.01" placeholder="Leave empty to use same as amount" class="pl-8" />
                         </div>
                     </FormControl>
                     <FormDescription>
-                        For reporting purposes. Leave empty to use the same as amount.
+                        For reporting purposes. If left empty, the bill amount will be used for reporting.
                     </FormDescription>
                     <FormMessage :message="form.errors.base_amount" />
                 </FormItem>
