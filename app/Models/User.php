@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Observers\UserObserver;
 use App\Traits\HasMetaData;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 
+#[ObservedBy([UserObserver::class])]
 final class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -65,6 +69,15 @@ final class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Get the transactions for the user.
+     */
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class)
+            ->orderBy('payment_date', 'desc');
+    }
+
+    /**
      * Get the active team for the user.
      */
     public function activeTeam()
@@ -77,7 +90,16 @@ final class User extends Authenticatable implements MustVerifyEmail
      */
     public function teams()
     {
-        return $this->belongsToMany(Team::class, Team::PivotTableName)->distinct();
+        return $this->belongsToMany(Team::class, Team::PivotTableName)
+            ->distinct();
+    }
+
+    /**
+     * Get the notes for the user.
+     */
+    public function notes()
+    {
+        return $this->hasMany(Note::class);
     }
 
     /**

@@ -91,14 +91,15 @@ const handleClose = () => {
             <form @submit.prevent="handleSubmit">
                 <div class="grid gap-4 py-4">
                     <div>
-                        <Label class="mb-2">Title *</Label>
-                        <Input placeholder="Enter note title..." v-model="form.title" :disabled="form.processing" />
+                        <Label for="title" class="mb-2">Title *</Label>
+                        <Input name="title" placeholder="Enter note title..." v-model="form.title" :disabled="form.processing" />
                         <FormError :message="form.errors.title" />
                     </div>
 
                     <div>
-                        <Label class="mb-2">Content</Label>
+                        <Label for="content" class="mb-2">Content</Label>
                         <Textarea
+                            name="content"
                             placeholder="Write your note content here..."
                             class="min-h-[120px] resize-none"
                             v-model="form.content"

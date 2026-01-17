@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Observers\TeamObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
+#[ObservedBy([TeamObserver::class])]
 final class Team extends Model
 {
     use HasFactory;
@@ -59,7 +62,10 @@ final class Team extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, self::PivotTableName)->distinct();
+        return $this->belongsToMany(
+            User::class,
+            self::PivotTableName
+        )->distinct();
     }
 
     /**
@@ -70,5 +76,45 @@ final class Team extends Model
         $user = Auth::user();
 
         return $user->activeTeam;
+    }
+
+    /**
+     * Relation with bills
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function bills()
+    {
+        return $this->hasMany(Bill::class);
+    }
+
+    /**
+     * Relation with transactions
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    /**
+     * Relation with categories
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function category()
+    {
+        return $this->hasMany(Category::class);
+    }
+
+    /**
+     * Relation with notes
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function notes()
+    {
+        return $this->hasMany(Note::class);
     }
 }

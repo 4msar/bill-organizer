@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Models\Scopes\TeamScope;
+use App\Observers\CategoryObserver;
 use App\Traits\HasTeam;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-#[ScopedBy([TeamScope::class])]
+#[ScopedBy([TeamScope::class]), ObservedBy(CategoryObserver::class)]
 final class Category extends Model
 {
     use HasFactory;

@@ -3,15 +3,17 @@
 namespace App\Models;
 
 use App\Models\Scopes\TeamScope;
+use App\Observers\BillObserver;
 use App\Traits\HasMetaData;
 use App\Traits\HasTeam;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[ScopedBy([TeamScope::class])]
+#[ScopedBy([TeamScope::class]), ObservedBy(BillObserver::class)]
 final class Bill extends Model
 {
     use HasFactory;
@@ -64,16 +66,12 @@ final class Bill extends Model
     {
         parent::boot();
 
-        self::deleted(function (Bill $bill) {
-            $bill->transactions()->delete();
-            $bill->notes()->detach();
+        self::creating(function (Bill $bill) {
+            $bill->createUniqueTags();
         });
 
-        self::creating(function (Bill $bill) {
-            if ($bill->tags) {
-                $bill->tags = array_map(fn ($item) => strtolower(trim($item)), $bill->tags);
-                $bill->tags = array_filter($bill->tags, fn ($tag) => ! empty($tag));
-            }
+        self::updating(function (Bill $bill) {
+            $bill->createUniqueTags();
         });
     }
 
@@ -341,9 +339,26 @@ final class Bill extends Model
             ->pluck('tags')
             ->filter()
             ->flatten()
-            ->map(fn ($tag) => strtolower(trim($tag)))
+            ->map(fn($tag) => strtolower(trim($tag)))
             ->unique()
             ->values();
+    }
+
+    /**
+     * Unique tags
+     */
+    public function createUniqueTags()
+    {
+        if ($this->tags) {
+            $this->tags = array_map(
+                fn($item) => strtolower(trim($item)),
+                $this->tags
+            );
+
+            $this->tags = array_filter($this->tags, fn($tag) => ! empty($tag));
+
+            $this->tags = array_values(array_unique($this->tags));
+        }
     }
 
     /**
