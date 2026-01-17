@@ -37,7 +37,7 @@ class TeamObserver
                 $team->transactions()->delete();
 
                 // Delete related categories
-                $team->category()->delete();
+                $team->categories()->delete();
 
                 // Update related notes
                 $team->notes()->update(['team_id' => null]);

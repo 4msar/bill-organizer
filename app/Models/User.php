@@ -95,6 +95,14 @@ final class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Owner teams
+     */
+    public function ownTeams()
+    {
+        return $this->hasMany(Team::class, 'user_id', 'id');
+    }
+
+    /**
      * Get the notes for the user.
      */
     public function notes()

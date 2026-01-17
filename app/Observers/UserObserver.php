@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 use Illuminate\Support\Facades\DB;
@@ -30,23 +31,20 @@ class UserObserver implements ShouldHandleEventsAfterCommit
     public function deleted(User $user): void
     {
         DB::transaction(function () use ($user) {
-            // Delete related categories
-            $user->categories()->delete();
-
-            // Delete related bills
-            $user->bills()->delete();
-
-            // Delete related transactions
-            $user->transactions()->delete();
-
             // Delete related meta and notes
             $user->meta()->delete();
 
             // Delete related notes
-            $user->notes()->delete();
+            $user->notes()->whereNull('team_id')->delete();
 
             // Delete related teams
-            $user->teams()->delete();
+            $user->ownTeams->each->delete();
+
+            // Detach from teams
+            $user->teams->each(function (Team $team) use ($user) {
+                $team->users()->detach($user->id);
+                $team->delete();
+            });
 
             // Delete related notifications
             $user->notifications()->delete();

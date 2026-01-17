@@ -103,7 +103,7 @@ final class Team extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function category()
+    public function categories()
     {
         return $this->hasMany(Category::class);
     }
