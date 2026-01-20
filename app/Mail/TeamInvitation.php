@@ -56,7 +56,7 @@ final class TeamInvitation extends Mailable
                 )
                 ->line('If you weren’t expecting this invitation or have any questions, feel free to reach out — we’re here to help!')
                 ->line('Excited to have you with us! 💛')
-                ->salutation("Warm regards,\nBill Organizer Team")
+                ->salutation("Warm regards,\n\nBill Organizer Team")
                 ->render()
         );
     }
