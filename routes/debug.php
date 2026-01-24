@@ -1,0 +1,20 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+if (app()->environment('local', 'dev', 'development')) {
+    Route::any('/test', function () {
+        // preview team invite email templates
+        // return new \App\Mail\TeamInvitation(
+        //     \App\Models\Team::withoutGlobalScopes()->first(),
+        //     \App\Models\User::first()
+        // )->render();
+
+        // preview upcoming bill notification email template
+        // return (new \App\Notifications\UpcomingBillNotification(
+        //     \App\Models\Bill::withoutGlobalScopes()->with('team')->first()
+        // ))->toMail(\App\Models\User::first());
+
+        return "test route works";
+    });
+}

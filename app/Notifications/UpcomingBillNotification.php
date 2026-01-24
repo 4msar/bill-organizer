@@ -54,7 +54,7 @@ final class UpcomingBillNotification extends Notification
             ->action('View Bill', route('bills.show', $this->bill->id))
             ->line('If you have any questions or need help with anything, feel free to reach out — we’re always happy to assist.')
             ->line('Thanks for being with us! 💛')
-            ->salutation("Warm regards,\n\nBill Organizer Team");
+            ->salutation(str("Warm regards,<br/>Bill Organizer Team")->toHtmlString());
     }
 
     /**
