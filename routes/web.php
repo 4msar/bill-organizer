@@ -57,6 +57,7 @@ Route::middleware(['auth', 'verified', 'team'])->group(function () {
         Route::put('/{bill}', 'update')->name('bills.update');
         Route::delete('/{bill}', 'destroy')->name('bills.destroy');
         Route::patch('/{bill}/pay', 'markAsPaid')->name('bills.pay');
+        Route::get('/{bill}/invoice', 'showInvoiceForm')->name('bills.invoice');
     });
 
     // Category routes
@@ -67,6 +68,7 @@ Route::middleware(['auth', 'verified', 'team'])->group(function () {
     Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store');
     Route::get('/transactions/{transaction}', [TransactionController::class, 'show'])->name('transactions.show');
     Route::delete('/transactions/{transaction}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
+    Route::get('/transactions/{transaction}/receipt', [TransactionController::class, 'showReceipt'])->name('transactions.receipt');
 
     // Bill payment routes
     Route::get('/bills/{bill}/payment', [BillController::class, 'showPaymentForm'])->name('bills.payment');

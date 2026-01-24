@@ -80,6 +80,12 @@ function onPaymentComplete(): void {
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
                         <Button variant="outline" asChild>
+                            <Link :href="route('bills.invoice', bill.id)">
+                                <Receipt class="mr-2 h-4 w-4" />
+                                Generate Invoice
+                            </Link>
+                        </Button>
+                        <Button variant="outline" asChild>
                             <Link :href="route('bills.edit', bill.id)">
                                 <Edit class="mr-2 h-4 w-4" />
                                 Edit

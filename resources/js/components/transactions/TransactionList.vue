@@ -123,6 +123,18 @@ function openTransactionDetails(transaction: Transaction): void {
                             </TableCell>
                             <TableCell class="text-right">
                                 <div class="flex justify-end space-x-1" @click.stop>
+                                    <Tooltip title="View Receipt">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            class="h-8 w-8"
+                                            as="a"
+                                            :href="route('transactions.receipt', transaction.id)"
+                                        >
+                                            <Receipt class="h-4 w-4" />
+                                            <span class="sr-only">Receipt</span>
+                                        </Button>
+                                    </Tooltip>
                                     <Button
                                         v-if="transaction.attachment_link"
                                         variant="ghost"

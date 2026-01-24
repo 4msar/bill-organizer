@@ -69,6 +69,7 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
+
     *,
     ::after,
     ::before,
@@ -79,6 +80,7 @@
 }
 
 @layer utilities {
+
     body,
     html {
         --font-sans:
@@ -184,5 +186,95 @@
 
     .dark [data-sonner-toast][data-styled='true'] [data-description] {
         color: grey !important;
+    }
+}
+
+/* Print Styles for Invoices and Receipts */
+@media print {
+    @page {
+        margin: 0.5in;
+        size: auto;
+    }
+
+    body {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    /* Hide print button and navigation elements */
+    .print\:hidden,
+    [class*='print:hidden'] {
+        display: none !important;
+    }
+
+    /* Hide everything except the main content */
+    body * {
+        visibility: hidden;
+    }
+
+    #invoice-content,
+    #invoice-content *,
+    #receipt-content,
+    #receipt-content * {
+        visibility: visible;
+    }
+
+    #invoice-content,
+    #receipt-content {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Force light colors for printing */
+    .dark\:bg-gray-900,
+    .dark\:bg-gray-800,
+    .dark\:text-white,
+    .dark\:text-gray-400,
+    .dark\:text-gray-500,
+    .dark\:text-gray-600,
+    .dark\:border-gray-700,
+    .dark\:border-gray-800,
+    .dark\:bg-green-900\/20,
+    .dark\:text-green-400 {
+        background-color: white !important;
+        color: black !important;
+        border-color: #e5e7eb !important;
+    }
+
+    /* Keep specific backgrounds for printing */
+    .bg-gray-50 {
+        background-color: #f9fafb !important;
+    }
+
+    .bg-primary\/10 {
+        background-color: #f0f9ff !important;
+    }
+
+    /* Keep primary text color visible */
+    .text-primary {
+        color: #0284c7 !important;
+    }
+
+    /* Ensure tables print correctly */
+    table {
+        page-break-inside: auto;
+    }
+
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+
+    /* Avoid page breaks inside important sections */
+    .print\:break-inside-avoid,
+    [class*='print:break-inside-avoid'] {
+        page-break-inside: avoid;
     }
 }

@@ -34,11 +34,11 @@ final class BillController extends Controller
                 if (str_contains($search, ':')) {
                     [$column, $value] = explode(':', request('search', ''));
                     if ($column && $value && in_fillable($column, Bill::class)) {
-                        return $query->where($column, 'like', '%'.$value.'%');
+                        return $query->where($column, 'like', '%' . $value . '%');
                     }
                 }
 
-                $query->where('title', 'like', '%'.$search.'%');
+                $query->where('title', 'like', '%' . $search . '%');
             })
             ->when(request('status'), function ($query) {
                 $query->where('status', request('status'));
@@ -63,13 +63,13 @@ final class BillController extends Controller
 
         return inertia('Bills/Index', [
             'bills' => $bills,
-            'total_unpaid' => $currentMonthBills->filter(fn ($item) => ! $item->isPaid())->sum('amount'),
-            'unpaid_count' => $currentMonthBills->filter(fn ($item) => ! $item->isPaid())->count(),
+            'total_unpaid' => $currentMonthBills->filter(fn($item) => ! $item->isPaid())->sum('amount'),
+            'unpaid_count' => $currentMonthBills->filter(fn($item) => ! $item->isPaid())->count(),
             'upcoming_count' => $currentMonthBills
-                ->filter(fn ($item) => $item->isUpcoming())
+                ->filter(fn($item) => $item->isUpcoming())
                 ->count(),
             'paid_count' => $currentMonthBills
-                ->filter(fn ($item) => $item->isPaid())
+                ->filter(fn($item) => $item->isPaid())
                 ->count(),
             'categories' => Category::all(),
         ]);
@@ -189,6 +189,18 @@ final class BillController extends Controller
             'bill' => $bill->load('category'),
             'paymentMethods' => $paymentMethods,
             'nextDueDate' => $bill->is_recurring ? $bill->calculateNextDueDate() : null,
+        ]);
+    }
+
+    /**
+     * Show invoice generation form
+     */
+    public function showInvoiceForm(Bill $bill)
+    {
+        $bill->load(['category', 'user', 'team']);
+
+        return inertia('Bills/Invoice', [
+            'bill' => $bill,
         ]);
     }
 }

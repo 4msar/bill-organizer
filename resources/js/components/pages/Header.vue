@@ -14,7 +14,7 @@ const isAuthenticated = computed(() => page.props.auth.user);
 </script>
 
 <template>
-    <header class="border-border/40 bg-background/80 sticky top-0 z-50 w-full border-b backdrop-blur-md">
+    <header class="border-border/40 bg-background/80 sticky top-0 z-50 w-full border-b backdrop-blur-md print:hidden">
         <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
             <Link href="/" class="flex items-center gap-2">
                 <div class="bg-foreground flex h-8 w-8 items-center justify-center rounded-lg">

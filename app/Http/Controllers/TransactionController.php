@@ -148,4 +148,16 @@ final class TransactionController extends Controller
 
         return back()->with('success', 'Transaction deleted successfully.');
     }
+
+    /**
+     * Show receipt page for a transaction
+     */
+    public function showReceipt(Transaction $transaction)
+    {
+        $transaction->load(['bill', 'bill.category', 'user']);
+
+        return inertia('Transactions/Receipt', [
+            'transaction' => $transaction,
+        ]);
+    }
 }
