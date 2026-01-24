@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useLocalStorage } from '@/composables/useLocalStorage';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { formatCurrency } from '@/lib/utils';
 import { Bill } from '@/types/model';
 import { Head, router } from '@inertiajs/vue3';
 import { ArrowLeft, Eye, EyeOff, Plus, Printer, RotateCcw, Trash2 } from 'lucide-vue-next';
@@ -274,7 +275,14 @@ function formatDate(date: string) {
                                         </div>
                                         <div class="flex items-end sm:col-span-2">
                                             <div class="flex w-full items-center justify-between">
-                                                <div class="text-sm font-medium">${{ (item.quantity * item.unit_price).toFixed(2) }}</div>
+                                                <div class="text-sm font-medium">
+                                                    {{
+                                                        formatCurrency(
+                                                            item.quantity * item.unit_price,
+                                                            $page.props?.team?.current?.currency as string,
+                                                        )
+                                                    }}
+                                                </div>
                                                 <Button
                                                     type="button"
                                                     variant="ghost"
@@ -299,26 +307,32 @@ function formatDate(date: string) {
                                         <Input id="tax_rate" v-model.number="formData.tax_rate" type="number" min="0" step="0.01" />
                                     </div>
                                     <div>
-                                        <Label for="discount">Discount ($)</Label>
+                                        <Label for="discount">Discount ({{ $page.props?.team?.current?.currency_symbol }})</Label>
                                         <Input id="discount" v-model.number="formData.discount" type="number" min="0" step="0.01" />
                                     </div>
                                 </div>
                                 <div class="mt-6 space-y-2 border-t pt-4">
                                     <div class="flex justify-between text-sm">
                                         <span>Subtotal:</span>
-                                        <span class="font-medium">${{ subtotal.toFixed(2) }}</span>
+                                        <span class="font-medium">{{
+                                            formatCurrency(subtotal, $page.props?.team?.current?.currency as string)
+                                        }}</span>
                                     </div>
                                     <div v-if="formData.tax_rate > 0" class="flex justify-between text-sm">
                                         <span>Tax ({{ formData.tax_rate }}%):</span>
-                                        <span class="font-medium">${{ taxAmount.toFixed(2) }}</span>
+                                        <span class="font-medium">{{
+                                            formatCurrency(taxAmount, $page.props?.team?.current?.currency as string)
+                                        }}</span>
                                     </div>
                                     <div v-if="formData.discount > 0" class="flex justify-between text-sm">
                                         <span>Discount:</span>
-                                        <span class="font-medium">-${{ formData.discount.toFixed(2) }}</span>
+                                        <span class="font-medium"
+                                            >-{{ formatCurrency(formData.discount, $page.props?.team?.current?.currency as string) }}</span
+                                        >
                                     </div>
                                     <div class="flex justify-between border-t pt-2 text-lg font-bold">
                                         <span>Total:</span>
-                                        <span>${{ total.toFixed(2) }}</span>
+                                        <span>{{ formatCurrency(total, $page.props?.team?.current?.currency as string) }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -430,9 +444,11 @@ function formatDate(date: string) {
                                         >
                                             <td class="py-3 text-gray-900 dark:text-white">{{ item.description }}</td>
                                             <td class="py-3 text-right text-gray-900 dark:text-white">{{ item.quantity }}</td>
-                                            <td class="py-3 text-right text-gray-900 dark:text-white">${{ item.unit_price.toFixed(2) }}</td>
+                                            <td class="py-3 text-right text-gray-900 dark:text-white">
+                                                {{ formatCurrency(item.unit_price, $page.props?.team?.current?.currency as string) }}
+                                            </td>
                                             <td class="py-3 text-right font-medium text-gray-900 dark:text-white">
-                                                ${{ (item.quantity * item.unit_price).toFixed(2) }}
+                                                {{ formatCurrency(item.quantity * item.unit_price, $page.props?.team?.current?.currency as string) }}
                                             </td>
                                         </tr>
                                     </tbody>
@@ -444,19 +460,27 @@ function formatDate(date: string) {
                                 <div class="w-64 space-y-2">
                                     <div class="flex justify-between border-b pb-2">
                                         <span class="text-gray-600 dark:text-gray-400">Subtotal:</span>
-                                        <span class="font-medium text-gray-900 dark:text-white">${{ subtotal.toFixed(2) }}</span>
+                                        <span class="font-medium text-gray-900 dark:text-white">{{
+                                            formatCurrency(subtotal, $page.props?.team?.current?.currency as string)
+                                        }}</span>
                                     </div>
                                     <div v-if="formData.tax_rate && formData.tax_rate > 0" class="flex justify-between">
                                         <span class="text-gray-600 dark:text-gray-400">Tax ({{ formData.tax_rate }}%):</span>
-                                        <span class="font-medium text-gray-900 dark:text-white">${{ taxAmount.toFixed(2) }}</span>
+                                        <span class="font-medium text-gray-900 dark:text-white">{{
+                                            formatCurrency(taxAmount, $page.props?.team?.current?.currency as string)
+                                        }}</span>
                                     </div>
                                     <div v-if="formData.discount && formData.discount > 0" class="flex justify-between">
                                         <span class="text-gray-600 dark:text-gray-400">Discount:</span>
-                                        <span class="font-medium text-gray-900 dark:text-white">-${{ formData.discount.toFixed(2) }}</span>
+                                        <span class="font-medium text-gray-900 dark:text-white"
+                                            >-{{ formatCurrency(formData.discount, $page.props?.team?.current?.currency as string) }}</span
+                                        >
                                     </div>
                                     <div class="flex justify-between border-t-2 border-gray-300 pt-2 dark:border-gray-700">
                                         <span class="text-lg font-bold text-gray-900 dark:text-white">Total:</span>
-                                        <span class="text-lg font-bold text-gray-900 dark:text-white">${{ total.toFixed(2) }}</span>
+                                        <span class="text-lg font-bold text-gray-900 dark:text-white">{{
+                                            formatCurrency(total, $page.props?.team?.current?.currency as string)
+                                        }}</span>
                                     </div>
                                 </div>
                             </div>
