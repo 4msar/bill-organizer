@@ -142,7 +142,7 @@ function formatDate(date: string) {
         <div class="py-6">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <!-- Header -->
-                <div class="mb-6 flex items-center justify-between">
+                <div class="mb-6 flex flex-wrap items-center justify-between">
                     <div>
                         <Button variant="ghost" @click="goBack" class="mb-2 print:hidden">
                             <ArrowLeft class="mr-2 h-4 w-4" />
@@ -362,7 +362,8 @@ function formatDate(date: string) {
                     <div v-if="showPreview" class="print:block">
                         <div
                             id="invoice-content"
-                            class="rounded-lg border bg-white p-8 shadow-sm dark:bg-gray-900 print:border-0 print:p-0 print:shadow-none"
+                            class="rounded-lg border bg-white p-8 font-mono shadow-sm dark:bg-gray-900 print:border-0 print:p-0 print:shadow-none"
+                            contenteditable="true"
                         >
                             <!-- Header -->
                             <div class="mb-8 border-b pb-8">
@@ -458,13 +459,13 @@ function formatDate(date: string) {
                             <!-- Totals -->
                             <div class="flex justify-end">
                                 <div class="w-64 space-y-2">
-                                    <div class="flex justify-between border-b pb-2">
+                                    <div class="flex justify-between">
                                         <span class="text-gray-600 dark:text-gray-400">Subtotal:</span>
                                         <span class="font-medium text-gray-900 dark:text-white">{{
                                             formatCurrency(subtotal, $page.props?.team?.current?.currency as string)
                                         }}</span>
                                     </div>
-                                    <div v-if="formData.tax_rate && formData.tax_rate > 0" class="flex justify-between">
+                                    <div v-if="formData.tax_rate && formData.tax_rate > 0" class="flex justify-between border-t pt-2">
                                         <span class="text-gray-600 dark:text-gray-400">Tax ({{ formData.tax_rate }}%):</span>
                                         <span class="font-medium text-gray-900 dark:text-white">{{
                                             formatCurrency(taxAmount, $page.props?.team?.current?.currency as string)
@@ -504,3 +505,12 @@ function formatDate(date: string) {
         </div>
     </AppLayout>
 </template>
+
+<style scoped>
+@media print {
+    @page {
+        margin: 0.5in;
+        size: A4 portrait;
+    }
+}
+</style>

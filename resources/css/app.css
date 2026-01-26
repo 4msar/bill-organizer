@@ -10,7 +10,12 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-sans: Instrument Sans, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --instrument-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-jetbrains-mono: "JetBrains Mono", monospace;
+    --font-nunito: 'Nunito', ui-sans-serif, system-ui, sans-serif;
+
+    --font-sans: var(--instrument-sans);
+    --font-mono: var(--font-jetbrains-mono);
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -79,14 +84,6 @@
     }
 }
 
-@layer utilities {
-
-    body,
-    html {
-        --font-sans:
-            'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-    }
-}
 
 :root {
     --background: hsl(0 0% 100%);
@@ -243,7 +240,7 @@
     .dark\:border-gray-800,
     .dark\:bg-green-900\/20,
     .dark\:text-green-400 {
-        background-color: white !important;
+        background-color: transparent !important;
         color: black !important;
         border-color: #e5e7eb !important;
     }

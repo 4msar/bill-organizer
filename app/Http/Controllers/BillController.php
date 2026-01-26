@@ -174,20 +174,9 @@ final class BillController extends Controller
      */
     public function getPaymentDetails(Bill $bill)
     {
-        $paymentMethods = [
-            'cash' => 'Cash',
-            'credit_card' => 'Credit Card',
-            'debit_card' => 'Debit Card',
-            'bank_transfer' => 'Bank Transfer',
-            'paypal' => 'PayPal',
-            'crypto' => 'Cryptocurrency',
-            'check' => 'Check',
-            'other' => 'Other',
-        ];
-
         return response()->json([
             'bill' => $bill->load('category'),
-            'paymentMethods' => $paymentMethods,
+            'paymentMethods' => config('system.payment_methods'),
             'nextDueDate' => $bill->is_recurring ? $bill->calculateNextDueDate() : null,
         ]);
     }

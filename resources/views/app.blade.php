@@ -71,7 +71,7 @@
     {{-- Inline script to detect system dark mode preference and apply it immediately --}}
     <script>
         (function() {
-            const appearance = '{{ $appearance ?? "system" }}';
+            const appearance = '{{ $appearance ?? 'system' }}';
 
             if (appearance === 'system') {
                 const prefersDark = window.matchMedia(
@@ -97,9 +97,11 @@
 
     <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
-        rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+        rel="stylesheet">
 
     @routes
     @vite(['resources/js/app.ts'])

@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Transaction } from '@/types/model';
+import { formatCurrency } from '@/lib/utils';
+import { Bill, Category, Transaction, User } from '@/types/model';
 import { Head, router } from '@inertiajs/vue3';
 import { ArrowLeft, Printer } from 'lucide-vue-next';
 
 interface Props {
-    transaction: Transaction;
+    transaction: Transaction & {
+        bill: Bill;
+        category: Category;
+        user: User;
+    };
 }
 
 const { transaction } = defineProps<Props>();
@@ -46,7 +51,7 @@ function formatTime(date: string) {
         <Head title="Payment Receipt" />
 
         <div class="py-6">
-            <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-xl px-4 sm:px-6 lg:px-8">
                 <!-- Action Buttons (hidden when printing) -->
                 <div class="mb-6 flex items-center justify-between print:hidden">
                     <Button variant="ghost" @click="goBack">
@@ -62,12 +67,13 @@ function formatTime(date: string) {
                 <!-- Receipt Content -->
                 <div
                     id="receipt-content"
-                    class="rounded-lg border bg-white p-8 shadow-sm dark:bg-gray-900 print:border-0 print:p-0 print:shadow-none"
+                    class="rounded-lg border p-8 font-mono shadow-sm print:border-0 print:p-0 print:shadow-none"
+                    contenteditable="true"
                 >
                     <!-- Header -->
                     <div class="mb-8 border-b pb-6 text-center">
                         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">PAYMENT RECEIPT</h1>
-                        <p class="text-muted-foreground mt-2">Transaction #{{ transaction.id }}</p>
+                        <p class="text-muted-foreground mt-2">Transaction #{{ transaction.tnx_id || transaction.id }}</p>
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-500">
                             {{ formatDate(transaction.created_at as string) }} at
                             {{ formatTime(transaction.created_at as string) }}
@@ -90,7 +96,9 @@ function formatTime(date: string) {
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-gray-600 dark:text-gray-400">Bill Amount:</span>
-                                    <span class="font-medium text-gray-900 dark:text-white">${{ Number(transaction.bill?.amount).toFixed(2) }}</span>
+                                    <span class="font-medium text-gray-900 dark:text-white">{{
+                                        formatCurrency(Number(transaction.bill?.amount), $page.props.team.current.currency)
+                                    }}</span>
                                 </div>
                             </div>
                         </div>
@@ -107,7 +115,9 @@ function formatTime(date: string) {
                                 </div>
                                 <div class="flex justify-between border-b pb-2">
                                     <span class="text-gray-600 dark:text-gray-400">Payment Method:</span>
-                                    <span class="font-medium text-gray-900 dark:text-white">{{ transaction.payment_method || 'Not specified' }}</span>
+                                    <span class="font-medium text-gray-900 dark:text-white">{{
+                                        transaction.payment_method_name || 'Not specified'
+                                    }}</span>
                                 </div>
                                 <div class="flex justify-between border-b pb-2">
                                     <span class="text-gray-600 dark:text-gray-400">Paid By:</span>
@@ -119,7 +129,9 @@ function formatTime(date: string) {
                         <!-- Amount Paid -->
                         <div class="bg-primary/10 rounded-lg p-6 text-center">
                             <p class="mb-2 text-sm text-gray-600 dark:text-gray-400">Amount Paid</p>
-                            <p class="text-primary text-4xl font-bold">${{ Number(transaction.amount).toFixed(2) }}</p>
+                            <p class="text-primary text-4xl font-bold">
+                                {{ formatCurrency(Number(transaction.amount), $page.props.team.current.currency) }}
+                            </p>
                         </div>
 
                         <!-- Notes -->
@@ -151,3 +163,15 @@ function formatTime(date: string) {
         </div>
     </AppLayout>
 </template>
+
+<style scoped>
+@media print {
+    @page {
+        margin-top: 0.5in;
+        margin-bottom: 0.5in;
+        margin-left: 2in;
+        margin-right: 2in;
+        size: A4 portrait;
+    }
+}
+</style>

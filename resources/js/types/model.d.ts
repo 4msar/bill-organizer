@@ -54,7 +54,9 @@ export interface Transaction extends Model {
     attachment: string | null;
     notes: string | null;
 
+    tnx_id?: string; // Computed property for transaction ID
     attachment_link?: string; // Computed property for attachment URL
+    payment_method_name?: string; // Computed property for payment method display name
     bill?: Bill;
 }
 
