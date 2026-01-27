@@ -91,31 +91,33 @@ const submit = () => {
             <InputError class="mt-2" :message="form.errors.icon" />
         </div>
 
-        <div class="grid gap-2">
-            <Label for="currency">Currency</Label>
-            <Select v-model="form.currency" class="w-full">
-                <SelectTrigger class="w-full">
-                    <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem v-for="currency in currencies" :key="currency" :value="currency">
-                        {{ currency }} - {{ getCurrencyFullName(currency) }}
-                    </SelectItem>
-                </SelectContent>
-            </Select>
-            <InputError class="mt-2" :message="form.errors.currency" />
-        </div>
-        <div class="grid gap-2">
-            <Label for="currency_symbol">Currency Symbol</Label>
-            <Input
-                id="currency_symbol"
-                class="mt-1 block w-full"
-                v-model="form.currency_symbol"
-                required
-                autocomplete="currency_symbol"
-                placeholder="Currency Code. Ex: $"
-            />
-            <InputError class="mt-2" :message="form.errors.currency_symbol" />
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div class="grid gap-2">
+                <Label for="currency">Currency</Label>
+                <Select v-model="form.currency" class="w-full">
+                    <SelectTrigger class="w-full">
+                        <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem v-for="currency in currencies" :key="currency" :value="currency">
+                            {{ currency }} - {{ getCurrencyFullName(currency) }}
+                        </SelectItem>
+                    </SelectContent>
+                </Select>
+                <InputError class="mt-2" :message="form.errors.currency" />
+            </div>
+            <div class="grid gap-2">
+                <Label for="currency_symbol">Currency Symbol</Label>
+                <Input
+                    id="currency_symbol"
+                    class="mt-1 block w-full"
+                    v-model="form.currency_symbol"
+                    required
+                    autocomplete="currency_symbol"
+                    placeholder="Currency Code. Ex: $"
+                />
+                <InputError class="mt-2" :message="form.errors.currency_symbol" />
+            </div>
         </div>
 
         <slot :form="form" />

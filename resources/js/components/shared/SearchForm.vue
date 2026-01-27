@@ -2,7 +2,7 @@
 import { Input } from '@/components/ui/input';
 import { router } from '@inertiajs/vue3';
 import { Search } from 'lucide-vue-next';
-import { ref, useTemplateRef, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps<{
     url: string;
@@ -25,7 +25,6 @@ watch(
     { immediate: true },
 );
 
-const input = useTemplateRef<HTMLInputElement>('input');
 const search = ref(params.get('search') || '');
 
 let delayTimeout: ReturnType<typeof setTimeout>;
@@ -54,9 +53,19 @@ const searchHandler = (payload: Record<string, string | number>) => {
 };
 </script>
 <template>
-    <div class="relative">
-        <Input ref="input" autofocus :class="props.class" type="text" v-model="search" placeholder="Search" v-on:update:model-value="handleSearch" />
-        <Search class="absolute top-1/2 right-2 size-4 -translate-y-1/2 text-gray-500" />
+    <div :class="props.class">
+        <div class="relative w-full sm:w-fit">
+            <Input
+                ref="input"
+                autofocus
+                class="w-full sm:w-fit"
+                type="text"
+                v-model="search"
+                placeholder="Search"
+                v-on:update:model-value="handleSearch"
+            />
+            <Search class="absolute top-1/2 right-2 size-4 -translate-y-1/2 text-gray-500" />
+        </div>
+        <slot :searchHandler="searchHandler" :queryParams="queryParams" />
     </div>
-    <slot :searchHandler="searchHandler" :queryParams="queryParams" />
 </template>

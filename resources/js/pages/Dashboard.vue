@@ -283,7 +283,7 @@ const userName = props.auth.user.name || 'User';
 
                 <!-- Bills and Categories Tabs -->
                 <Tabs defaultValue="upcoming" class="mb-8">
-                    <TabsList class="grid w-full grid-cols-3">
+                    <TabsList class="grid h-auto w-full grid-cols-1 sm:grid-cols-3">
                         <TabsTrigger value="upcoming">Upcoming Bills</TabsTrigger>
                         <TabsTrigger value="recent">Recent Bills</TabsTrigger>
                         <TabsTrigger value="categories">Categorized Bills</TabsTrigger>

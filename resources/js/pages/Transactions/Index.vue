@@ -129,7 +129,7 @@ function resetFilters(): void {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                             <!-- Bill Filter -->
                             <div class="space-y-2">
                                 <label class="text-sm font-medium">Bill</label>

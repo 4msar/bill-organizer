@@ -81,17 +81,17 @@ function markAsPaid(id: string | number) {
                 </div>
 
                 <!-- Bills Header with New Bill Button -->
-                <div class="mb-6 flex flex-wrap items-start justify-between md:items-center">
+                <div class="mb-6 flex flex-wrap items-start justify-between gap-3 md:items-center">
                     <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Bills</h2>
                     <div class="flex flex-wrap items-center gap-2">
-                        <SearchForm :url="route('bills.index')" class="w-full">
+                        <SearchForm :url="route('bills.index')" class="col-auto flex w-auto flex-1/4 flex-wrap items-center gap-2 md:flex-auto">
                             <template #default="{ searchHandler, queryParams }">
                                 <Select
                                     :default-value="queryParams.category"
                                     v-on:update:model-value="(value) => searchHandler({ category: (value as string) ?? '' })"
                                     class="w-full"
                                 >
-                                    <SelectTrigger>
+                                    <SelectTrigger class="w-full sm:w-fit">
                                         <SelectValue placeholder="Select a category" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -106,7 +106,7 @@ function markAsPaid(id: string | number) {
                                     v-on:update:model-value="(value) => searchHandler({ status: (value as string) ?? '' })"
                                     class="w-full"
                                 >
-                                    <SelectTrigger>
+                                    <SelectTrigger class="w-full sm:w-fit">
                                         <SelectValue placeholder="Select status" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -119,19 +119,20 @@ function markAsPaid(id: string | number) {
                                 <!-- Calendar picker with month and year only -->
                                 <Input
                                     type="month"
-                                    class="w-auto"
+                                    class="w-full sm:w-fit"
                                     :value="queryParams.date"
                                     :default-value="queryParams.date"
                                     @update:model-value="(value) => searchHandler({ date: value })"
                                 />
+
+                                <Link :href="route('bills.create')">
+                                    <Button type="button">
+                                        <PlusCircle class="mr-2 h-4 w-4" />
+                                        Add New Bill
+                                    </Button>
+                                </Link>
                             </template>
                         </SearchForm>
-                        <Link :href="route('bills.create')">
-                            <Button>
-                                <PlusCircle class="mr-2 h-4 w-4" />
-                                Add New Bill
-                            </Button>
-                        </Link>
                     </div>
                 </div>
 
