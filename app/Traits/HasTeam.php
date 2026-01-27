@@ -10,6 +10,8 @@ trait HasTeam
 {
     /**
      * Get the team
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function team()
     {

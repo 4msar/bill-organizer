@@ -86,6 +86,10 @@ Route::middleware(['auth', 'verified', 'team'])->group(function () {
         });
 });
 
+Route::get('/visit/bill/{bill}', [BillController::class, 'visit'])
+    ->middleware(['auth', 'verified', 'signed'])
+    ->name('visit.bill');
+
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
 require __DIR__ . '/debug.php';

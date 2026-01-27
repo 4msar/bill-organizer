@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\URL;
 
 final class TrialEndNotification extends Notification
 {
@@ -47,7 +48,9 @@ final class TrialEndNotification extends Notification
             ->line('Just a quick reminder! 🌼')
             ->line("Your trial period for **{$this->bill->title}** will end on **{$this->bill->trial_end_date->format('M d, Y')}**.")
             ->line("Once the trial wraps up, your first payment of **{$currency}{$amount}** will be due on **{$this->bill->due_date->format('M d, Y')}**.")
-            ->action('View Bill', route('bills.show', $this->bill->id))
+            ->action('View Bill', URL::signedRoute('visit.bill', [
+                'bill' => $this->bill->id,
+            ]))
             ->line('If you have any questions or need a bit more time, feel free to reach out — we’re here to help!')
             ->line('Thanks for being with us! 💛')
             ->salutation(str("Warm regards,<br/>Bill Organizer Team")->toHtmlString());

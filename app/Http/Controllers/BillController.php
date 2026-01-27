@@ -6,6 +6,7 @@ use App\Models\Bill;
 use App\Models\Category;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 
 final class BillController extends Controller
@@ -191,5 +192,33 @@ final class BillController extends Controller
         return inertia('Bills/Invoice', [
             'bill' => $bill,
         ]);
+    }
+
+    /**
+     * Redirect to bill page if valid link
+     * 
+     * @param int $bill
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function visit($bill, Request $request)
+    {
+        $user = Auth::user();
+
+        /** @var Bill $billItem */
+        $billItem = Bill::withoutGlobalScopes()
+            ->whereId($bill)
+            ->whereUserId($user->id)
+            ->with('team')
+            ->firstOrFail();
+
+        if (
+            $user->activeTeam->id !== $billItem->team_id &&
+            $user->hasTeam($billItem->team_id)
+        ) {
+            $user->switchTeam($billItem->team);
+        }
+
+        return redirect()->route('bills.show', $billItem);
     }
 }

@@ -3,7 +3,10 @@ import InputError from '@/components/shared/InputError.vue';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { getCurrencyFullName } from '@/lib/utils';
 import { useForm } from '@inertiajs/vue3';
+import { ref, watch } from 'vue';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 const { method, submitUrl, defaultValues } = defineProps<{
     submitUrl: string;
@@ -16,6 +19,7 @@ const { method, submitUrl, defaultValues } = defineProps<{
         currency_symbol: string;
     };
 }>();
+const currencies = ref<string[]>(Intl.supportedValuesOf('currency'));
 
 const form = useForm<{
     name: string;
@@ -28,6 +32,29 @@ const form = useForm<{
     ...defaultValues,
     _method: method,
 });
+
+watch(
+    () => form.currency,
+    (newCurrency) => {
+        try {
+            const formatter = new Intl.NumberFormat('en', {
+                currency: newCurrency,
+                maximumFractionDigits: 1,
+                style: 'currency',
+                currencyDisplay: 'narrowSymbol',
+            });
+            const parts = formatter.formatToParts(1000);
+            const symbolPart = parts.find((part) => part.type === 'currency');
+            if (symbolPart) {
+                form.currency_symbol = symbolPart.value;
+            }
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+            // Invalid currency code
+        }
+    },
+    { immediate: true },
+);
 
 const submit = () => {
     if (method === 'PUT') {
@@ -66,14 +93,16 @@ const submit = () => {
 
         <div class="grid gap-2">
             <Label for="currency">Currency</Label>
-            <Input
-                id="currency"
-                class="mt-1 block w-full"
-                v-model="form.currency"
-                required
-                autocomplete="currency"
-                placeholder="Currency Code. Ex: USD"
-            />
+            <Select v-model="form.currency" class="w-full">
+                <SelectTrigger class="w-full">
+                    <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem v-for="currency in currencies" :key="currency" :value="currency">
+                        {{ currency }} - {{ getCurrencyFullName(currency) }}
+                    </SelectItem>
+                </SelectContent>
+            </Select>
             <InputError class="mt-2" :message="form.errors.currency" />
         </div>
         <div class="grid gap-2">

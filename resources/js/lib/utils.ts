@@ -17,13 +17,28 @@ export function formatDate(date: string | number | Date) {
 }
 
 export function formatCurrency(value: number, currency: string = 'USD') {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: currency,
-        maximumFractionDigits: 2,
-        currencyDisplay: 'narrowSymbol',
-    }).format(value);
+    try {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: currency,
+            maximumFractionDigits: 1,
+            currencyDisplay: 'narrowSymbol',
+        }).format(value);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+        return '$' + value.toFixed(2);
+    }
 }
+
+export const getCurrencyFullName = (currencyCode: string): string => {
+    try {
+        const displayNames = new Intl.DisplayNames(['en'], { type: 'currency' });
+        return displayNames.of(currencyCode) ?? currencyCode;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+        return currencyCode;
+    }
+};
 
 export function getIconComponent(iconName: string | null): LucideIcons.LucideIcon {
     if (!iconName) return LucideIcons.CircleDot;

@@ -157,4 +157,12 @@ final class User extends Authenticatable implements MustVerifyEmail
 
         return $channels;
     }
+
+    /**
+     * Check if the user belongs to a specific team.
+     */
+    public function hasTeam(int $teamId): bool
+    {
+        return $this->teams()->where('id', $teamId)->exists();
+    }
 }

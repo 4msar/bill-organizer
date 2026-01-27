@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\URL;
 
 final class UpcomingBillNotification extends Notification
 {
@@ -47,11 +48,15 @@ final class UpcomingBillNotification extends Notification
             ->line('Just a quick heads-up! 🌼')
             ->line("Your bill for **{$this->bill->title}** is coming up, and it’s due on **{$this->bill->due_date->format('M d, Y')}**.")
             ->line('Here’s a quick summary:')
-            ->line('-----------------------------------------')
+            ->line('------------------------------------------')
+            ->line("Title: {$this->bill->title}")
             ->line("Amount: {$currency}{$amount}")
             ->line('Status: Pending')
+            ->line("Due Date: {$this->bill->due_date->format('M d, Y')}")
             ->line('-----------------------------------------')
-            ->action('View Bill', route('bills.show', $this->bill->id))
+            ->action('View Bill', URL::signedRoute('visit.bill', [
+                'bill' => $this->bill->id,
+            ]))
             ->line('If you have any questions or need help with anything, feel free to reach out — we’re always happy to assist.')
             ->line('Thanks for being with us! 💛')
             ->salutation(str("Warm regards,<br/>Bill Organizer Team")->toHtmlString());

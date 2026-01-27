@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency, getPaymentMethodName } from '@/lib/utils';
 import { Bill, Category, Transaction, User } from '@/types/model';
 import { Head, router } from '@inertiajs/vue3';
 import { ArrowLeft, Printer } from 'lucide-vue-next';
@@ -116,7 +116,7 @@ function formatTime(date: string) {
                                 <div class="flex justify-between border-b pb-2">
                                     <span class="text-gray-600 dark:text-gray-400">Payment Method:</span>
                                     <span class="font-medium text-gray-900 dark:text-white">{{
-                                        transaction.payment_method_name || 'Not specified'
+                                        transaction.payment_method_name || getPaymentMethodName(transaction.payment_method)
                                     }}</span>
                                 </div>
                                 <div class="flex justify-between border-b pb-2">
