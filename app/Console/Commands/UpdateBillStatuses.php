@@ -80,7 +80,6 @@ class UpdateBillStatuses extends Command
                         ->where('id', $bill->id)
                         ->update([
                             'status' => $calculatedStatus,
-                            'updated_at' => now(),
                         ]);
                 }
 

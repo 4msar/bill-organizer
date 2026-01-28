@@ -28,7 +28,7 @@ final class BillController extends Controller
 
     public function index()
     {
-        $bills = Bill::with('category')
+        $billsQuery = Bill::with('category')
             ->when(request('search'), function ($query) {
                 $search = request('search', '');
 
@@ -42,6 +42,10 @@ final class BillController extends Controller
                 $query->where('title', 'like', '%' . $search . '%');
             })
             ->when(request('status'), function ($query) {
+                if (request('status') === 'upcoming') {
+                    $query->upcoming();
+                    return;
+                }
                 $query->where('status', request('status'));
             })
             ->when(request('category'), function ($query) {
@@ -54,9 +58,19 @@ final class BillController extends Controller
                     $date->copy()->startOfMonth(),
                     $date->copy()->endOfMonth(),
                 ]);
-            })
-            ->orderBy('due_date', 'asc')
-            ->get();
+            });
+
+        if (
+            request('sort_by') &&
+            in_fillable(request('sort_by'), Bill::class)
+        ) {
+            $sortDirection = request('sort_direction', 'asc') === 'desc' ? 'desc' : 'asc';
+            $billsQuery->orderBy(request('sort_by'), $sortDirection);
+        } else {
+            $billsQuery->orderBy('due_date', 'asc');
+        }
+
+        $bills = $billsQuery->get();
 
         $currentMonthBills = Bill::query()
             ->currentMonth()

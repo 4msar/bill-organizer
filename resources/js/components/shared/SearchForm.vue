@@ -10,7 +10,7 @@ const props = defineProps<{
 }>();
 
 const params = new URLSearchParams(window.location.search);
-const queryParams = ref<Record<string, string>>({});
+const queryParams = ref<Record<string, string | number>>({});
 
 watch(
     () => window.location.search,
@@ -34,16 +34,22 @@ const handleSearch = (searchStr: string | number) => {
 };
 
 const searchHandler = (payload: Record<string, string | number>) => {
-    clearTimeout(delayTimeout);
-
     const data = { ...queryParams.value, ...payload };
     // remove empty values
     Object.keys(data).forEach((key) => {
         if (data[key] === '' || data[key] === null) {
             delete data[key];
         }
+
+        // add to queryParams ref
+        queryParams.value = { ...data };
     });
 
+    processSearch(data);
+};
+
+const processSearch = (data: Record<string, string | number>) => {
+    clearTimeout(delayTimeout);
     delayTimeout = setTimeout(() => {
         router.get(props.url, data, {
             preserveScroll: true,

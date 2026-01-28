@@ -9,6 +9,9 @@ if (app()->environment('local', 'dev', 'development')) {
 
         // dd($request->url());
 
+        $bill = \App\Models\Bill::find(71);
+        dd($bill, $bill->calculateStatus());
+
         // preview team invite email templates
         // return new \App\Mail\TeamInvitation(
         //     \App\Models\Team::withoutGlobalScopes()->first(),

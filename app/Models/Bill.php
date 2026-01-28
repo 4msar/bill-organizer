@@ -135,9 +135,9 @@ final class Bill extends Model
         };
 
         // If in current period, respect the current status
-        if ($isCurrentPeriod) {
-            return $currentStatus;
-        }
+        // if ($isCurrentPeriod) {
+        //     return $currentStatus;
+        // }
 
         // Not in current period - check for transactions in the current period
         $periodStart = match ($this->recurrence_period) {
@@ -156,7 +156,7 @@ final class Bill extends Model
 
         if ($periodStart && $periodEnd) {
             $hasTransactionInPeriod = $this->transactions()
-                ->whereBetween('created_at', [$periodStart, $periodEnd])
+                ->whereBetween('payment_date', [$periodStart, $periodEnd])
                 ->exists();
 
             return $hasTransactionInPeriod ? 'paid' : 'unpaid';
@@ -174,6 +174,7 @@ final class Bill extends Model
      */
     public function getStatusAttribute($value)
     {
+        return $value;
         return $this->calculateStatus();
     }
 
