@@ -6,6 +6,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schedule;
 
 /**
+ * Update bill statuses based on recurrence period and transactions.
+ *
+ * Run daily at 12:05 AM to ensure statuses are up-to-date.
+ */
+Schedule::command('bills:update-statuses')
+    ->dailyAt('00:05')
+    ->runInBackground();
+
+/**
  * Send upcoming bill notifications to users.
  *
  * Run the job every minute.

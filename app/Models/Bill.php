@@ -108,16 +108,19 @@ final class Bill extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function getStatusAttribute($value)
+    /**
+     * Calculate the status based on recurrence period and transactions.
+     * This is used for both the accessor and the command to keep logic consistent.
+     *
+     * @return string
+     */
+    public function calculateStatus(): string
     {
-        // If status is explicitly set, return it
-        if ($value === 'paid') {
-            return $value;
-        }
+        $currentStatus = $this->attributes['status'] ?? 'unpaid';
 
-        // Only auto-calculate status for recurring bills
+        // For non-recurring bills, just return the current status
         if (! $this->is_recurring || ! $this->recurrence_period) {
-            return $value ?: 'unpaid';
+            return $currentStatus;
         }
 
         $now = now();
@@ -131,32 +134,47 @@ final class Bill extends Model
             default => false,
         };
 
-        // If we're not in the current period, check if there are transactions for this period
-        if (! $isCurrentPeriod) {
-            $periodStart = match ($this->recurrence_period) {
-                'weekly' => $now->startOfWeek(),
-                'monthly' => $now->startOfMonth(),
-                'yearly' => $now->startOfYear(),
-                default => null,
-            };
-
-            $periodEnd = match ($this->recurrence_period) {
-                'weekly' => $now->copy()->endOfWeek(),
-                'monthly' => $now->copy()->endOfMonth(),
-                'yearly' => $now->copy()->endOfYear(),
-                default => null,
-            };
-
-            if ($periodStart && $periodEnd) {
-                $hasTransactionInPeriod = $this->transactions()
-                    ->whereBetween('created_at', [$periodStart, $periodEnd])
-                    ->exists();
-
-                return $hasTransactionInPeriod ? 'paid' : 'unpaid';
-            }
+        // If in current period, respect the current status
+        if ($isCurrentPeriod) {
+            return $currentStatus;
         }
 
-        return $value ?: 'unpaid';
+        // Not in current period - check for transactions in the current period
+        $periodStart = match ($this->recurrence_period) {
+            'weekly' => $now->startOfWeek(),
+            'monthly' => $now->startOfMonth(),
+            'yearly' => $now->startOfYear(),
+            default => null,
+        };
+
+        $periodEnd = match ($this->recurrence_period) {
+            'weekly' => $now->copy()->endOfWeek(),
+            'monthly' => $now->copy()->endOfMonth(),
+            'yearly' => $now->copy()->endOfYear(),
+            default => null,
+        };
+
+        if ($periodStart && $periodEnd) {
+            $hasTransactionInPeriod = $this->transactions()
+                ->whereBetween('created_at', [$periodStart, $periodEnd])
+                ->exists();
+
+            return $hasTransactionInPeriod ? 'paid' : 'unpaid';
+        }
+
+        return 'unpaid';
+    }
+
+    /**
+     * Accessor for status attribute.
+     * Calculates status dynamically for recurring bills.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    public function getStatusAttribute($value)
+    {
+        return $this->calculateStatus();
     }
 
     /**
