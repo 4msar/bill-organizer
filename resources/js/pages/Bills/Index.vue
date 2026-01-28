@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SortableTableHead from '@/components/bills/SortableTableHead.vue';
 import Confirm from '@/components/shared/Confirm.vue';
 import SearchForm from '@/components/shared/SearchForm.vue';
 import { Badge } from '@/components/ui/badge';
@@ -146,11 +147,11 @@ function markAsPaid(id: string | number) {
                             <TableCaption v-if="bills.length === 0">You don't have any bills yet.</TableCaption>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Title</TableHead>
-                                    <TableHead>Category</TableHead>
-                                    <TableHead>Amount</TableHead>
-                                    <TableHead>Due Date</TableHead>
-                                    <TableHead>Status</TableHead>
+                                    <SortableTableHead field="title" label="Title" />
+                                    <SortableTableHead field="category_id" label="Category" />
+                                    <SortableTableHead field="amount" label="Amount" />
+                                    <SortableTableHead field="due_date" label="Due Date" />
+                                    <SortableTableHead field="status" label="Status" />
                                     <TableHead class="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>

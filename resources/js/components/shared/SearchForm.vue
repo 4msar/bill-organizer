@@ -20,6 +20,14 @@ watch(
         newParams.forEach((value, key) => {
             updatedParams[key] = value;
         });
+
+        // keep existing params
+        Object.keys(queryParams.value).forEach((key) => {
+            if (!(key in updatedParams)) {
+                updatedParams[key] = queryParams.value[key] as string;
+            }
+        });
+
         queryParams.value = updatedParams;
     },
     { immediate: true },
