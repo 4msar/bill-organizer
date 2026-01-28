@@ -22,7 +22,9 @@ defineProps<{
 
         <div>
             <Tooltip title="Current app version">
-                <span class="text-muted-foreground border-muted-foreground rounded border px-1 text-xs">{{ $page.props.version }}</span>
+                <a :href="`https://github.com/4msar/bill-organizer/releases/tag/${$page.props.version}`" target="_blank" rel="noopener noreferrer">
+                    <span class="text-muted-foreground border-muted-foreground rounded border px-1 text-xs">{{ $page.props.version }}</span>
+                </a>
             </Tooltip>
         </div>
     </header>

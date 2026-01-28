@@ -85,3 +85,23 @@ export interface PaginatedData<T> {
     links: PaginationLinks;
     meta: PaginationMeta;
 }
+
+export type PaginationData<T> = {
+    current_page: number;
+    data: T;
+    first_page_url: string;
+    from: string;
+    last_page: string;
+    last_page_url: string;
+    links: {
+        url: string | null;
+        label: string;
+        active: boolean;
+    }[];
+    next_page_url: null;
+    path: string;
+    per_page: number;
+    prev_page_url: string | null;
+    to: string;
+    total: string;
+};

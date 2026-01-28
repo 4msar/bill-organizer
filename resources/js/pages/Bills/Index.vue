@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import SortableTableHead from '@/components/bills/SortableTableHead.vue';
 import Confirm from '@/components/shared/Confirm.vue';
+import Pagination from '@/components/shared/Pagination.vue';
 import SearchForm from '@/components/shared/SearchForm.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,12 +12,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency, formatDate } from '@/lib/utils';
+import { PaginationData } from '@/types';
 import { Bill, Category } from '@/types/model';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Calendar, CheckCheck, Clock, DollarSign, Edit, Eye, MoreHorizontal, PlusCircle, Trash2 } from 'lucide-vue-next';
 
 defineProps<{
-    bills: Array<Bill>;
+    bills: PaginationData<Bill[]>;
     total_unpaid: number;
     unpaid_count: number;
     upcoming_count: number;
@@ -144,20 +146,20 @@ function markAsPaid(id: string | number) {
                     </CardHeader>
                     <CardContent>
                         <Table>
-                            <TableCaption v-if="bills.length === 0">You don't have any bills yet.</TableCaption>
+                            <TableCaption v-if="bills.data.length === 0">You don't have any bills yet.</TableCaption>
                             <TableHeader>
                                 <TableRow>
                                     <SortableTableHead field="title" label="Title" />
                                     <SortableTableHead field="category_id" label="Category" />
                                     <SortableTableHead field="amount" label="Amount" />
-                                    <SortableTableHead field="due_date" label="Due Date" />
+                                    <SortableTableHead field="due_date" label="Due Date" default />
                                     <SortableTableHead field="status" label="Status" />
                                     <TableHead class="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 <TableRow
-                                    v-for="bill in bills"
+                                    v-for="bill in bills.data"
                                     :key="bill.id"
                                     @click.stop="router.visit(route('bills.show', bill.id))"
                                     class="hover:bg-muted/50 cursor-pointer"
@@ -233,6 +235,7 @@ function markAsPaid(id: string | number) {
                         </Table>
                     </CardContent>
                 </Card>
+                <Pagination :data="bills" />
             </div>
         </div>
     </AppLayout>

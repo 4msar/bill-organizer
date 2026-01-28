@@ -28,6 +28,8 @@ watch(
             }
         });
 
+        updatedParams['page'] = '1'; // reset page on new search
+
         queryParams.value = updatedParams;
     },
     { immediate: true },

@@ -70,7 +70,7 @@ final class BillController extends Controller
             $billsQuery->orderBy('due_date', 'asc');
         }
 
-        $bills = $billsQuery->get();
+        $bills = $billsQuery->paginate(20)->withQueryString();
 
         $currentMonthBills = Bill::query()
             ->currentMonth()
