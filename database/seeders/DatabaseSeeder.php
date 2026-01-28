@@ -18,13 +18,17 @@ final class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create main test user
-        $user = User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        $user = User::whereEmail('test@example.com')->first();
 
-        // Create test team
+        if (!$user) {
+            // Create main test user
+            $user = User::factory()->create([
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+            ]);
+        }
+
+        // // Create test team
         $team = Team::factory()->create([
             'user_id' => $user->id,
             'name' => 'Test Team',
