@@ -5,7 +5,11 @@ import { Link } from '@inertiajs/vue3';
 const { data: pagination } = defineProps<{ data: PaginationData<T[]> }>();
 </script>
 <template>
-    <nav class="flex-column flex flex-wrap items-center justify-between py-5 pt-6 md:flex-row" aria-label="Table navigation">
+    <nav
+        v-if="pagination.links.length > 0 && pagination.next_page_url"
+        class="flex-column flex flex-wrap items-center justify-between py-5 pt-6 md:flex-row"
+        aria-label="Table navigation"
+    >
         <span class="mb-4 block w-full text-sm font-normal text-gray-500 md:mb-0 md:inline md:w-auto dark:text-gray-400"
             >Showing
             <span class="font-semibold text-gray-900 dark:text-white"> {{ pagination.from }} - {{ pagination.to }} </span>
