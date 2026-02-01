@@ -82,13 +82,16 @@ const formattedContent = computed(() => {
                         </CardDescription>
                     </div>
                     <div class="flex flex-shrink-0 items-center gap-2">
-                        <Button variant="outline" size="sm" @click="handleEdit">
+                        <Button variant="outline" size="sm" @click="handleEdit" class="hidden sm:flex">
                             <Pencil class="mr-2 h-4 w-4" />
                             Edit
                         </Button>
+                        <Button variant="outline" size="icon" @click="handleEdit" class="sm:hidden">
+                            <Pencil class="h-4 w-4" />
+                        </Button>
                         <DropdownMenu>
                             <DropdownMenuTrigger as-child>
-                                <Button variant="ghost" size="sm" class="h-8 w-8 p-0">
+                                <Button variant="ghost" size="icon" class="h-8 w-8">
                                     <MoreVertical class="h-4 w-4" />
                                     <span class="sr-only">Open menu</span>
                                 </Button>
@@ -121,11 +124,11 @@ const formattedContent = computed(() => {
                 </div>
             </CardHeader>
 
-            <CardContent class="flex-1 overflow-y-auto p-6">
+            <CardContent class="flex-1 overflow-y-auto p-4 sm:p-6">
                 <div v-if="note.content" class="prose prose-sm text-muted-foreground dark:prose-invert max-w-none" v-html="formattedContent"></div>
                 <p v-else class="text-muted-foreground italic">This note has no content.</p>
 
-                <div v-if="note.related && note.related.length" class="mt-6 flex flex-wrap items-center gap-2" title="Related Items">
+                <div v-if="note.related && note.related.length" class="mt-4 flex flex-wrap items-center gap-2 sm:mt-6" title="Related Items">
                     <p class="text-muted-foreground w-full text-sm font-medium">Related Items:</p>
                     <template v-for="item in note.related" :key="item.notable_id">
                         <Link :href="getLink(item)">

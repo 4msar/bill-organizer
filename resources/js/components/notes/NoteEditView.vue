@@ -78,20 +78,26 @@ watch(
                         {{ note ? 'Edit Note' : 'Create New Note' }}
                     </h2>
                     <div class="flex items-center gap-2">
-                        <Button variant="outline" size="sm" @click="handleCancel" :disabled="form.processing">
+                        <Button variant="outline" size="sm" @click="handleCancel" :disabled="form.processing" class="hidden sm:flex">
                             <X class="mr-2 h-4 w-4" />
                             Cancel
                         </Button>
-                        <Button size="sm" @click="handleSubmit" :disabled="form.processing">
+                        <Button variant="outline" size="icon" @click="handleCancel" :disabled="form.processing" class="sm:hidden">
+                            <X class="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" @click="handleSubmit" :disabled="form.processing" class="hidden sm:flex">
                             <Save class="mr-2 h-4 w-4" />
                             {{ form.processing ? 'Saving...' : 'Save' }}
+                        </Button>
+                        <Button size="icon" @click="handleSubmit" :disabled="form.processing" class="sm:hidden">
+                            <Save class="h-4 w-4" />
                         </Button>
                     </div>
                 </div>
             </CardHeader>
 
-            <CardContent class="flex-1 overflow-y-auto p-6">
-                <form @submit.prevent="handleSubmit" class="space-y-6">
+            <CardContent class="flex-1 overflow-y-auto p-4 sm:p-6">
+                <form @submit.prevent="handleSubmit" class="space-y-4 sm:space-y-6">
                     <div>
                         <Label for="title" class="mb-2">Title *</Label>
                         <Input name="title" placeholder="Enter note title..." v-model="form.title" :disabled="form.processing" />

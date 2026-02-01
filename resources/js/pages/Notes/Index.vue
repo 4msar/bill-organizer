@@ -10,13 +10,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ExportFormat, useNoteExport } from '@/composables/useNoteExport';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { SharedData } from '@/types';
 import { Note } from '@/types/model';
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { Download, Filter, Plus, Search, StickyNote } from 'lucide-vue-next';
-import { computed, onMounted, ref } from 'vue';
+import { Download, Filter, Menu, Plus, Search, StickyNote } from 'lucide-vue-next';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 const props = defineProps<{
     notes: Array<Note>;
@@ -37,6 +38,13 @@ const showViewDialog = ref(false);
 const selectedNote = ref<Note | undefined>(undefined);
 const isEditing = ref(false);
 const searchQuery = ref('');
+const showMobileSheet = ref(false);
+const isMobile = ref(false);
+
+// Check if mobile on mount and resize
+const checkMobile = () => {
+    isMobile.value = window.innerWidth < 768;
+};
 
 // Filtered and sorted notes
 const filteredNotes = computed(() => {
@@ -114,6 +122,13 @@ function onDialogSuccess() {
 function handleSelectNote(note: Note) {
     selectedNote.value = note;
     isEditing.value = false;
+    if (isMobile.value) {
+        showMobileSheet.value = false;
+    }
+}
+
+function toggleMobileSheet() {
+    showMobileSheet.value = !showMobileSheet.value;
 }
 
 function handleEditNote(note: Note) {
@@ -157,6 +172,15 @@ onMounted(() => {
     if (viewMode.value === 'sidebar' && props.notes.length > 0 && !selectedNote.value) {
         handleSelectNote(props.notes[0]);
     }
+
+    // Check mobile and add resize listener
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+});
+
+onUnmounted(() => {
+    // Clean up resize listener
+    window.removeEventListener('resize', checkMobile);
 });
 </script>
 
@@ -260,15 +284,24 @@ onMounted(() => {
                 <!-- Header -->
                 <Heading class="mb-4 flex flex-wrap items-center justify-between gap-2" title="Notes" description="Organize your thoughts and ideas">
                     <div class="flex items-center gap-2">
-                        <Button variant="secondary" @click="handleFilter">
-                            <Filter class="mr-2 h-4 w-4" />
-                            {{ queryParams.get('team') === 'all' ? 'Current Team Notes' : 'All Teams Notes' }}
+                        <!-- Mobile menu button -->
+                        <Button variant="outline" size="icon" class="md:hidden" @click="toggleMobileSheet">
+                            <Menu class="h-4 w-4" />
                         </Button>
+
+                        <Button variant="secondary" size="sm" @click="handleFilter" class="hidden sm:flex">
+                            <Filter class="h-4 w-4 sm:mr-2" />
+                            <span class="hidden sm:inline">{{ queryParams.get('team') === 'all' ? 'Current Team' : 'All Teams' }}</span>
+                        </Button>
+                        <Button variant="secondary" size="icon" @click="handleFilter" class="sm:hidden">
+                            <Filter class="h-4 w-4" />
+                        </Button>
+
                         <DropdownMenu v-if="notes.length > 0">
                             <DropdownMenuTrigger as-child>
-                                <Button variant="outline">
-                                    <Download class="mr-2 h-4 w-4" />
-                                    Export Notes
+                                <Button variant="outline" size="sm" class="hidden sm:flex">
+                                    <Download class="h-4 w-4 sm:mr-2" />
+                                    <span class="hidden sm:inline">Export</span>
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
@@ -278,24 +311,25 @@ onMounted(() => {
                                 <DropdownMenuItem @click="handleExport('txt')"> Export as Text </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        <Button @click="handleCreateNote">
-                            <Plus class="mr-2 h-4 w-4" />
-                            New Note
+
+                        <Button size="sm" @click="handleCreateNote">
+                            <Plus class="h-4 w-4 sm:mr-2" />
+                            <span class="hidden sm:inline">New Note</span>
                         </Button>
                     </div>
                 </Heading>
 
                 <!-- Sidebar Layout -->
                 <div class="flex h-[calc(100vh-12rem)] gap-4">
-                    <!-- Left Sidebar - Notes List -->
-                    <Card class="w-80 flex-shrink-0 overflow-hidden">
+                    <!-- Desktop Sidebar - Notes List -->
+                    <Card class="hidden flex-shrink-0 overflow-hidden md:block md:w-64 lg:w-80">
                         <div class="border-b p-4">
                             <div class="relative">
                                 <Search class="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                                 <Input v-model="searchQuery" placeholder="Search notes..." class="pl-9" />
                             </div>
                         </div>
-                        <div class="overflow-y-auto">
+                        <div class="h-[calc(100%-5rem)] overflow-y-auto">
                             <div v-if="filteredNotes.length > 0">
                                 <!-- Pinned Notes -->
                                 <div v-if="pinnedNotes.length > 0">
@@ -335,6 +369,58 @@ onMounted(() => {
                             </div>
                         </div>
                     </Card>
+
+                    <!-- Mobile Sheet - Notes List -->
+                    <Sheet v-model:open="showMobileSheet">
+                        <SheetContent side="left" class="w-[300px] p-0 sm:w-[350px]">
+                            <SheetHeader class="border-b p-4">
+                                <SheetTitle>Notes</SheetTitle>
+                                <div class="relative mt-3">
+                                    <Search class="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                                    <Input v-model="searchQuery" placeholder="Search notes..." class="pl-9" />
+                                </div>
+                            </SheetHeader>
+                            <div class="h-[calc(100vh-10rem)] overflow-y-auto">
+                                <div v-if="filteredNotes.length > 0">
+                                    <!-- Pinned Notes -->
+                                    <div v-if="pinnedNotes.length > 0">
+                                        <div class="bg-muted/50 px-4 py-2 text-xs font-semibold tracking-wider uppercase">Pinned</div>
+                                        <NoteListItem
+                                            v-for="note in pinnedNotes"
+                                            :key="note.id"
+                                            :note="note"
+                                            :is-active="selectedNote?.id === note.id"
+                                            :show-team-badge="queryParams.get('team') === 'all'"
+                                            @select="handleSelectNote"
+                                        />
+                                    </div>
+
+                                    <!-- Regular Notes -->
+                                    <div v-if="regularNotes.length > 0">
+                                        <div class="bg-muted/50 px-4 py-1 text-xs font-semibold tracking-wider uppercase">Notes</div>
+                                        <NoteListItem
+                                            v-for="note in regularNotes"
+                                            :key="note.id"
+                                            :note="note"
+                                            :is-active="selectedNote?.id === note.id"
+                                            :show-team-badge="queryParams.get('team') === 'all'"
+                                            @select="handleSelectNote"
+                                        />
+                                    </div>
+                                </div>
+
+                                <!-- Empty State in Mobile Sheet -->
+                                <div v-else class="flex h-full items-center justify-center p-8 text-center">
+                                    <div>
+                                        <StickyNote class="text-muted-foreground mx-auto mb-2 h-8 w-8" />
+                                        <p class="text-muted-foreground text-sm">
+                                            {{ searchQuery ? 'No notes found' : 'No notes yet' }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </SheetContent>
+                    </Sheet>
 
                     <!-- Right Panel - Note Details or Edit -->
                     <div class="flex-1 overflow-hidden">
