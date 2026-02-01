@@ -121,7 +121,7 @@ const formattedContent = computed(() => {
             </CardHeader>
 
             <CardContent class="flex-1 overflow-y-auto p-4 sm:p-6">
-                <div v-if="note.content" class="prose prose-sm text-muted-foreground dark:prose-invert max-w-none" v-html="formattedContent"></div>
+                <div v-if="note.content" class="prose prose-sm text-muted-foreground dark:prose-invert max-w-none whitespace-break-spaces" v-html="formattedContent"></div>
                 <p v-else class="text-muted-foreground italic">This note has no content.</p>
 
                 <div v-if="note.related && note.related.length" class="mt-4 flex flex-wrap items-center gap-2 sm:mt-6" title="Related Items">
