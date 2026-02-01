@@ -79,7 +79,7 @@ const formattedContent = computed(() => {
                         </DialogTitle>
                         <DialogDescription>
                             <div class="mt-1 flex items-center gap-2">
-                                <span>Created {{ formatDate(note?.created_at || '') }}</span>
+                                <span>Updated at {{ formatDate(note?.updated_at || note?.created_at || '') }}</span>
                                 <Pin v-if="note?.is_pinned" class="text-muted-foreground h-3 w-3" />
                             </div>
                         </DialogDescription>
