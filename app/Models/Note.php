@@ -7,12 +7,14 @@ use App\Models\Scopes\TeamScope;
 use App\Models\Scopes\UserScope;
 use App\Traits\HasTeam;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 #[ScopedBy([TeamScope::class, UserScope::class])]
 final class Note extends Model
 {
     use HasTeam;
+    use HasFactory;
 
     protected $fillable = [
         'user_id',

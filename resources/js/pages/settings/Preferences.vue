@@ -46,6 +46,7 @@ const form = useForm<SettingsForm>({
     email_notification: Boolean(user.metas?.email_notification ?? true),
     web_notification: Boolean(user.metas?.web_notification ?? true),
     enable_reports: Boolean(user.metas?.enable_reports ?? false),
+    notes_view_mode: (user.metas?.notes_view_mode as string) ?? 'grid',
     /**
      * early reminder days
      *
@@ -133,6 +134,23 @@ const submit = () => {
                         <div>
                             <Switch :model-value="form.enable_reports" @update:model-value="(value) => (form.enable_reports = value)" />
                         </div>
+                    </div>
+
+                    <div class="grid gap-2">
+                        <Label for="notes-view" class="text-base"> Notes View Mode </Label>
+                        <p class="text-muted-foreground text-sm">
+                            Choose how you want to view your notes. Grid view shows notes as cards, while sidebar view displays them in a list with a
+                            detail panel.
+                        </p>
+                        <Select v-model="form.notes_view_mode">
+                            <SelectTrigger class="w-full">
+                                <SelectValue placeholder="Select view mode" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="grid">Grid View</SelectItem>
+                                <SelectItem value="sidebar">Sidebar View</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     <div class="flex items-center gap-4">

@@ -30,6 +30,7 @@ final class PreferenceController extends Controller
             'web_notification' => ['nullable', 'boolean'],
             'early_reminder_days' => ['array'],
             'enable_reports' => ['nullable', 'boolean'],
+            'notes_view_mode' => ['nullable', 'string', 'in:grid,sidebar'],
             'excluded_notification_teams' => ['nullable', 'array'],
             'excluded_notification_teams.*' => ['integer', 'exists:teams,id'],
         ]);
@@ -47,6 +48,7 @@ final class PreferenceController extends Controller
 
         // Enable or disable features
         $user->setMeta('enable_reports', $request->input('enable_reports', false));
+        $user->setMeta('notes_view_mode', $request->input('notes_view_mode', 'grid'));
 
         return redirect()->back()->with('success', 'Application preferences updated successfully.');
     }
