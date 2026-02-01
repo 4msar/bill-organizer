@@ -5,7 +5,7 @@ namespace App\Observers;
 use App\Models\Team;
 use Illuminate\Support\Facades\DB;
 
-class TeamObserver
+final class TeamObserver
 {
     /**
      * Handle the Team "created" event.

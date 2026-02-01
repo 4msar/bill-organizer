@@ -5,7 +5,7 @@ namespace App\Observers;
 use App\Models\Category;
 use Illuminate\Support\Facades\DB;
 
-class CategoryObserver
+final class CategoryObserver
 {
     /**
      * Handle the Category "created" event.

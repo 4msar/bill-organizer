@@ -27,8 +27,8 @@ if (! function_exists('in_fillable')) {
     /**
      * Check if a given attribute name is in the fillable array of a model.
      *
-     * @param string $name The attribute name to check.
-     * @param mixed $modelOrFillables The model instance or an array of fillable attributes.
+     * @param  string  $name  The attribute name to check.
+     * @param  mixed  $modelOrFillables  The model instance or an array of fillable attributes.
      * @return bool True if the attribute is fillable, false otherwise.
      */
     function in_fillable($name, $modelOrFillables): bool

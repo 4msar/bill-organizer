@@ -111,8 +111,6 @@ final class Bill extends Model
     /**
      * Calculate the status based on recurrence period and transactions.
      * This is used for both the accessor and the command to keep logic consistent.
-     *
-     * @return string
      */
     public function calculateStatus(): string
     {
@@ -175,6 +173,7 @@ final class Bill extends Model
     public function getStatusAttribute($value)
     {
         return $value;
+
         return $this->calculateStatus();
     }
 
@@ -358,7 +357,7 @@ final class Bill extends Model
             ->pluck('tags')
             ->filter()
             ->flatten()
-            ->map(fn($tag) => strtolower(trim($tag)))
+            ->map(fn ($tag) => strtolower(trim($tag)))
             ->unique()
             ->values();
     }
@@ -370,11 +369,11 @@ final class Bill extends Model
     {
         if ($this->tags) {
             $this->tags = array_map(
-                fn($item) => strtolower(trim($item)),
+                fn ($item) => strtolower(trim($item)),
                 $this->tags
             );
 
-            $this->tags = array_filter($this->tags, fn($tag) => ! empty($tag));
+            $this->tags = array_filter($this->tags, fn ($tag) => ! empty($tag));
 
             $this->tags = array_values(array_unique($this->tags));
         }

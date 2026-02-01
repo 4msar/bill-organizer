@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 use Illuminate\Support\Facades\DB;
 
-class UserObserver implements ShouldHandleEventsAfterCommit
+final class UserObserver implements ShouldHandleEventsAfterCommit
 {
     /**
      * Handle the User "created" event.

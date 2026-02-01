@@ -43,4 +43,3 @@ final class CategoryFactory extends Factory
         ];
     }
 }
-

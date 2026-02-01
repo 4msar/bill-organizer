@@ -27,6 +27,6 @@ if (app()->environment('local', 'dev', 'development')) {
         //     \App\Models\Bill::withoutGlobalScopes()->with('team')->first()
         // ))->toMail(\App\Models\User::first());
 
-        return "test route works";
+        return 'test route works';
     });
 }

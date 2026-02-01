@@ -116,6 +116,7 @@ final class BillFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             $trialStart = fake()->dateTimeBetween('-1 month', '+1 week');
+
             return [
                 'has_trial' => true,
                 'trial_start_date' => $trialStart,
@@ -124,4 +125,3 @@ final class BillFactory extends Factory
         });
     }
 }
-

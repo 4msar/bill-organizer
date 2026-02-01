@@ -50,4 +50,3 @@ final class NoteFactory extends Factory
         ]);
     }
 }
-

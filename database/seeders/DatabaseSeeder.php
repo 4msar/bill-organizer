@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Bill;
 use App\Models\Category;
-use App\Models\Note;
 use App\Models\Team;
 use App\Models\Transaction;
 use App\Models\User;
@@ -20,7 +19,7 @@ final class DatabaseSeeder extends Seeder
     {
         $user = User::whereEmail('test@example.com')->first();
 
-        if (!$user) {
+        if (! $user) {
             // Create main test user
             $user = User::factory()->create([
                 'name' => 'Test User',
@@ -117,7 +116,7 @@ final class DatabaseSeeder extends Seeder
         }
 
         $this->command->info('Database seeded successfully!');
-        $this->command->info("Created:");
+        $this->command->info('Created:');
         $this->command->info("- {$categories->count()} categories");
         $this->command->info("- {$allBills->count()} bills");
     }

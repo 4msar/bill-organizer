@@ -5,7 +5,7 @@ namespace App\Observers;
 use App\Models\Bill;
 use Illuminate\Support\Facades\DB;
 
-class BillObserver
+final class BillObserver
 {
     /**
      * Handle the Bill "created" event.

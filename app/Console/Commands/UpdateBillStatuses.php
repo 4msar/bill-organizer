@@ -6,7 +6,7 @@ use App\Models\Bill;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class UpdateBillStatuses extends Command
+final class UpdateBillStatuses extends Command
 {
     /**
      * The name and signature of the console command.
@@ -45,7 +45,7 @@ class UpdateBillStatuses extends Command
 
         if (! empty($billIds)) {
             $query->whereIn('id', $billIds);
-            $this->info('Filtering by bill IDs: ' . implode(', ', $billIds));
+            $this->info('Filtering by bill IDs: '.implode(', ', $billIds));
         }
 
         $bills = $query->get();

@@ -75,20 +75,20 @@ final class Transaction extends Model
         return null;
     }
 
-    function getPaymentMethodNameAttribute(): ?string
+    public function getPaymentMethodNameAttribute(): ?string
     {
         $methods = config('system.payment_methods');
 
         return $methods[$this->payment_method] ?? null;
     }
 
-    function getTnxIdAttribute(): string
+    public function getTnxIdAttribute(): string
     {
         $number = date('dmy', strtotime($this->created_at));
         $number .= str_pad($this->id, 2, '0', STR_PAD_LEFT);
         $number .= str_pad($this->team_id, 2, '0', STR_PAD_LEFT);
         $number .= str_pad($this->bill_id, 2, '0', STR_PAD_LEFT);
 
-        return 'TNX-' . $number;
+        return 'TNX-'.$number;
     }
 }

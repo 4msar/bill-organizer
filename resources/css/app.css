@@ -11,7 +11,7 @@
 
 @theme inline {
     --instrument-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
-    --font-jetbrains-mono: "JetBrains Mono", monospace;
+    --font-jetbrains-mono: 'JetBrains Mono', monospace;
     --font-nunito: 'Nunito', ui-sans-serif, system-ui, sans-serif;
 
     --font-sans: var(--instrument-sans);
@@ -74,7 +74,6 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
-
     *,
     ::after,
     ::before,
@@ -83,7 +82,6 @@
         border-color: var(--color-gray-200, currentColor);
     }
 }
-
 
 :root {
     --background: hsl(0 0% 100%);
