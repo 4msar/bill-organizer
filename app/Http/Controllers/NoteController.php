@@ -24,10 +24,13 @@ final class NoteController extends Controller
                 $query->withoutGlobalScope(TeamScope::class);
                 $query->with('team');
             }
-        )->with('related')->get();
+        )
+            ->with('related')
+            ->latest('updated_at')
+            ->get();
 
         return inertia('Notes/Index', [
-            'bills' => Bill::all(),
+            'bills' => Bill::all(['id', 'title']),
             'notes' => $notes,
         ]);
     }
@@ -65,7 +68,10 @@ final class NoteController extends Controller
             $note->bills()->sync($data['related']);
         }
 
-        return redirect()->route('notes.index')->with('success', 'Note created successfully.');
+        return redirect()
+            ->route('notes.index')
+            ->with('noteId', $note->id)
+            ->with('success', 'Note created successfully.');
     }
 
     /**

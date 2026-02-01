@@ -13,7 +13,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ExportFormat, useNoteExport } from '@/composables/useNoteExport';
-import { formatDate, getLink } from '@/lib/utils';
+import { formatDate, getLink, simpleMarkdown } from '@/lib/utils';
 import { Note } from '@/types/model';
 import { Link } from '@inertiajs/vue3';
 import { Download, MoreVertical, Pencil, Pin, StickyNote, Trash } from 'lucide-vue-next';
@@ -59,11 +59,7 @@ const formattedContent = computed(() => {
     if (!props.note?.content) return '';
 
     // Simple markdown-like formatting
-    return props.note.content
-        .replace(/\n/g, '<br>')
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/`(.*?)`/g, '<code class="bg-muted px-1 py-0.5 rounded text-sm">$1</code>');
+    return simpleMarkdown(props.note.content);
 });
 </script>
 
@@ -77,7 +73,7 @@ const formattedContent = computed(() => {
                             {{ note.title || 'Untitled Note' }}
                         </CardTitle>
                         <CardDescription class="mt-2 flex flex-wrap items-center gap-2">
-                            <span>Updated {{ formatDate(note.updated_at || note.created_at) }}</span>
+                            <span>Updated {{ formatDate(note.updated_at || note.created_at, true) }}</span>
                             <Pin v-if="note.is_pinned" class="text-muted-foreground h-3 w-3" />
                         </CardDescription>
                     </div>

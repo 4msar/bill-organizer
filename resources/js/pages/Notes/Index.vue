@@ -15,6 +15,7 @@ import { ExportFormat, useNoteExport } from '@/composables/useNoteExport';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { SharedData } from '@/types';
 import { Note } from '@/types/model';
+import { Page } from '@inertiajs/core';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { Download, Filter, Menu, Plus, Search, StickyNote } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
@@ -122,9 +123,10 @@ function onDialogSuccess() {
 function handleSelectNote(note: Note) {
     selectedNote.value = note;
     isEditing.value = false;
-    if (isMobile.value) {
-        showMobileSheet.value = false;
-    }
+    showMobileSheet.value = false;
+
+    // Store last selected note ID in session storage
+    sessionStorage.setItem('lastSelectedNoteId', note.id.toString());
 }
 
 function toggleMobileSheet() {
@@ -149,9 +151,10 @@ function handleCancelEdit() {
     // Keep the note selected in view mode
 }
 
-function handleEditSuccess() {
+function handleEditSuccess(data: Page<SharedData>) {
     isEditing.value = false;
     // Keep the note selected to view the updated version
+    console.log('Data after edit success:', data.props);
 }
 
 function handleExport(format: ExportFormat) {
@@ -170,17 +173,30 @@ const handleFilter = () => {
 onMounted(() => {
     // If in sidebar view and there are notes, select the first one by default
     if (viewMode.value === 'sidebar' && props.notes.length > 0 && !selectedNote.value) {
-        handleSelectNote(props.notes[0]);
+        const lastSelectedId = sessionStorage.getItem('lastSelectedNoteId');
+        if (lastSelectedId) {
+            const lastSelectedNote = props.notes.find((note) => note.id === Number(lastSelectedId));
+            if (lastSelectedNote) {
+                handleSelectNote(lastSelectedNote);
+                return;
+            }
+        } else {
+            handleSelectNote(props.notes[0]);
+        }
     }
 
     // Check mobile and add resize listener
     checkMobile();
-    window.addEventListener('resize', checkMobile);
+    if (viewMode.value !== 'grid') {
+        window.addEventListener('resize', checkMobile);
+    }
 });
 
 onUnmounted(() => {
     // Clean up resize listener
-    window.removeEventListener('resize', checkMobile);
+    if (viewMode.value !== 'grid') {
+        window.removeEventListener('resize', checkMobile);
+    }
 });
 </script>
 
@@ -202,14 +218,16 @@ onUnmounted(() => {
                 <Heading class="flex flex-wrap items-center justify-between gap-2" title="Notes" description="Organize your thoughts and ideas">
                     <div class="flex items-center gap-2">
                         <Button variant="secondary" @click="handleFilter">
-                            <Filter class="mr-2 h-4 w-4" />
-                            {{ queryParams.get('team') === 'all' ? 'Current Team Notes' : 'All Teams Notes' }}
+                            <Filter class="h-4 w-4" />
+                            <span class="ml-2 hidden sm:inline">
+                                {{ queryParams.get('team') === 'all' ? 'Current Team Notes' : 'All Teams Notes' }}
+                            </span>
                         </Button>
                         <DropdownMenu v-if="notes.length > 0">
                             <DropdownMenuTrigger as-child>
                                 <Button variant="outline">
-                                    <Download class="mr-2 h-4 w-4" />
-                                    Export Notes
+                                    <Download class="h-4 w-4" />
+                                    <span class="ml-2 hidden sm:inline">Export</span>
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
@@ -220,8 +238,8 @@ onUnmounted(() => {
                             </DropdownMenuContent>
                         </DropdownMenu>
                         <Button @click="handleCreateNote">
-                            <Plus class="mr-2 h-4 w-4" />
-                            New Note
+                            <Plus class="h-4 w-4" />
+                            <span class="ml-2 hidden sm:inline">New Note</span>
                         </Button>
                     </div>
                 </Heading>
@@ -231,7 +249,7 @@ onUnmounted(() => {
                     <!-- Pinned Notes -->
                     <div v-if="notes.filter((note) => note.is_pinned).length > 0" class="mb-8">
                         <h2 class="mb-4 text-lg font-semibold text-gray-700 dark:text-gray-300">Pinned Notes</h2>
-                        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:grid-cols-4">
                             <NoteCard
                                 v-for="note in notes.filter((note) => note.is_pinned)"
                                 :key="note.id"
@@ -276,6 +294,18 @@ onUnmounted(() => {
                     </CardContent>
                 </Card>
             </div>
+            <!-- Dialogs (for grid view) -->
+            <NoteDialog v-model:open="showCreateDialog" @success="onDialogSuccess" />
+
+            <NoteDialog v-model:open="showEditDialog" :note="selectedNote" @success="onDialogSuccess" />
+
+            <NoteViewDialog
+                v-model:open="showViewDialog"
+                :note="selectedNote"
+                @edit="handleEditFromView"
+                @delete="handleDeleteFromView"
+                @pin="handlePinFromView"
+            />
         </div>
 
         <!-- Sidebar View -->
@@ -430,18 +460,5 @@ onUnmounted(() => {
                 </div>
             </div>
         </div>
-
-        <!-- Dialogs (for grid view) -->
-        <NoteDialog v-model:open="showCreateDialog" @success="onDialogSuccess" />
-
-        <NoteDialog v-model:open="showEditDialog" :note="selectedNote" @success="onDialogSuccess" />
-
-        <NoteViewDialog
-            v-model:open="showViewDialog"
-            :note="selectedNote"
-            @edit="handleEditFromView"
-            @delete="handleDeleteFromView"
-            @pin="handlePinFromView"
-        />
     </AppLayout>
 </template>

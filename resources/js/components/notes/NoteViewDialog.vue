@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ExportFormat, useNoteExport } from '@/composables/useNoteExport';
-import { formatDate, getLink } from '@/lib/utils';
+import { formatDate, getLink, simpleMarkdown } from '@/lib/utils';
 import { Note } from '@/types/model';
 import { Link } from '@inertiajs/vue3';
 import { Download, Pencil, Pin, Trash } from 'lucide-vue-next';
@@ -60,11 +60,7 @@ const formattedContent = computed(() => {
     if (!props.note?.content) return '';
 
     // Simple markdown-like formatting
-    return props.note.content
-        .replace(/\n/g, '<br>')
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/`(.*?)`/g, '<code class="bg-muted px-1 py-0.5 rounded text-sm">$1</code>');
+    return simpleMarkdown(props.note.content);
 });
 </script>
 

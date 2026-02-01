@@ -24,6 +24,10 @@ final class Note extends Model
         'is_pinned',
     ];
 
+    protected $appends = [
+        'was_recently_created'
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -49,5 +53,10 @@ final class Note extends Model
     public function related()
     {
         return $this->hasMany(Notable::class, 'note_id')->with('notable');
+    }
+
+    public function getWasRecentlyCreatedAttribute(): bool
+    {
+        return $this->wasRecentlyCreated;
     }
 }

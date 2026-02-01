@@ -52,7 +52,7 @@ const summaryText = computed(() => {
 </script>
 
 <template>
-    <Card class="relative w-full max-w-sm gap-y-1 py-4 transition-shadow duration-200 hover:shadow-md">
+    <Card class="relative w-full gap-y-1 py-4 transition-shadow duration-200 hover:shadow-md">
         <CardHeader>
             <div class="flex items-start justify-between">
                 <div class="flex w-full flex-wrap items-center justify-between">
