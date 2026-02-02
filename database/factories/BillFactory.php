@@ -54,6 +54,7 @@ final class BillFactory extends Factory
             'user_id' => User::factory(),
             'category_id' => Category::factory(),
             'title' => fake()->randomElement($billTitles),
+            'slug' => fake()->unique()->slug(),
             'description' => fake()->optional(0.6)->sentence(),
             'amount' => fake()->randomFloat(2, 10, 500),
             'due_date' => $dueDate,
@@ -83,7 +84,7 @@ final class BillFactory extends Factory
      */
     public function paid(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => 'paid',
         ]);
     }
@@ -93,7 +94,7 @@ final class BillFactory extends Factory
      */
     public function unpaid(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => 'unpaid',
         ]);
     }
@@ -103,7 +104,7 @@ final class BillFactory extends Factory
      */
     public function recurring(string $period = 'monthly'): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_recurring' => true,
             'recurrence_period' => $period,
         ]);
