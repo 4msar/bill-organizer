@@ -6,7 +6,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { useLocalStorage } from '@/composables/useLocalStorage';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { formatCurrency } from '@/lib/utils';
+import { cn, formatCurrency } from '@/lib/utils';
 import { Bill } from '@/types/model';
 import { Head, router } from '@inertiajs/vue3';
 import { ArrowLeft, Eye, EyeOff, Plus, Printer, RotateCcw, Trash2 } from 'lucide-vue-next';
@@ -58,7 +58,7 @@ const getDefaultFormData = (): InvoiceFormData => ({
     to_email: '',
     to_phone: '',
     to_address: '',
-    include_logo: true,
+    include_logo: false,
     items: [
         {
             description: bill.title || '',
@@ -187,11 +187,11 @@ function formatDate(date: string) {
                                         <Input id="due_date" v-model="formData.due_date" type="date" />
                                     </div>
                                     <div>
-                                        <Label class="mb-2" for="include_logo">Include Logo</Label>
+                                        <Label class="mb-2" for="include_logo">Include Logo/Details</Label>
                                         <Label for="include_logo" class="flex items-center gap-4 pt-2">
                                             <Switch id="include_logo" v-model="formData.include_logo" />
 
-                                            Include your company logo on the invoice.
+                                            Include your company logo and details on the invoice.
                                         </Label>
                                     </div>
                                 </div>
@@ -378,8 +378,19 @@ function formatDate(date: string) {
                         >
                             <!-- Header -->
                             <div class="mb-8 border-b pb-8">
-                                <div v-if="formData.include_logo" class="mb-4 flex items-center justify-center">
-                                    <img :src="$page.props?.team?.current?.icon_url" alt="Company Logo" class="h-12 w-auto dark:invert" />
+                                <div v-if="formData.include_logo" class="mb-20 flex flex-col items-center justify-center">
+                                    <img
+                                        v-if="$page.props?.team?.current?.icon"
+                                        :src="$page.props?.team?.current?.icon_url"
+                                        alt="Company Logo"
+                                        class="h-12 w-auto dark:invert"
+                                    />
+                                    <h4 :class="cn('mt-4 font-bold', $page.props?.team?.current?.icon ? 'text-2xl' : 'text-3xl')">
+                                        {{ $page.props.team.current.name }}
+                                    </h4>
+                                    <p>
+                                        {{ $page.props.team.current.description }}
+                                    </p>
                                 </div>
                                 <div class="flex items-start justify-between">
                                     <div>

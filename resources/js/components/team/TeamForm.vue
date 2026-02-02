@@ -4,8 +4,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { getCurrencyFullName } from '@/lib/utils';
-import { useForm } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
+import Tooltip from '../shared/Tooltip.vue';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 const { method, submitUrl, defaultValues } = defineProps<{
@@ -86,9 +87,20 @@ const submit = () => {
         </div>
 
         <div class="grid gap-2">
-            <Label for="icon">Icon / Logo</Label>
+            <div class="flex items-center justify-between">
+                <Label for="icon">Icon / Logo</Label>
+                <Tooltip v-if="$page.props.team?.current?.icon" title="Delete the current logo/icon">
+                    <Link as="button" method="delete" :href="route('team.logo.remove')" class="text-sm hover:underline">Clear Current Icon</Link>
+                </Tooltip>
+            </div>
             <Input id="icon" type="file" accept="image/*" class="mt-1 block w-full" @change="form.icon = $event?.target?.files[0]" />
             <InputError class="mt-2" :message="form.errors.icon" />
+            <img
+                v-if="$page.props.team?.current?.icon"
+                :src="$page.props.team.current.icon_url"
+                alt="Current Team Icon"
+                class="mt-4 h-16 w-16 rounded-md object-cover"
+            />
         </div>
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">

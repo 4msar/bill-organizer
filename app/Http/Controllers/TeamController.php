@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 final class TeamController extends Controller
 {
@@ -199,5 +200,24 @@ final class TeamController extends Controller
         $team->users()->detach($user);
 
         return back()->with('success', 'Member removed successfully.');
+    }
+
+    public function removeLogo()
+    {
+        /** @var Team $team */
+        $team = request()->user()->activeTeam;
+
+        if (
+            $team->icon &&
+            ! str($team->icon)->startsWith('http') &&
+            Storage::exists($team->icon)
+        ) {
+            Storage::delete($team->icon);
+        }
+
+        $team->icon = null;
+        $team->save();
+
+        return back()->with('success', 'Team logo removed successfully.');
     }
 }

@@ -41,6 +41,8 @@ Route::middleware(['auth', 'verified', 'team'])->group(function () {
 
         Route::post('member', 'addMember')->name('member.add');
         Route::delete('member/{user}', 'removeMember')->name('member.remove');
+
+        Route::delete('logo/remove', 'removeLogo')->name('logo.remove');
     });
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
