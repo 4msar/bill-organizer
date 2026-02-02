@@ -335,7 +335,7 @@ const userName = props.auth.user.name || 'User';
                                             <TableCell>{{ bill.category?.name || 'Uncategorized' }}</TableCell>
                                             <TableCell class="text-right">
                                                 <Button variant="ghost" size="sm" asChild>
-                                                    <Link :href="route('bills.show', bill.id)">
+                                                    <Link :href="route('bills.show', bill.slug)">
                                                         <ArrowRightCircle class="h-4 w-4" />
                                                         <span class="sr-only">View</span>
                                                     </Link>
@@ -386,7 +386,7 @@ const userName = props.auth.user.name || 'User';
                                             <TableCell>{{ bill.category?.name || 'Uncategorized' }}</TableCell>
                                             <TableCell class="text-right">
                                                 <Button variant="ghost" size="sm" asChild>
-                                                    <Link :href="route('bills.show', bill.id)">
+                                                    <Link :href="route('bills.show', bill.slug)">
                                                         <ArrowRightCircle class="h-4 w-4" />
                                                         <span class="sr-only">View</span>
                                                     </Link>

@@ -57,7 +57,7 @@ final class BillFactory extends Factory
             'description' => fake()->optional(0.6)->sentence(),
             'amount' => fake()->randomFloat(2, 10, 500),
             'due_date' => $dueDate,
-            'status' => fake()->randomElement(['paid', 'unpaid']),
+            'status' => fake()->randomElement(['paid', 'unpaid', 'overdue']),
             'is_recurring' => $isRecurring,
             'recurrence_period' => $isRecurring ? fake()->randomElement(['weekly', 'monthly', 'yearly']) : null,
             'payment_url' => fake()->optional(0.4)->url(),
@@ -83,7 +83,7 @@ final class BillFactory extends Factory
      */
     public function paid(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'paid',
         ]);
     }
@@ -93,7 +93,7 @@ final class BillFactory extends Factory
      */
     public function unpaid(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'unpaid',
         ]);
     }
@@ -103,7 +103,7 @@ final class BillFactory extends Factory
      */
     public function recurring(string $period = 'monthly'): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'is_recurring' => true,
             'recurrence_period' => $period,
         ]);

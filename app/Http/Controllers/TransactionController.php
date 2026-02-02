@@ -19,7 +19,7 @@ final class TransactionController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Transaction::with(['bill:id,title,category_id', 'bill.category:id,name']);
+        $query = Transaction::with(['bill', 'bill.category']);
 
         // Apply filters
         if ($request->filled('bill_id')) {

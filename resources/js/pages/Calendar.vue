@@ -127,7 +127,7 @@ const handleDialogClose = () => {
                 <template v-if="selectedEvent?.id && bill && !editSelectedEvent">
                     <Details :bill="bill" class="border-none shadow-none">
                         <template #footer>
-                            <Link class="w-auto justify-self-end" :href="route('bills.show', bill.id)">
+                            <Link class="w-auto justify-self-end" :href="route('bills.show', bill)">
                                 <Button variant="outline">
                                     <ScanEye class="mr-1 size-4" />
                                     Details
@@ -148,7 +148,7 @@ const handleDialogClose = () => {
                     </DialogHeader>
                     <BillForm
                         :categories="props.categories"
-                        :submit-url="editSelectedEvent && bill ? route('bills.update', bill.id) : route('bills.store')"
+                        :submit-url="editSelectedEvent && bill ? route('bills.update', bill) : route('bills.store')"
                         :submit-method="editSelectedEvent && bill ? 'put' : 'post'"
                         :options="{
                             onSuccess: () => handleDialogClose(),

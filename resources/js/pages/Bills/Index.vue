@@ -163,7 +163,7 @@ function markAsPaid(id: string | number) {
                                 <TableRow
                                     v-for="bill in bills.data"
                                     :key="bill.id"
-                                    @click.stop="router.visit(route('bills.show', bill.id))"
+                                    @click.stop="router.visit(route('bills.show', bill.slug))"
                                     class="hover:bg-muted/50 cursor-pointer"
                                 >
                                     <TableCell class="font-medium">
@@ -204,13 +204,13 @@ function markAsPaid(id: string | number) {
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuItem>
-                                                    <Link :href="route('bills.show', bill.id)" class="flex w-full items-center gap-2">
+                                                    <Link :href="route('bills.show', bill.slug)" class="flex w-full items-center gap-2">
                                                         <Eye class="mr-2 h-4 w-4" />
                                                         View details
                                                     </Link>
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem class="flex items-center">
-                                                    <Link :href="route('bills.edit', bill.id)" class="flex w-full items-center gap-2">
+                                                    <Link :href="route('bills.edit', bill.slug)" class="flex w-full items-center gap-2">
                                                         <Edit class="mr-2 h-4 w-4" />
                                                         Edit
                                                     </Link>
@@ -223,7 +223,7 @@ function markAsPaid(id: string | number) {
                                                     <CheckCheck class="mr-2 h-4 w-4" />
                                                     Mark as paid
                                                 </DropdownMenuItem>
-                                                <Confirm :modal="true" title="Are you sure?" :url="route('bills.destroy', bill.id)">
+                                                <Confirm :modal="true" title="Are you sure?" :url="route('bills.destroy', bill.slug)">
                                                     <DropdownMenuItem standalone class="text-destructive hover:text-destructive flex items-center">
                                                         <Trash2 class="mr-2 h-4 w-4" />
                                                         Delete

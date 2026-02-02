@@ -88,7 +88,7 @@ const paymentMethodIcon = computed(() => {
                                     {{ transaction.bill.description }}
                                 </p>
                             </div>
-                            <Button variant="outline" size="sm" as="a" :href="route('bills.show', transaction.bill.id)">
+                            <Button variant="outline" size="sm" as="a" :href="route('bills.show', transaction?.bill?.slug ?? transaction.bill_id)">
                                 <ExternalLink class="mr-1 h-4 w-4" />
                                 View Bill
                             </Button>
@@ -144,7 +144,7 @@ const paymentMethodIcon = computed(() => {
 
                 <!-- Metadata -->
                 <div class="text-muted-foreground text-xs">
-                    <p>Transaction ID: {{ transaction.id }}</p>
+                    <p>Transaction ID: {{ transaction.tnx_id ?? transaction.id }}</p>
                     <p>Created: {{ formatDate(transaction.created_at) }}</p>
                     <p v-if="transaction.updated_at !== transaction.created_at">Last updated: {{ formatDate(transaction.updated_at) }}</p>
                 </div>

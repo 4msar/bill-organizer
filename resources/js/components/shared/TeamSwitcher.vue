@@ -54,7 +54,7 @@ const teams = computed(() => props.team.items);
                     <DropdownMenuLabel class="text-muted-foreground text-xs"> Teams </DropdownMenuLabel>
                     <template v-for="team in teams" :key="team.name">
                         <DropdownMenuItem class="gap-0 p-0">
-                            <Link :href="route('team.switch', { team: team.id })" class="flex w-full items-center gap-2 p-2">
+                            <Link :href="route('team.switch', { team })" class="flex w-full items-center gap-2 p-2">
                                 <div class="flex size-6 items-center justify-center rounded-sm border">
                                     <img v-if="team.icon" :src="team.icon_url" alt="Icon" class="size-4 shrink-0" />
                                     <AppLogoIcon v-else class="size-4 shrink-0" />

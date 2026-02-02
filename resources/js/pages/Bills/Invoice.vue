@@ -116,7 +116,7 @@ function printInvoice() {
 }
 
 function goBack() {
-    router.visit(route('bills.show', bill.id));
+    router.visit(route('bills.show', bill.slug));
 }
 
 function formatDate(date: string) {
@@ -133,8 +133,8 @@ function formatDate(date: string) {
     <AppLayout
         :breadcrumbs="[
             { title: 'Bills', href: route('bills.index') },
-            { title: bill.title, href: route('bills.show', bill.id) },
-            { title: 'Generate Invoice', href: route('bills.invoice', bill.id) },
+            { title: bill.title, href: route('bills.show', bill.slug) },
+            { title: 'Generate Invoice', href: route('bills.invoice', bill.slug) },
         ]"
     >
         <Head title="Generate Invoice" />

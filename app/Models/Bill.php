@@ -7,6 +7,7 @@ use App\Models\Scopes\TeamScope;
 use App\Observers\BillObserver;
 use App\Traits\HasMetaData;
 use App\Traits\HasTeam;
+use App\Traits\Sluggable;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
@@ -22,6 +23,7 @@ final class Bill extends Model
     // for check the notification are sent or not
     use HasMetaData;
     use HasTeam;
+    use Sluggable;
 
     /**
      * The attributes that are mass assignable.
@@ -33,6 +35,7 @@ final class Bill extends Model
         'user_id',
         'category_id',
         'title',
+        'slug',
         'description',
         'amount',
         'due_date',
@@ -75,6 +78,30 @@ final class Bill extends Model
         self::updating(function (Bill $bill) {
             $bill->createUniqueTags();
         });
+    }
+
+    /**
+     * Get the route key name for Laravel Route Model Binding.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    /**
+     * Resolve route binding for the model.
+     *
+     * @param mixed $value
+     * @param string|null $field
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->where('id', $value)
+            ->orWhere('slug', $value)
+            ->firstOrFail();
     }
 
     /**

@@ -47,11 +47,11 @@ const isPastDue = computed((): boolean => {
 });
 
 function onFormSuccess(): void {
-    router.visit(route('bills.show', props.bill.id));
+    router.visit(route('bills.show', props.bill.slug));
 }
 
 function onFormCancel(): void {
-    router.visit(route('bills.show', props.bill.id));
+    router.visit(route('bills.show', props.bill.slug));
 }
 </script>
 
@@ -64,7 +64,7 @@ function onFormCancel(): void {
             },
             {
                 title: `Pay Bill (${bill.title})`,
-                href: route('bills.pay', bill.id),
+                href: route('bills.pay', bill.slug),
             },
         ]"
     >
@@ -74,7 +74,7 @@ function onFormCancel(): void {
             <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
                 <!-- Back button and header -->
                 <div class="mb-6">
-                    <Link :href="route('bills.show', bill.id)" class="text-muted-foreground flex items-center text-sm hover:underline">
+                    <Link :href="route('bills.show', bill.slug)" class="text-muted-foreground flex items-center text-sm hover:underline">
                         <ArrowLeft class="mr-1 h-4 w-4" />
                         Back to Bill
                     </Link>

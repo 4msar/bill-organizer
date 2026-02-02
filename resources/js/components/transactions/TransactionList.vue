@@ -3,7 +3,7 @@ import Tooltip from '@/components/shared/Tooltip.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { formatCurrency, formatDate, getDocumentType, getPaymentMethodName, isImage, isPdf } from '@/lib/utils';
+import { formatCurrency, formatDate, getDocumentType, getPaymentMethodName } from '@/lib/utils';
 import { Transaction } from '@/types/model';
 import { Calendar, CreditCard, Download, ExternalLink, FileText, Receipt, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
@@ -62,10 +62,10 @@ function openTransactionDetails(transaction: Transaction): void {
                 <Table>
                     <TableHeader>
                         <TableRow>
+                            <TableHead v-if="showBillLink">Bill</TableHead>
                             <TableHead>Date</TableHead>
                             <TableHead>Amount</TableHead>
                             <TableHead>Method</TableHead>
-                            <TableHead>Attachment</TableHead>
                             <TableHead>Notes</TableHead>
                             <TableHead class="text-right">Actions</TableHead>
                         </TableRow>
@@ -77,6 +77,11 @@ function openTransactionDetails(transaction: Transaction): void {
                             class="hover:bg-muted/50 cursor-pointer"
                             @click="openTransactionDetails(transaction)"
                         >
+                            <TableCell v-if="showBillLink">
+                                <span class="font-bold">
+                                    {{ transaction.bill ? transaction.bill?.title : '—' }}
+                                </span>
+                            </TableCell>
                             <TableCell>
                                 <div class="flex items-center">
                                     <Calendar class="text-muted-foreground mr-2 h-4 w-4" />
@@ -91,26 +96,6 @@ function openTransactionDetails(transaction: Transaction): void {
                                     <component :is="getPaymentMethodIcon(transaction.payment_method)" class="text-muted-foreground mr-2 h-4 w-4" />
                                     {{ getPaymentMethodName(transaction.payment_method) }}
                                 </div>
-                            </TableCell>
-                            <TableCell>
-                                <Tooltip v-if="transaction.attachment" :title="getDocumentType(transaction.attachment)">
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        class="h-8 px-2"
-                                        as="a"
-                                        :href="`/storage/${transaction.attachment}`"
-                                        target="_blank"
-                                        @click.stop
-                                    >
-                                        <component
-                                            :is="isImage(transaction.attachment) ? 'Image' : isPdf(transaction.attachment) ? FileText : FileText"
-                                            class="mr-1 h-4 w-4"
-                                        />
-                                        <span class="sr-only md:not-sr-only md:text-xs">View</span>
-                                    </Button>
-                                </Tooltip>
-                                <span v-else class="text-muted-foreground text-sm">—</span>
                             </TableCell>
                             <TableCell>
                                 <Tooltip v-if="transaction.notes" :title="transaction.notes">
@@ -144,8 +129,10 @@ function openTransactionDetails(transaction: Transaction): void {
                                         :href="transaction.attachment_link"
                                         download
                                     >
-                                        <Download class="h-4 w-4" />
-                                        <span class="sr-only">Download</span>
+                                        <Tooltip v-if="transaction.attachment" :title="getDocumentType(transaction.attachment)">
+                                            <Download class="h-4 w-4" />
+                                            <span class="sr-only">Download</span>
+                                        </Tooltip>
                                     </Button>
                                     <Button
                                         v-if="showBillLink"
@@ -153,7 +140,7 @@ function openTransactionDetails(transaction: Transaction): void {
                                         size="icon"
                                         class="h-8 w-8"
                                         as="a"
-                                        :href="route('bills.show', transaction.bill_id)"
+                                        :href="route('bills.show', transaction.bill?.slug ?? transaction.bill_id)"
                                     >
                                         <ExternalLink class="h-4 w-4" />
                                         <span class="sr-only">View Bill</span>

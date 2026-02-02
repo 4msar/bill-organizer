@@ -29,14 +29,14 @@ const isPastDue = computed((): boolean => {
 
 function deleteBill(): void {
     if (confirm('Are you sure you want to delete this bill?')) {
-        router.delete(route('bills.destroy', bill.id));
+        router.delete(route('bills.destroy', bill.slug));
     }
 }
 
 async function openPaymentDialog(): Promise<void> {
     isLoading.value = true;
     try {
-        const response = await axios.get(route('bills.payment-details', bill.id));
+        const response = await axios.get(route('bills.payment-details', bill.slug));
         console.log({ response });
         paymentMethods.value = response.data.paymentMethods;
         nextDueDate.value = response.data.nextDueDate;
@@ -63,7 +63,7 @@ function onPaymentComplete(): void {
             },
             {
                 title: `Bill Details (${bill.title})`,
-                href: route('bills.show', bill.id),
+                href: route('bills.show', bill.slug),
             },
         ]"
     >
@@ -81,13 +81,13 @@ function onPaymentComplete(): void {
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
                         <Button variant="outline" asChild>
-                            <Link :href="route('bills.invoice', bill.id)">
+                            <Link :href="route('bills.invoice', bill.slug)">
                                 <Receipt class="mr-2 h-4 w-4" />
                                 Generate Invoice
                             </Link>
                         </Button>
                         <Button variant="outline" asChild>
-                            <Link :href="route('bills.edit', bill.id)">
+                            <Link :href="route('bills.edit', bill.slug)">
                                 <Edit class="mr-2 h-4 w-4" />
                                 Edit
                             </Link>

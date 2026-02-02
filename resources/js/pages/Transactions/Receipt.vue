@@ -21,7 +21,7 @@ function printReceipt() {
 }
 
 function goBack() {
-    router.visit(route('bills.show', transaction.bill_id));
+    router.visit(route('bills.show', transaction?.bill?.slug ?? transaction.bill_id));
 }
 
 function formatDate(date: string) {
@@ -44,7 +44,7 @@ function formatTime(date: string) {
     <AppLayout
         :breadcrumbs="[
             { title: 'Bills', href: route('bills.index') },
-            { title: transaction.bill?.title || 'Bill', href: route('bills.show', transaction.bill_id) },
+            { title: transaction.bill?.title || 'Bill', href: route('bills.show', transaction?.bill?.slug ?? transaction.bill_id) },
             { title: 'Receipt', href: '#' },
         ]"
     >

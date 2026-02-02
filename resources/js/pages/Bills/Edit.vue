@@ -24,7 +24,7 @@ defineProps<Props>();
             },
             {
                 title: `Edit Bill (${bill.title})`,
-                href: route('bills.edit', bill.id),
+                href: route('bills.edit', bill.slug),
             },
         ]"
     >
@@ -36,7 +36,7 @@ defineProps<Props>();
                     <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Edit Bill</h2>
 
                     <Button as-child variant="outline" size="sm">
-                        <Link :href="route('bills.show', bill.id)"> Back </Link>
+                        <Link :href="route('bills.show', bill.slug)"> Back </Link>
                     </Button>
                 </div>
 
@@ -50,7 +50,7 @@ defineProps<Props>();
                             :tags="tags"
                             :bill="bill"
                             :categories="categories"
-                            :submit-url="route('bills.update', bill.id)"
+                            :submit-url="route('bills.update', bill.slug)"
                             submit-method="put"
                         />
                     </CardContent>

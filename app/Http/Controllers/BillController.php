@@ -217,6 +217,7 @@ final class BillController extends Controller
      */
     public function visit($bill, Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         /** @var Bill $billItem */

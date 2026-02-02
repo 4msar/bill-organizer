@@ -26,6 +26,7 @@ export interface Bill extends Model {
     user_id: number;
     team_id: number;
     title: string;
+    slug: string;
     description: string;
     tags: string[]; // Array of tags
     amount: number;
@@ -63,6 +64,7 @@ export interface Transaction extends Model {
 export interface Team extends Model {
     user_id: number;
     name: string;
+    slug: string;
     description: string;
     icon: string;
     icon_url: string;
