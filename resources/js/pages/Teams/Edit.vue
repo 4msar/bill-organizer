@@ -44,6 +44,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 :submit-url="route('team.settings')"
                                 :default-values="{
                                     name: props.team.current.name,
+                                    slug: props.team.current.slug,
                                     description: props.team.current.description,
                                     icon: null,
                                     currency: props.team.current?.currency || 'USD',

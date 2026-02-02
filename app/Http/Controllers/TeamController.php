@@ -15,6 +15,7 @@ final class TeamController extends Controller
 {
     const ValidationRules = [
         'name' => ['required', 'string', 'max:100'],
+        'slug' => ['required', 'string', 'max:100', 'alpha_dash', 'unique:teams,slug'],
         'description' => ['string', 'max:255'],
         'icon' => ['image', 'nullable', 'max:512'],
         'currency' => ['string', 'required'],
@@ -92,7 +93,9 @@ final class TeamController extends Controller
      */
     public function update(Request $request, Team $team)
     {
-        $data = $request->validate(self::ValidationRules);
+        $data = $request->validate(array_merge(self::ValidationRules, [
+            'slug' => ['required', 'string', 'max:100', 'alpha_dash', 'unique:teams,slug,'.$team->id],
+        ]));
 
         if ($request->hasFile('icon')) {
             $data['icon'] = $request->file('icon')->store('teams');

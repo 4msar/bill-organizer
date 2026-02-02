@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 #[
     ScopedBy([TeamUserScope::class]),
@@ -75,6 +76,25 @@ final class Team extends Model
             'unique' => true,
             'maxLength' => 255,
         ];
+    }
+
+    /**
+     * Check uniqueness of slug
+     */
+    protected function checkUniqueness(string $destination, string $slug): string
+    {
+        $counter = 1;
+        $originalSlug = $slug;
+
+        while (
+            self::where($destination, $slug)
+                ->where('user_id', $this->user_id)
+                ->exists()
+        ) {
+            $slug = $originalSlug.'-'.$counter++.Str::random(6);
+        }
+
+        return $slug;
     }
 
     public function getIconUrlAttribute()

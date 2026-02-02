@@ -14,6 +14,7 @@ const { method, submitUrl, defaultValues } = defineProps<{
     method?: 'POST' | 'PUT';
     defaultValues: {
         name: string;
+        slug?: string;
         description: string;
         icon: File | null;
         currency: string;
@@ -24,6 +25,7 @@ const currencies = ref<string[]>(Intl.supportedValuesOf('currency'));
 
 const form = useForm<{
     name: string;
+    slug?: string;
     description: string;
     icon: File | null;
     currency: string;
@@ -57,6 +59,17 @@ watch(
     { immediate: true },
 );
 
+watch(
+    () => form.name,
+    (newName) => {
+        form.slug = newName
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+            .substring(0, 100);
+    },
+);
+
 const submit = () => {
     if (method === 'PUT') {
         form._method = 'PUT';
@@ -72,6 +85,11 @@ const submit = () => {
             <Label for="name">Name</Label>
             <Input id="name" class="mt-1 block w-full" v-model="form.name" required autocomplete="name" placeholder="Team name" />
             <InputError class="mt-2" :message="form.errors.name" />
+        </div>
+        <div class="grid gap-2">
+            <Label for="slug">Slug</Label>
+            <Input id="slug" class="mt-1 block w-full" v-model="form.slug" required autocomplete="slug" placeholder="Team slug" />
+            <InputError class="mt-2" :message="form.errors.slug" />
         </div>
 
         <div class="grid gap-2">

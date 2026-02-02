@@ -8,8 +8,6 @@ trait Sluggable
 {
     /**
      * Get slug options
-     *
-     * @return array
      */
     public function getSlugOptions(): array
     {
@@ -23,8 +21,6 @@ trait Sluggable
 
     /**
      * Boot the trait
-     *
-     * @return void
      */
     public static function bootSluggable(): void
     {
@@ -36,14 +32,14 @@ trait Sluggable
     public function fillSlug(): void
     {
         $options = $this->getSlugOptions();
-        if (!isset($options['source']) || !isset($options['destination'])) {
+        if (! isset($options['source']) || ! isset($options['destination'])) {
             return;
         }
 
         $source = $options['source'];
         $destination = $options['destination'];
 
-        if (!empty($this->$destination)) {
+        if (! empty($this->$destination)) {
             if ($options['unique']) {
                 $this->$destination = $this->checkUniqueness(
                     $destination,
@@ -70,13 +66,16 @@ trait Sluggable
         $this->$destination = $slug;
     }
 
+    /**
+     * Ensure the slug is unique within the destination field.
+     */
     protected function checkUniqueness(string $destination, string $slug): string
     {
         $counter = 1;
         $originalSlug = $slug;
 
         while (self::where($destination, $slug)->exists()) {
-            $slug = $originalSlug . '-' . $counter++ . Str::random(6);
+            $slug = $originalSlug.'-'.$counter++.Str::random(6);
         }
 
         return $slug;

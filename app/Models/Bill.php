@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 #[ScopedBy([TeamScope::class]), ObservedBy(BillObserver::class)]
 final class Bill extends Model
@@ -93,8 +94,8 @@ final class Bill extends Model
     /**
      * Resolve route binding for the model.
      *
-     * @param mixed $value
-     * @param string|null $field
+     * @param  mixed  $value
+     * @param  string|null  $field
      * @return \Illuminate\Database\Eloquent\Model|null
      */
     public function resolveRouteBinding($value, $field = null)
@@ -102,6 +103,26 @@ final class Bill extends Model
         return $this->where('id', $value)
             ->orWhere('slug', $value)
             ->firstOrFail();
+    }
+
+    /**
+     * Ensure the slug is unique within the destination field.
+     */
+    protected function checkUniqueness(string $destination, string $slug): string
+    {
+        $counter = 1;
+        $originalSlug = $slug;
+
+        while (
+            self::where($destination, $slug)
+                ->where('user_id', $this->user_id)
+                ->where('team_id', $this->team_id)
+                ->exists()
+        ) {
+            $slug = $originalSlug.'-'.$counter++.Str::random(6);
+        }
+
+        return $slug;
     }
 
     /**
@@ -382,7 +403,7 @@ final class Bill extends Model
             ->pluck('tags')
             ->filter()
             ->flatten()
-            ->map(fn($tag) => strtolower(trim($tag)))
+            ->map(fn ($tag) => strtolower(trim($tag)))
             ->unique()
             ->values();
     }
@@ -394,11 +415,11 @@ final class Bill extends Model
     {
         if ($this->tags) {
             $this->tags = array_map(
-                fn($item) => strtolower(trim($item)),
+                fn ($item) => strtolower(trim($item)),
                 $this->tags
             );
 
-            $this->tags = array_filter($this->tags, fn($tag) => ! empty($tag));
+            $this->tags = array_filter($this->tags, fn ($tag) => ! empty($tag));
 
             $this->tags = array_values(array_unique($this->tags));
         }

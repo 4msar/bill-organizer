@@ -18,6 +18,7 @@ import AppLayout from '@/layouts/AuthLayout.vue';
                 :submit-url="route('team.store')"
                 :default-values="{
                     name: '',
+                    slug: '',
                     description: '',
                     icon: null,
                     currency: 'USD',
