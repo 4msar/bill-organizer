@@ -2,16 +2,20 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\TeamUserScope;
 use App\Observers\TeamObserver;
 use App\Traits\Sluggable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-#[ObservedBy([TeamObserver::class])]
+#[
+    ScopedBy([TeamUserScope::class]),
+    ObservedBy([TeamObserver::class])
+]
 final class Team extends Model
 {
     use HasFactory;
@@ -37,21 +41,6 @@ final class Team extends Model
     ];
 
     /**
-     * Boot the model.
-     */
-    protected static function booted(): void
-    {
-        self::addGlobalScope('user', function (Builder $builder) {
-            $table = self::TableName;
-            // check if the user can access the model via pivot table
-            $builder->whereHas('users', function (Builder $query) {
-                // In the users relation
-                $query->where('user_id', Auth::id());
-            })->orWhere("{$table}.user_id", Auth::id());
-        });
-    }
-
-    /**
      * Get the route key name for Laravel Route Model Binding.
      *
      * @return string
@@ -64,8 +53,8 @@ final class Team extends Model
     /**
      * Resolve route binding for the model.
      *
-     * @param mixed $value
-     * @param string|null $field
+     * @param  mixed  $value
+     * @param  string|null  $field
      * @return \Illuminate\Database\Eloquent\Model|null
      */
     public function resolveRouteBinding($value, $field = null)
@@ -77,8 +66,6 @@ final class Team extends Model
 
     /**
      * Get slug options
-     *
-     * @return array
      */
     public function getSlugOptions(): array
     {
@@ -96,6 +83,7 @@ final class Team extends Model
             if (str_starts_with($this->icon, 'http')) {
                 return $this->icon;
             }
+
             return Storage::url($this->icon);
         }
 

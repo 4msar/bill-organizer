@@ -90,6 +90,15 @@ Route::get('/visit/bill/{bill}', [BillController::class, 'visit'])
     ->middleware(['auth', 'verified', 'signed'])
     ->name('visit.bill');
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/auth.php';
-require __DIR__ . '/debug.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';
+require __DIR__.'/debug.php';
+
+Route::fallback(function () {
+    return Inertia::render('errors/404', [
+        'status' => 404,
+        'message' => 'The requested page could not be found.',
+    ])
+        ->toResponse(request())
+        ->setStatusCode(404);
+});

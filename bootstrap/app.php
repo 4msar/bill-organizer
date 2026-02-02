@@ -9,7 +9,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -49,7 +49,10 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             if ($response->getStatusCode() === 404) {
-                return inertia('errors/404')
+                return inertia('errors/404', [
+                    'status' => 404,
+                    'message' => 'The requested page could not be found.',
+                ])
                     ->toResponse(request())
                     ->setStatusCode(404);
             }

@@ -2,12 +2,13 @@
 
 namespace App\Models\Scopes;
 
+use App\Models\Team;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Support\Facades\Auth;
 
-final class UserScope implements Scope
+final class TeamUserScope implements Scope
 {
     /**
      * Apply the scope to a given Eloquent query builder.
@@ -19,11 +20,11 @@ final class UserScope implements Scope
             return;
         }
 
-        // User must be authenticated
-        // Include both user-specific items (where user_id is null)
-        $builder->where(function ($query) {
-            $query->where('user_id', Auth::id())
-                ->orWhereNull('user_id');
-        });
+        $table = Team::TableName;
+        // check if the user can access the model via pivot table
+        $builder->whereHas('users', function (Builder $query) {
+            // In the users relation
+            $query->where('user_id', Auth::id());
+        })->orWhere("{$table}.user_id", Auth::id());
     }
 }

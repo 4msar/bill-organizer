@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Details from '@/components/bills/Details.vue';
 import PaymentDialog from '@/components/bills/PaymentDialog.vue';
+import Confirm from '@/components/shared/Confirm.vue';
 import TransactionList from '@/components/transactions/TransactionList.vue';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -26,12 +27,6 @@ const isLoading = ref(false);
 const isPastDue = computed((): boolean => {
     return new Date(bill.due_date as string) < new Date() && bill.status === 'unpaid';
 });
-
-function deleteBill(): void {
-    if (confirm('Are you sure you want to delete this bill?')) {
-        router.delete(route('bills.destroy', bill.slug));
-    }
-}
 
 async function openPaymentDialog(): Promise<void> {
     isLoading.value = true;
@@ -92,10 +87,12 @@ function onPaymentComplete(): void {
                                 Edit
                             </Link>
                         </Button>
-                        <Button variant="destructive" @click="deleteBill">
-                            <Trash2 class="mr-2 h-4 w-4" />
-                            Delete
-                        </Button>
+                        <Confirm :url="route('bills.destroy', bill.slug)" title="Are you sure?" modal>
+                            <Button variant="destructive" type="button">
+                                <Trash2 class="mr-2 h-4 w-4" />
+                                Delete
+                            </Button>
+                        </Confirm>
                     </div>
                 </div>
 
