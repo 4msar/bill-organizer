@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { useLocalStorage } from '@/composables/useLocalStorage';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -35,6 +36,7 @@ interface InvoiceFormData {
     to_email: string;
     to_phone: string;
     to_address: string;
+    include_logo: boolean;
     items: InvoiceItem[];
     tax_rate: number;
     discount: number;
@@ -56,6 +58,7 @@ const getDefaultFormData = (): InvoiceFormData => ({
     to_email: '',
     to_phone: '',
     to_address: '',
+    include_logo: true,
     items: [
         {
             description: bill.title || '',
@@ -172,16 +175,24 @@ function formatDate(date: string) {
                                 <h3 class="mb-4 text-lg font-semibold">Invoice Details</h3>
                                 <div class="grid gap-4 sm:grid-cols-2">
                                     <div>
-                                        <Label for="invoice_number">Invoice Number *</Label>
+                                        <Label class="mb-2" for="invoice_number">Invoice Number *</Label>
                                         <Input id="invoice_number" v-model="formData.invoice_number" required />
                                     </div>
                                     <div>
-                                        <Label for="invoice_date">Invoice Date *</Label>
+                                        <Label class="mb-2" for="invoice_date">Invoice Date *</Label>
                                         <Input id="invoice_date" v-model="formData.invoice_date" type="date" required />
                                     </div>
                                     <div>
-                                        <Label for="due_date">Due Date</Label>
+                                        <Label class="mb-2" for="due_date">Due Date</Label>
                                         <Input id="due_date" v-model="formData.due_date" type="date" />
+                                    </div>
+                                    <div>
+                                        <Label class="mb-2" for="include_logo">Include Logo</Label>
+                                        <Label for="include_logo" class="flex items-center gap-4 pt-2">
+                                            <Switch id="include_logo" v-model="formData.include_logo" />
+
+                                            Include your company logo on the invoice.
+                                        </Label>
                                     </div>
                                 </div>
                             </div>
@@ -191,19 +202,19 @@ function formatDate(date: string) {
                                 <h3 class="mb-4 text-lg font-semibold">From (Your Information)</h3>
                                 <div class="grid gap-4 sm:grid-cols-2">
                                     <div>
-                                        <Label for="from_name">Name *</Label>
+                                        <Label class="mb-2" for="from_name">Name *</Label>
                                         <Input id="from_name" v-model="formData.from_name" required />
                                     </div>
                                     <div>
-                                        <Label for="from_email">Email</Label>
+                                        <Label class="mb-2" for="from_email">Email</Label>
                                         <Input id="from_email" v-model="formData.from_email" type="email" />
                                     </div>
                                     <div>
-                                        <Label for="from_phone">Phone</Label>
+                                        <Label class="mb-2" for="from_phone">Phone</Label>
                                         <Input id="from_phone" v-model="formData.from_phone" />
                                     </div>
                                     <div class="sm:col-span-2">
-                                        <Label for="from_address">Address</Label>
+                                        <Label class="mb-2" for="from_address">Address</Label>
                                         <Textarea id="from_address" v-model="formData.from_address" rows="2" />
                                     </div>
                                 </div>
@@ -214,19 +225,19 @@ function formatDate(date: string) {
                                 <h3 class="mb-4 text-lg font-semibold">To (Customer Information)</h3>
                                 <div class="grid gap-4 sm:grid-cols-2">
                                     <div>
-                                        <Label for="to_name">Name *</Label>
+                                        <Label class="mb-2" for="to_name">Name *</Label>
                                         <Input id="to_name" v-model="formData.to_name" required />
                                     </div>
                                     <div>
-                                        <Label for="to_email">Email</Label>
+                                        <Label class="mb-2" for="to_email">Email</Label>
                                         <Input id="to_email" v-model="formData.to_email" type="email" />
                                     </div>
                                     <div>
-                                        <Label for="to_phone">Phone</Label>
+                                        <Label class="mb-2" for="to_phone">Phone</Label>
                                         <Input id="to_phone" v-model="formData.to_phone" />
                                     </div>
                                     <div class="sm:col-span-2">
-                                        <Label for="to_address">Address</Label>
+                                        <Label class="mb-2" for="to_address">Address</Label>
                                         <Textarea id="to_address" v-model="formData.to_address" rows="2" />
                                     </div>
                                 </div>
@@ -248,11 +259,11 @@ function formatDate(date: string) {
                                         class="grid gap-4 rounded-lg border p-4 sm:grid-cols-12"
                                     >
                                         <div class="sm:col-span-5">
-                                            <Label :for="`item_desc_${index}`">Description *</Label>
+                                            <Label class="mb-2" :for="`item_desc_${index}`">Description *</Label>
                                             <Input :id="`item_desc_${index}`" v-model="item.description" required />
                                         </div>
                                         <div class="sm:col-span-2">
-                                            <Label :for="`item_qty_${index}`">Quantity *</Label>
+                                            <Label class="mb-2" :for="`item_qty_${index}`">Quantity *</Label>
                                             <Input
                                                 :id="`item_qty_${index}`"
                                                 v-model.number="item.quantity"
@@ -263,7 +274,7 @@ function formatDate(date: string) {
                                             />
                                         </div>
                                         <div class="sm:col-span-3">
-                                            <Label :for="`item_price_${index}`">Unit Price *</Label>
+                                            <Label class="mb-2" :for="`item_price_${index}`">Unit Price *</Label>
                                             <Input
                                                 :id="`item_price_${index}`"
                                                 v-model.number="item.unit_price"
@@ -303,11 +314,11 @@ function formatDate(date: string) {
                                 <h3 class="mb-4 text-lg font-semibold">Additional Charges</h3>
                                 <div class="grid gap-4 sm:grid-cols-2">
                                     <div>
-                                        <Label for="tax_rate">Tax Rate (%)</Label>
+                                        <Label class="mb-2" for="tax_rate">Tax Rate (%)</Label>
                                         <Input id="tax_rate" v-model.number="formData.tax_rate" type="number" min="0" step="0.01" />
                                     </div>
                                     <div>
-                                        <Label for="discount">Discount ({{ $page.props?.team?.current?.currency_symbol }})</Label>
+                                        <Label class="mb-2" for="discount">Discount ({{ $page.props?.team?.current?.currency_symbol }})</Label>
                                         <Input id="discount" v-model.number="formData.discount" type="number" min="0" step="0.01" />
                                     </div>
                                 </div>
@@ -367,6 +378,9 @@ function formatDate(date: string) {
                         >
                             <!-- Header -->
                             <div class="mb-8 border-b pb-8">
+                                <div v-if="formData.include_logo" class="mb-4 flex items-center justify-center">
+                                    <img :src="$page.props?.team?.current?.icon_url" alt="Company Logo" class="h-12 w-auto dark:invert" />
+                                </div>
                                 <div class="flex items-start justify-between">
                                     <div>
                                         <h1 class="text-4xl font-bold text-gray-900 dark:text-white">INVOICE</h1>

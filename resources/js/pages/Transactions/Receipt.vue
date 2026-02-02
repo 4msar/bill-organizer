@@ -51,7 +51,7 @@ function formatTime(date: string) {
         <Head title="Payment Receipt" />
 
         <div class="py-6">
-            <div class="mx-auto max-w-xl px-4 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
                 <!-- Action Buttons (hidden when printing) -->
                 <div class="mb-6 flex items-center justify-between print:hidden">
                     <Button variant="ghost" @click="goBack">
@@ -60,7 +60,7 @@ function formatTime(date: string) {
                     </Button>
                     <Button @click="printReceipt">
                         <Printer class="mr-2 h-4 w-4" />
-                        Print / Save as PDF
+                        Print
                     </Button>
                 </div>
 
