@@ -62,9 +62,11 @@ final class NotificationResource extends JsonResource
      */
     public function getLink(): string
     {
+        $slugOrId = $this->data['slug'] ?? $this->data['id'] ?? null;
+
         return match ($this->type) {
-            UpcomingBillNotification::class => route('bills.show', $this->data['bill_id']),
-            TrialEndNotification::class => route('bills.show', $this->data['bill_id']),
+            UpcomingBillNotification::class => route('bills.show', $slugOrId),
+            TrialEndNotification::class => route('bills.show', $slugOrId),
             default => null
         };
     }

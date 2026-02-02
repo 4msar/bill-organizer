@@ -43,8 +43,8 @@ final class UpcomingBillNotification extends Notification
         $amount = $this->bill->amount;
 
         return (new MailMessage())
-            ->subject('Upcoming Bill Reminder : '.$this->bill->title)
-            ->greeting('Hi '.$notifiable->name.',')
+            ->subject('Upcoming Bill Reminder : ' . $this->bill->title)
+            ->greeting('Hi ' . $notifiable->name . ',')
             ->line('Just a quick heads-up! 🌼')
             ->line("Your bill for **{$this->bill->title}** is coming up, and it’s due on **{$this->bill->due_date->format('M d, Y')}**.")
             ->line('Here’s a quick summary:')
@@ -55,7 +55,7 @@ final class UpcomingBillNotification extends Notification
             ->line("Due Date: {$this->bill->due_date->format('M d, Y')}")
             ->line('-----------------------------------------')
             ->action('View Bill', URL::signedRoute('visit.bill', [
-                'bill' => $this->bill->id,
+                'bill' => $this->bill->slug,
             ]))
             ->line('If you have any questions or need help with anything, feel free to reach out — we’re always happy to assist.')
             ->line('Thanks for being with us! 💛')
@@ -69,6 +69,7 @@ final class UpcomingBillNotification extends Notification
     {
         return [
             'bill_id' => $this->bill->id,
+            'bill_slug' => $this->bill->slug,
             'title' => $this->bill->title,
             'due_date' => $this->bill->due_date,
             'amount' => $this->bill->amount,
@@ -79,7 +80,7 @@ final class UpcomingBillNotification extends Notification
     {
         $date = Carbon::parse($notification->data['due_date'])->format('d M, Y');
 
-        return "Your \"{$notification->data['title']}\" bill is due on {$date}, amount of ".self::getAmount($notification).'.';
+        return "Your \"{$notification->data['title']}\" bill is due on {$date}, amount of " . self::getAmount($notification) . '.';
     }
 
     public static function getAmount($notification): string

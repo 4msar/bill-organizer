@@ -20,7 +20,7 @@ Route::get('/terms', [LegalController::class, 'terms'])->name('legal.terms');
 Route::get('/privacy', [LegalController::class, 'privacy'])->name('legal.privacy');
 Route::get('/contact', [LegalController::class, 'contact'])->name('legal.contact');
 
-Route::get('join/team/{teamId}', [TeamController::class, 'join'])->name('team.join')->middleware(['guest', 'signed']);
+Route::get('join/team/{team}', [TeamController::class, 'join'])->name('team.join')->middleware(['guest', 'signed']);
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/team/create', [TeamController::class, 'create'])->name('team.create');
@@ -90,6 +90,6 @@ Route::get('/visit/bill/{bill}', [BillController::class, 'visit'])
     ->middleware(['auth', 'verified', 'signed'])
     ->name('visit.bill');
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
-require __DIR__.'/debug.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';
+require __DIR__ . '/debug.php';

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\NotificationResource;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 
 final class NotificationController extends Controller
 {
@@ -13,12 +12,13 @@ final class NotificationController extends Controller
      */
     public function index()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         // Fetch notifications with pagination (10 per page)
         $notifications = $user->notifications()->paginate(10);
 
-        return Inertia::render('Notifications', [
+        return inertia('Notifications', [
             'items' => NotificationResource::collection($notifications),
         ]);
     }
@@ -28,6 +28,7 @@ final class NotificationController extends Controller
      */
     public function markAllAsRead()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         $user->unreadNotifications->markAsRead();
 
@@ -39,6 +40,7 @@ final class NotificationController extends Controller
      */
     public function delete($id)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         $notification = $user->notifications()->findOrFail($id);
         $notification->delete();

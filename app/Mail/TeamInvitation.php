@@ -50,7 +50,7 @@ final class TeamInvitation extends Mailable
                     'Join Team',
                     URL::signedRoute(
                         'team.join',
-                        ['teamId' => $this->team->id, 'email' => $this->email],
+                        ['team' => $this->team->slug, 'email' => $this->email],
                         now()->addDays(30) // Link valid for 30 days
                     )
                 )

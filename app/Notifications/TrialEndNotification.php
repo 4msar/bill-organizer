@@ -49,7 +49,7 @@ final class TrialEndNotification extends Notification
             ->line("Your trial period for **{$this->bill->title}** will end on **{$this->bill->trial_end_date->format('M d, Y')}**.")
             ->line("Once the trial wraps up, your first payment of **{$currency}{$amount}** will be due on **{$this->bill->due_date->format('M d, Y')}**.")
             ->action('View Bill', URL::signedRoute('visit.bill', [
-                'bill' => $this->bill->id,
+                'bill' => $this->bill->slug,
             ]))
             ->line('If you have any questions or need a bit more time, feel free to reach out — we’re here to help!')
             ->line('Thanks for being with us! 💛')
@@ -63,6 +63,7 @@ final class TrialEndNotification extends Notification
     {
         return [
             'bill_id' => $this->bill->id,
+            'bill_slug' => $this->bill->slug,
             'title' => $this->bill->title,
             'trial_end_date' => $this->bill->trial_end_date,
             'due_date' => $this->bill->due_date,
