@@ -3,7 +3,7 @@ import SortableTableHead from '@/components/bills/SortableTableHead.vue';
 import Confirm from '@/components/shared/Confirm.vue';
 import Pagination from '@/components/shared/Pagination.vue';
 import SearchForm from '@/components/shared/SearchForm.vue';
-import { Badge } from '@/components/ui/badge';
+import { Badge, BadgeVariants } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -11,11 +11,12 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { formatCurrency, formatDate, getVariantByStatus } from '@/lib/utils';
 import { PaginationData } from '@/types';
 import { Bill, Category } from '@/types/model';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Calendar, CheckCheck, Clock, DollarSign, Edit, Eye, MoreHorizontal, PlusCircle, Trash2 } from 'lucide-vue-next';
+import { capitalize } from 'vue';
 
 defineProps<{
     bills: PaginationData<Bill[]>;
@@ -116,6 +117,7 @@ function markAsPaid(id: string | number) {
                                         <SelectItem :value="null">All</SelectItem>
                                         <SelectItem value="paid">Paid</SelectItem>
                                         <SelectItem value="unpaid">Unpaid</SelectItem>
+                                        <SelectItem value="overdue">Overdue</SelectItem>
                                         <SelectItem value="upcoming">Upcoming</SelectItem>
                                     </SelectContent>
                                 </Select>
@@ -190,8 +192,8 @@ function markAsPaid(id: string | number) {
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        <Badge :variant="bill.status === 'paid' ? 'secondary' : 'default'">
-                                            {{ bill.status === 'paid' ? 'Paid' : 'Unpaid' }}
+                                        <Badge :variant="getVariantByStatus<BadgeVariants['variant']>(bill.status)">
+                                            {{ capitalize(bill.status) }}
                                         </Badge>
                                     </TableCell>
                                     <TableCell class="text-right">

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Badge } from '@/components/ui/badge';
+import { Badge, BadgeVariants } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { cn, formatCurrency, formatDate } from '@/lib/utils';
+import { cn, formatCurrency, formatDate, getVariantByStatus } from '@/lib/utils';
 import { Bill } from '@/types/model';
 import { CalendarIcon, Clock, Link2, RotateCcw } from 'lucide-vue-next';
 import { capitalize, computed } from 'vue';
@@ -14,29 +14,29 @@ interface Props {
 const { bill } = defineProps<Props>();
 
 const isPastDue = computed((): boolean => {
-    return new Date(bill.due_date as string) < new Date() && bill.status === 'unpaid';
+    return new Date(bill.due_date as string) < new Date() && (bill.status === 'unpaid' || bill.status === 'overdue');
 });
 </script>
 
 <template>
     <!-- Bill Details Card -->
-    <Card>
+    <Card class="gap-3">
         <CardHeader>
             <div class="flex flex-col items-start justify-between space-y-2 space-x-2 sm:flex-row">
                 <div class="space-y-2">
                     <CardTitle class="text-lg font-semibold">
                         {{ bill.title }}
                     </CardTitle>
-                    <CardDescription v-if="bill.category">
-                        <span class="mb-2 flex w-full flex-wrap items-center gap-2">
+                    <CardDescription>
+                        <span class="flex w-full flex-wrap items-center gap-2">
                             <Badge v-if="bill.is_recurring" variant="outline">Recurring</Badge>
                             <Badge v-if="bill.has_trial" variant="outline" class="border-blue-200 bg-blue-50 text-blue-700"> Trial</Badge>
-                            <Badge :variant="bill.status === 'paid' ? 'secondary' : 'default'">
-                                {{ bill.status === 'paid' ? 'Paid' : 'Unpaid' }}
+                            <Badge :variant="getVariantByStatus<BadgeVariants['variant']>(bill.status)">
+                                {{ capitalize(bill.status) }}
                             </Badge>
                         </span>
 
-                        <span>Category: {{ bill.category.name }}</span>
+                        <span class="mt-2 block" v-if="bill.category">Category: {{ bill.category.name }}</span>
                     </CardDescription>
                 </div>
                 <div class="text-2xl font-bold">
@@ -98,7 +98,7 @@ const isPastDue = computed((): boolean => {
         </CardContent>
 
         <CardFooter :class="cn('flex flex-wrap items-center gap-2', bill.payment_url ? 'justify-between' : 'justify-end')">
-            <a v-if="bill.status === 'unpaid' && bill.payment_url" :href="bill.payment_url" target="_blank" rel="noopener noreferrer">
+            <a v-if="bill.status !== 'paid' && bill.payment_url" :href="bill.payment_url" target="_blank" rel="noopener noreferrer">
                 <Button variant="secondary">
                     <Link2 class="mr-2 h-4 w-4" />
                     Go to Payment Page

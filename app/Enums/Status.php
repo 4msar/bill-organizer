@@ -29,6 +29,9 @@ enum Status: string
     case New = 'new';
     case Renew = 'renew';
     case PendingApproval = 'pending_approval';
+    case Paid = 'paid';
+    case Unpaid = 'unpaid';
+    case Overdue = 'overdue';
 
     public function label(): string
     {
@@ -52,7 +55,10 @@ enum Status: string
             self::Inactive => 'Inactive',
             self::New => 'New',
             self::Renew => 'Renew',
-            self::PendingApproval => 'Pending Approval'
+            self::PendingApproval => 'Pending Approval',
+            self::Paid => 'Paid',
+            self::Unpaid => 'Unpaid',
+            self::Overdue => 'Overdue',
         };
     }
 }

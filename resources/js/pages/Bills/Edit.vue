@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import BillForm from '@/components/bills/BillForm.vue';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Bill, Category } from '@/types/model';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 
 interface Props {
     bill: Bill;
@@ -31,8 +32,12 @@ defineProps<Props>();
 
         <div class="py-6">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="mb-6">
+                <div class="mb-6 flex items-center justify-between">
                     <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Edit Bill</h2>
+
+                    <Button as-child variant="outline" size="sm">
+                        <Link :href="route('bills.show', bill.id)"> Back </Link>
+                    </Button>
                 </div>
 
                 <Card>

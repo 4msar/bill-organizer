@@ -37,6 +37,7 @@ async function openPaymentDialog(): Promise<void> {
     isLoading.value = true;
     try {
         const response = await axios.get(route('bills.payment-details', bill.id));
+        console.log({ response });
         paymentMethods.value = response.data.paymentMethods;
         nextDueDate.value = response.data.nextDueDate;
         isPaymentDialogOpen.value = true;

@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { Badge } from '@/components/ui/badge';
+import { Badge, BadgeVariants } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { formatCurrency, formatDate, getVariantByStatus } from '@/lib/utils';
 import { SharedData } from '@/types';
 import { Bill, Category } from '@/types/model';
 import { Head, Link } from '@inertiajs/vue3';
 import { ArrowRightCircle, CalendarDays, CreditCard, DollarSign, Landmark, Plus, Wallet } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { capitalize, computed, ref } from 'vue';
 
 interface ChartData {
     months: string[];
@@ -379,8 +379,8 @@ const userName = props.auth.user.name || 'User';
                                             <TableCell class="font-medium">{{ bill.title }}</TableCell>
                                             <TableCell>{{ formatCurrency(bill.amount, $page.props?.team?.current?.currency as string) }}</TableCell>
                                             <TableCell>
-                                                <Badge :variant="bill.status === 'paid' ? 'secondary' : 'default'">
-                                                    {{ bill.status === 'paid' ? 'Paid' : 'Unpaid' }}
+                                                <Badge :variant="getVariantByStatus<BadgeVariants['variant']>(bill.status)">
+                                                    {{ capitalize(bill.status) }}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>{{ bill.category?.name || 'Uncategorized' }}</TableCell>

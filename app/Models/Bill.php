@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\RecurrencePeriod;
 use App\Models\Scopes\TeamScope;
 use App\Observers\BillObserver;
 use App\Traits\HasMetaData;
@@ -57,6 +58,7 @@ final class Bill extends Model
         'has_trial' => 'boolean',
         'is_recurring' => 'boolean',
         'tags' => 'array',
+        'recurrence_period' => RecurrencePeriod::class,
     ];
 
     /**
@@ -126,54 +128,50 @@ final class Bill extends Model
 
         // Check if we're in the current period for this bill
         $isCurrentPeriod = match ($this->recurrence_period) {
-            'weekly' => $dueDate->isSameWeek($now),
-            'monthly' => $dueDate->isSameMonth($now),
-            'yearly' => $dueDate->isSameYear($now),
+            RecurrencePeriod::WEEKLY => $dueDate->isSameWeek($now),
+            RecurrencePeriod::MONTHLY => $dueDate->isSameMonth($now),
+            RecurrencePeriod::YEARLY => $dueDate->isSameYear($now),
             default => false,
         };
 
-        // If in current period, respect the current status
-        // if ($isCurrentPeriod) {
-        //     return $currentStatus;
-        // }
-
-        // Not in current period - check for transactions in the current period
-        $periodStart = match ($this->recurrence_period) {
-            'weekly' => $now->startOfWeek(),
-            'monthly' => $now->startOfMonth(),
-            'yearly' => $now->startOfYear(),
-            default => null,
-        };
-
-        $periodEnd = match ($this->recurrence_period) {
-            'weekly' => $now->copy()->endOfWeek(),
-            'monthly' => $now->copy()->endOfMonth(),
-            'yearly' => $now->copy()->endOfYear(),
-            default => null,
-        };
-
-        if ($periodStart && $periodEnd) {
-            $hasTransactionInPeriod = $this->transactions()
-                ->whereBetween('payment_date', [$periodStart, $periodEnd])
+        // if the bill is in the current recurrence period
+        // check for transactions to determine if it's paid or unpaid
+        if ($isCurrentPeriod) {
+            // In current period - check for recent transactions
+            $hasTransaction = $this->transactions()
+                ->whereBetween('payment_date', [
+                    $dueDate->copy()->startOfPeriod($this->recurrence_period),
+                    $dueDate->copy()->endOfPeriod($this->recurrence_period),
+                ])
                 ->exists();
 
-            return $hasTransactionInPeriod ? 'paid' : 'unpaid';
+            return $hasTransaction ? 'paid' : 'unpaid';
         }
 
-        return 'unpaid';
+        // Not in current period - check if due date is in the past
+        if ($dueDate->isBefore($now)) {
+            return 'overdue';
+        }
+
+        // check if due date is in the future and not in current period
+        // then it's considered paid for past periods
+        if ($dueDate->isAfter($now)) {
+            return 'paid';
+        }
+
+        // info('Bill #' . $this->id . ' is not in the current period.');
+
+        return $currentStatus;
     }
 
     /**
      * Accessor for status attribute.
      * Calculates status dynamically for recurring bills.
      *
-     * @param  string  $value
      * @return string
      */
-    public function getStatusAttribute($value)
+    public function getStatusAttribute()
     {
-        return $value;
-
         return $this->calculateStatus();
     }
 
@@ -193,9 +191,9 @@ final class Bill extends Model
         $currentDueDate = Carbon::parse($this->due_date);
 
         return match ($this->recurrence_period) {
-            'weekly' => $currentDueDate->addWeek()->format('Y-m-d'),
-            'monthly' => $currentDueDate->addMonth()->format('Y-m-d'),
-            'yearly' => $currentDueDate->addYear()->format('Y-m-d'),
+            RecurrencePeriod::WEEKLY => $currentDueDate->addWeek()->format('Y-m-d'),
+            RecurrencePeriod::MONTHLY => $currentDueDate->addMonth()->format('Y-m-d'),
+            RecurrencePeriod::YEARLY => $currentDueDate->addYear()->format('Y-m-d'),
             default => null,
         };
     }
@@ -357,7 +355,7 @@ final class Bill extends Model
             ->pluck('tags')
             ->filter()
             ->flatten()
-            ->map(fn ($tag) => strtolower(trim($tag)))
+            ->map(fn($tag) => strtolower(trim($tag)))
             ->unique()
             ->values();
     }
@@ -369,11 +367,11 @@ final class Bill extends Model
     {
         if ($this->tags) {
             $this->tags = array_map(
-                fn ($item) => strtolower(trim($item)),
+                fn($item) => strtolower(trim($item)),
                 $this->tags
             );
 
-            $this->tags = array_filter($this->tags, fn ($tag) => ! empty($tag));
+            $this->tags = array_filter($this->tags, fn($tag) => ! empty($tag));
 
             $this->tags = array_values(array_unique($this->tags));
         }

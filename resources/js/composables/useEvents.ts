@@ -7,6 +7,7 @@ const SevenDaysInMiliseconds = 7 * 24 * 60 * 60 * 1000;
 
 const getColorByItem = (item: Bill) => {
     if (item.status === 'paid') return 'emerald';
+    if (item.status === 'overdue') return 'rose';
 
     // if due date in 7 days
     if (new Date(item.due_date as string).getTime() - new Date().getTime() < SevenDaysInMiliseconds) {

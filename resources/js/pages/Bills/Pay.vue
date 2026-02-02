@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import PaymentForm from '@/components/bills/PaymentForm.vue';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
+import { Badge, BadgeVariants } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { formatDate } from '@/lib/utils';
+import { formatDate, getVariantByStatus } from '@/lib/utils';
 import { Bill } from '@/types/model';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { AlertCircle, ArrowLeft, Receipt } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { capitalize, computed } from 'vue';
 
 interface Props {
     bill: Bill;
@@ -21,7 +21,7 @@ const props = defineProps<Props>();
 const nextDueDate = computed(() => {
     if (!props.bill.is_recurring || !props.bill.recurrence_period) return null;
 
-    const currentDueDate = new Date(props.bill.due_date);
+    const currentDueDate = new Date(props.bill.due_date as string);
 
     switch (props.bill.recurrence_period) {
         case 'weekly':
@@ -43,7 +43,7 @@ const nextDueDate = computed(() => {
 
 // Check if bill is past due
 const isPastDue = computed((): boolean => {
-    return new Date(props.bill.due_date) < new Date();
+    return new Date(props.bill.due_date as string) < new Date();
 });
 
 function onFormSuccess(): void {
@@ -89,7 +89,7 @@ function onFormCancel(): void {
                 <Alert v-if="isPastDue" variant="destructive" class="mb-6">
                     <AlertCircle class="h-4 w-4" />
                     <AlertTitle>Past Due!</AlertTitle>
-                    <AlertDescription> This bill was due on {{ formatDate(bill.due_date) }} and is still unpaid. </AlertDescription>
+                    <AlertDescription> This bill was due on {{ formatDate(bill.due_date as string) }} and is still unpaid. </AlertDescription>
                 </Alert>
 
                 <!-- Payment Card -->
@@ -97,8 +97,8 @@ function onFormCancel(): void {
                     <CardHeader>
                         <CardTitle class="flex items-center justify-between">
                             <span>{{ bill.title }}</span>
-                            <Badge :variant="bill.status === 'paid' ? 'secondary' : 'default'">
-                                {{ bill.status === 'paid' ? 'Paid' : 'Unpaid' }}
+                            <Badge :variant="getVariantByStatus<BadgeVariants['variant']>(bill.status)">
+                                {{ capitalize(bill.status) }}
                             </Badge>
                         </CardTitle>
                         <CardDescription v-if="bill.category"> Category: {{ bill.category.name }} </CardDescription>

@@ -77,6 +77,13 @@ export function isPdf(path: string): boolean {
     return getFileExtension(path) === 'pdf';
 }
 
+export function getVariantByStatus<T = string>(status: string): T {
+    if (status === 'paid') return 'secondary' as T;
+    if (status === 'overdue') return 'destructive' as T;
+
+    return 'default' as T;
+}
+
 export function getDocumentType(path: string): string {
     const ext = getFileExtension(path);
     if (isImage(path)) return 'Image';
