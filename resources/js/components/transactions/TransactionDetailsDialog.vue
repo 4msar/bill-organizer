@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { formatCurrency, formatDate, getDocumentType, getPaymentMethodName, isImage, isPdf } from '@/lib/utils';
 import { Transaction } from '@/types/model';
+import { Link } from '@inertiajs/vue3';
 import { Calendar, CreditCard, Download, ExternalLink, FileText, Receipt, Trash2 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import Confirm from '../shared/Confirm.vue';
@@ -81,14 +82,14 @@ const paymentMethodIcon = computed(() => {
                 <div v-if="transaction.bill">
                     <h4 class="text-muted-foreground mb-2 text-sm font-medium">Related Bill</h4>
                     <div class="rounded-lg border p-3">
-                        <div class="flex items-center justify-between">
+                        <div class="flex flex-wrap gap-4 items-center justify-between">
                             <div>
                                 <p class="font-medium">{{ transaction.bill.title }}</p>
                                 <p v-if="transaction.bill.description" class="text-muted-foreground text-sm">
                                     {{ transaction.bill.description }}
                                 </p>
                             </div>
-                            <Button variant="outline" size="sm" as="a" :href="route('bills.show', transaction?.bill?.slug ?? transaction.bill_id)">
+                            <Button variant="outline" size="sm" :as="Link" :href="route('bills.show', transaction?.bill?.slug ?? transaction.bill_id)">
                                 <ExternalLink class="mr-1 h-4 w-4" />
                                 View Bill
                             </Button>
