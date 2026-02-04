@@ -79,7 +79,8 @@ export function isPdf(path: string): boolean {
 
 export function getVariantByStatus<T = string>(status: string): T {
     if (status === 'paid') return 'secondary' as T;
-    if (status === 'overdue') return 'destructive' as T;
+    if (status === 'overdue') return 'outline' as T;
+    if (status === 'unpaid') return 'destructive' as T;
 
     return 'default' as T;
 }

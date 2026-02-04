@@ -63,7 +63,7 @@ final class BillFactory extends Factory
             'recurrence_period' => $isRecurring ? fake()->randomElement(['weekly', 'monthly', 'yearly']) : null,
             'payment_url' => fake()->optional(0.4)->url(),
             'tags' => fake()->optional(0.5)->randomElements($tags, fake()->numberBetween(1, 3)),
-            'has_trial' => false,
+            'has_trial' => $hasTrial,
             'trial_start_date' => null,
             'trial_end_date' => null,
         ];
@@ -71,9 +71,16 @@ final class BillFactory extends Factory
         // Add trial dates if has_trial is true
         if ($hasTrial && $definition['status'] === 'unpaid') {
             $trialStart = fake()->dateTimeBetween('-1 month', '+1 week');
+            $trialEnd = fake()->dateTimeBetween($trialStart, '+1 month');
+
             $definition['has_trial'] = true;
             $definition['trial_start_date'] = $trialStart;
-            $definition['trial_end_date'] = fake()->dateTimeBetween($trialStart, '+1 month');
+            $definition['trial_end_date'] = $trialEnd;
+            $definition['due_date'] = $trialEnd;
+        }
+
+        if (now()->greaterThan($dueDate) && $definition['status'] === 'unpaid') {
+            $definition['status'] = 'overdue';
         }
 
         return $definition;
@@ -84,7 +91,7 @@ final class BillFactory extends Factory
      */
     public function paid(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'paid',
         ]);
     }
@@ -94,7 +101,7 @@ final class BillFactory extends Factory
      */
     public function unpaid(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'unpaid',
         ]);
     }
@@ -104,7 +111,7 @@ final class BillFactory extends Factory
      */
     public function recurring(string $period = 'monthly'): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'is_recurring' => true,
             'recurrence_period' => $period,
         ]);
@@ -117,11 +124,13 @@ final class BillFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             $trialStart = fake()->dateTimeBetween('-1 month', '+1 week');
+            $trialEnd = fake()->dateTimeBetween($trialStart, '+1 month');
 
             return [
                 'has_trial' => true,
                 'trial_start_date' => $trialStart,
-                'trial_end_date' => fake()->dateTimeBetween($trialStart, '+1 month'),
+                'trial_end_date' => $trialEnd,
+                'due_date' => $trialEnd,
             ];
         });
     }

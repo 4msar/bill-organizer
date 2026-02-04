@@ -115,11 +115,11 @@ final class Bill extends Model
 
         while (
             self::where($destination, $slug)
-                ->where('user_id', $this->user_id)
-                ->where('team_id', $this->team_id)
-                ->exists()
+            ->where('user_id', $this->user_id)
+            ->where('team_id', $this->team_id)
+            ->exists()
         ) {
-            $slug = $originalSlug.'-'.$counter++.Str::random(6);
+            $slug = $originalSlug . '-' . $counter++ . Str::random(6);
         }
 
         return $slug;
@@ -261,23 +261,15 @@ final class Bill extends Model
      *
      * @return bool
      */
-    public function isUpcoming()
-    {
-        return $this->isUpcomingIn(7);
-    }
-
-    /**
-     * Check if the due date is upcoming.
-     *
-     * @return bool
-     */
     public function isUpcomingIn($days = 1)
     {
         if ($days == 'due_day') {
             $days = 0;
         }
 
-        return $this->due_date->lte(now()->addDays(intval($days)));
+        return $this->due_date->lte(now()->addDays(intval($days))) &&
+            $this->due_date->gte(now()) &&
+            $this->status === 'unpaid';
     }
 
     /**
@@ -392,6 +384,20 @@ final class Bill extends Model
     }
 
     /**
+     * Scope a query to only include upcoming bills.
+     */
+    public function scopeUpcoming($query, $days = 7)
+    {
+        $now = now();
+
+        return $query->whereBetween(
+            'due_date',
+            [$now, $now->copy()->addDays(intval($days))]
+        )
+            ->where('status', 'unpaid');
+    }
+
+    /**
      * Get all tags
      *
      * @return \Illuminate\Support\Collection
@@ -403,7 +409,7 @@ final class Bill extends Model
             ->pluck('tags')
             ->filter()
             ->flatten()
-            ->map(fn ($tag) => strtolower(trim($tag)))
+            ->map(fn($tag) => strtolower(trim($tag)))
             ->unique()
             ->values();
     }
@@ -415,26 +421,14 @@ final class Bill extends Model
     {
         if ($this->tags) {
             $this->tags = array_map(
-                fn ($item) => strtolower(trim($item)),
+                fn($item) => strtolower(trim($item)),
                 $this->tags
             );
 
-            $this->tags = array_filter($this->tags, fn ($tag) => ! empty($tag));
+            $this->tags = array_filter($this->tags, fn($tag) => ! empty($tag));
 
             $this->tags = array_values(array_unique($this->tags));
         }
-    }
-
-    /**
-     * Scope a query to only include upcoming bills.
-     */
-    public function scopeUpcoming($query, $days = 7)
-    {
-        $now = now();
-
-        return $query->where('due_date', '>=', $now)
-            ->where('due_date', '<=', $now->copy()->addDays(intval($days)))
-            ->where('status', 'unpaid');
     }
 
     public function markAsPaid()

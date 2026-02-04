@@ -31,7 +31,12 @@ const isPastDue = computed((): boolean => {
                         <span class="flex w-full flex-wrap items-center gap-2">
                             <Badge v-if="bill.is_recurring" variant="outline">Recurring</Badge>
                             <Badge v-if="bill.has_trial" variant="outline" class="border-blue-200 bg-blue-50 text-blue-700"> Trial</Badge>
-                            <Badge :variant="getVariantByStatus<BadgeVariants['variant']>(bill.status)">
+                            <Badge
+                                :class="{
+                                    'border-amber-300 text-amber-600': bill.status === 'overdue',
+                                }"
+                                :variant="getVariantByStatus<BadgeVariants['variant']>(bill.status)"
+                            >
                                 {{ capitalize(bill.status) }}
                             </Badge>
                         </span>

@@ -97,7 +97,12 @@ function onFormCancel(): void {
                     <CardHeader>
                         <CardTitle class="flex items-center justify-between">
                             <span>{{ bill.title }}</span>
-                            <Badge :variant="getVariantByStatus<BadgeVariants['variant']>(bill.status)">
+                            <Badge
+                                :class="{
+                                    'border-amber-300 text-amber-600': bill.status === 'overdue',
+                                }"
+                                :variant="getVariantByStatus<BadgeVariants['variant']>(bill.status)"
+                            >
                                 {{ capitalize(bill.status) }}
                             </Badge>
                         </CardTitle>

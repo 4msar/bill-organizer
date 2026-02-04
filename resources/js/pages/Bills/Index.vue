@@ -181,8 +181,8 @@ function markAsPaid(id: string | number) {
                                         <div>
                                             <span
                                                 :class="{
-                                                    'text-yellow-500': bill.status === 'unpaid',
-                                                    'text-destructive': bill.status === 'overdue',
+                                                    'text-amber-600': bill.status === 'overdue',
+                                                    'text-destructive': bill.status === 'unpaid',
                                                 }"
                                             >
                                                 {{ formatDate(bill.due_date as string) }}
@@ -193,7 +193,12 @@ function markAsPaid(id: string | number) {
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        <Badge :variant="getVariantByStatus<BadgeVariants['variant']>(bill.status)">
+                                        <Badge
+                                            :class="{
+                                                'border-amber-300 text-amber-600': bill.status === 'overdue',
+                                            }"
+                                            :variant="getVariantByStatus<BadgeVariants['variant']>(bill.status)"
+                                        >
                                             {{ capitalize(bill.status) }}
                                         </Badge>
                                     </TableCell>

@@ -379,7 +379,12 @@ const userName = props.auth.user.name || 'User';
                                             <TableCell class="font-medium">{{ bill.title }}</TableCell>
                                             <TableCell>{{ formatCurrency(bill.amount, $page.props?.team?.current?.currency as string) }}</TableCell>
                                             <TableCell>
-                                                <Badge :variant="getVariantByStatus<BadgeVariants['variant']>(bill.status)">
+                                                <Badge
+                                                    :class="{
+                                                        'border-amber-300 text-amber-600': bill.status === 'overdue',
+                                                    }"
+                                                    :variant="getVariantByStatus<BadgeVariants['variant']>(bill.status)"
+                                                >
                                                     {{ capitalize(bill.status) }}
                                                 </Badge>
                                             </TableCell>
