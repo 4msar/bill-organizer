@@ -112,21 +112,6 @@ check_current_version() {
     fi
 }
 
-# Create backup
-create_backup() {
-    log "Creating backup of current installation..."
-    
-    mkdir -p "$BACKUP_DIR"
-    BACKUP_FILE="${BACKUP_DIR}/${APP_NAME}-backup-$(date +%Y%m%d-%H%M%S).tar.gz"
-    
-    if [[ -d "$INSTALL_DIR" ]]; then
-        tar -czf "$BACKUP_FILE" "$(dirname "$INSTALL_DIR")" 2>/dev/null || {
-            warning "Backup creation failed, but continuing..."
-        }
-        success "Backup created: $BACKUP_FILE"
-    fi
-}
-
 # Download and prepare new version
 download_and_prepare() {
     log "Downloading latest release..."
@@ -179,9 +164,6 @@ preserve_files() {
         ".env"
         "storage/app"
         "storage/logs"
-        "storage/framework/sessions"
-        "storage/framework/cache"
-        "storage/framework/views"
         "public/storage"
     )
     
@@ -271,32 +253,7 @@ cleanup() {
     rm -rf "$TEMP_DIR"
     
     echo
-    if [[ $KEEP_RELEASES -eq 0 ]]; then
-        # Remove backups
-        log "Removing backup directory..."
-        rm -rf "$BACKUP_DIR"
-    else
-        log "Keeping last $KEEP_RELEASES releases"
-        # Ensure backup directory exists
-        mkdir -p "$BACKUP_DIR"
 
-        # Remove old backups except the last one
-        ALL_OLD_BACKUPS=$(find "$BACKUP_DIR" -maxdepth 1 -name "${APP_NAME}-backup-*" -type f | sort -V)
-
-        # Keep the last $KEEP_RELEASES backups
-        REMOVABLE_BACKUPS=$(echo "$ALL_OLD_BACKUPS" | tail -n +$((KEEP_RELEASES + 1)))
-
-        if [[ -n "$REMOVABLE_BACKUPS" ]]; then
-            for backup in $REMOVABLE_BACKUPS; do
-                log "Removing old backup: $(basename "$backup")"
-                rm -f "$backup"
-            done
-        else
-            warning "No old backups to clean up"
-        fi
-        
-    fi
-    
     log "Removing last old releases..."
     OLD_RELEASES=$(find "$(dirname "$INSTALL_DIR")" -maxdepth 1 -name "${APP_NAME}-v*" -type d | sort -V | head -n 1)
 
@@ -390,13 +347,19 @@ main() {
 
 
     # Deployment process
-    create_backup
     download_and_prepare
     preserve_files
     
     # Deploy with error handling
     if deploy && health_check; then
-        cleanup
+        # ask for confirmation before cleanup
+        echo
+        read -p "Deployment successful! Do you want to clean up old releases? [y/N]: " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            cleanup
+        fi
+
         success "🎉 Deployment completed successfully!"
         log "New version $LATEST_VERSION is now live"
 
@@ -410,7 +373,9 @@ main() {
             log "Skipping deployment script update"
         fi
     else
+        echo
         rollback
+        echo
         error "❌ Deployment failed and has been rolled back"
         exit 1
     fi
