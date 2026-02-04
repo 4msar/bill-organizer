@@ -72,7 +72,7 @@ final class TeamController extends Controller
             $data = $request->validate(self::ValidationRules);
 
             if ($request->hasFile('icon')) {
-                $data['icon'] = $request->file('icon')->store('teams');
+                $data['icon'] = $request->file('icon')->storePublicly('teams');
             }
 
             $team = $request->user()->teams()->create($data + [
@@ -91,11 +91,16 @@ final class TeamController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Team $team)
+    public function update(Request $request)
     {
-        $data = $request->validate(array_merge(self::ValidationRules, [
-            'slug' => ['required', 'string', 'max:100', 'alpha_dash', 'unique:teams,slug,'.$team->id],
-        ]));
+        /** @var Team $team */
+        $team = $request->user()->activeTeam;
+
+        $rules = array_merge(self::ValidationRules, [
+            'slug' => ['required', 'string', 'max:100', 'alpha_dash', 'unique:teams,slug,' . $team->id],
+        ]);
+
+        $data = $request->validate($rules);
 
         if ($request->hasFile('icon')) {
             $data['icon'] = $request->file('icon')->store('teams');

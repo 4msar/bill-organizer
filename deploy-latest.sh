@@ -15,7 +15,7 @@ TEMP_DIR="${CURRENT_FILE_DIR}/temp"
 WEB_USER="www-data"  # Change this to your web server user
 GITHUB_TOKEN=""  # Optional: Set if you need authentication for private repos
 # Keep specified number of old releases (0 means keep none)
-KEEP_RELEASES="1"  # Default to 1 if not set
+KEEP_RELEASES="2"  # Default to 1 if not set
 
 # Colors for output
 RED='\033[0;31m'

@@ -72,7 +72,7 @@ final class TransactionController extends Controller
         // Handle file upload if present
         $attachmentPath = null;
         if ($request->hasFile('attachment')) {
-            $attachmentPath = $request->file('attachment')->store('attachments', 'public');
+            $attachmentPath = $request->file('attachment')->storePublicly('attachments');
         }
 
         // Create transaction
@@ -129,9 +129,11 @@ final class TransactionController extends Controller
      */
     public function destroy(Transaction $transaction)
     {
-
         // Delete attachment if exists
-        if ($transaction->attachment && Storage::exists($transaction->attachment)) {
+        if (
+            $transaction->attachment &&
+            Storage::exists($transaction->attachment)
+        ) {
             Storage::delete($transaction->attachment);
         }
 
