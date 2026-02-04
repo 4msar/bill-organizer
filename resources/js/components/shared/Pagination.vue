@@ -6,7 +6,7 @@ const { data: pagination } = defineProps<{ data: PaginationData<T[]> }>();
 </script>
 <template>
     <nav
-        v-if="pagination.links.length > 0 && pagination.next_page_url"
+        v-if="pagination.links.length > 0 && (pagination.next_page_url || pagination.prev_page_url)"
         class="flex-column flex flex-wrap items-center justify-between py-5 pt-6 md:flex-row"
         aria-label="Table navigation"
     >

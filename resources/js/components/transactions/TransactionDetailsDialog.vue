@@ -108,7 +108,7 @@ const paymentMethodIcon = computed(() => {
                 <div v-if="transaction.attachment">
                     <h4 class="text-muted-foreground mb-2 text-sm font-medium">Attachment</h4>
                     <div class="rounded-lg border p-3">
-                        <div class="flex items-center justify-between">
+                        <div class="flex flex-wrap items-center justify-between gap-4">
                             <div class="flex items-center">
                                 <component
                                     :is="isImage(transaction.attachment) ? 'Image' : isPdf(transaction.attachment) ? FileText : FileText"

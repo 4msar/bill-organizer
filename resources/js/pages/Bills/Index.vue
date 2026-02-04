@@ -181,7 +181,8 @@ function markAsPaid(id: string | number) {
                                         <div>
                                             <span
                                                 :class="{
-                                                    'text-destructive': new Date(bill.due_date as string) < new Date() && bill.status === 'unpaid',
+                                                    'text-yellow-500': bill.status === 'unpaid',
+                                                    'text-destructive': bill.status === 'overdue',
                                                 }"
                                             >
                                                 {{ formatDate(bill.due_date as string) }}
