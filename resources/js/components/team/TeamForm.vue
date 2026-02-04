@@ -75,6 +75,12 @@ const submit = () => {
         form._method = 'PUT';
     }
 
+    form.slug = (form.slug ?? form.name)
+        ?.toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .substring(0, 100);
+
     form.post(submitUrl);
 };
 </script>
@@ -107,14 +113,14 @@ const submit = () => {
         <div class="grid gap-2">
             <div class="flex items-center justify-between">
                 <Label for="icon">Icon / Logo</Label>
-                <Tooltip v-if="$page.props.team?.current?.icon" title="Delete the current logo/icon">
+                <Tooltip v-if="$page.props.team?.current?.icon && method === 'PUT'" title="Delete the current logo/icon">
                     <Link as="button" method="delete" :href="route('team.logo.remove')" class="text-sm hover:underline">Clear Current Icon</Link>
                 </Tooltip>
             </div>
             <Input id="icon" type="file" accept="image/*" class="mt-1 block w-full" @change="form.icon = $event?.target?.files[0]" />
             <InputError class="mt-2" :message="form.errors.icon" />
             <img
-                v-if="$page.props.team?.current?.icon"
+                v-if="$page.props.team?.current?.icon && method === 'PUT'"
                 :src="$page.props.team.current.icon_url"
                 alt="Current Team Icon"
                 class="mt-4 h-16 w-16 rounded-md object-cover"

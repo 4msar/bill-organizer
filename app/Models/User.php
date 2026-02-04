@@ -9,12 +9,14 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Lab404\Impersonate\Models\Impersonate;
 
 #[ObservedBy([UserObserver::class])]
 final class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, HasMetaData, Notifiable;
+    use Impersonate;
 
     /**
      * The attributes that are mass assignable.
@@ -36,6 +38,14 @@ final class User extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         'password',
         'remember_token',
+    ];
+
+    /**
+     * Appends`s to the model's array form.
+     */
+    protected $appends = [
+        'is_impersonating',
+        'can_impersonate',
     ];
 
     /**
@@ -163,5 +173,37 @@ final class User extends Authenticatable implements MustVerifyEmail
     public function hasTeam(int $teamId): bool
     {
         return $this->teams()->where('id', $teamId)->exists();
+    }
+
+    /**
+     * Return true or false if the user can impersonate an other user.
+     *
+     * @param void
+     * @return  bool
+     */
+    public function canImpersonate($targetUser = null): bool
+    {
+        return $this->teams()
+            ->whereHas('users', function ($query) use ($targetUser) {
+                $query->where(Team::PivotTableName . '.user_id', $targetUser->id);
+            })->exists();
+    }
+
+    /**
+     * Get if the user is impersonating.
+     * @return  bool
+     */
+    public function getIsImpersonatingAttribute()
+    {
+        return app('impersonate')->isImpersonating();
+    }
+
+    /**
+     * Get if the user can impersonate.
+     * @return  bool
+     */
+    public function getCanImpersonateAttribute()
+    {
+        return $this->activeTeam?->user_id === $this->id;
     }
 }

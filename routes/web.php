@@ -3,6 +3,7 @@
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ImpersonateController;
 use App\Http\Controllers\LegalController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\NotificationController;
@@ -26,6 +27,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/team/create', [TeamController::class, 'create'])->name('team.create');
     Route::post('/team/store', [TeamController::class, 'store'])->name('team.store');
     Route::get('/team/switch/{team}', [TeamController::class, 'switch'])->name('team.switch');
+
+    Route::get('/impersonate/take/{user}', [ImpersonateController::class, 'take'])->name('impersonate');
+    Route::get('/impersonate/leave', [ImpersonateController::class, 'leave'])->name('impersonate.leave');
 });
 
 Route::middleware(['auth', 'verified', 'team'])->group(function () {
@@ -92,9 +96,9 @@ Route::get('/visit/bill/{bill}', [BillController::class, 'visit'])
     ->middleware(['auth', 'verified', 'signed'])
     ->name('visit.bill');
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
-require __DIR__.'/debug.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';
+require __DIR__ . '/debug.php';
 
 Route::fallback(function () {
     return Inertia::render('errors/404', [

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { Team } from '@/types';
-import { router, useForm } from '@inertiajs/vue3';
-import { PlusIcon, XIcon } from 'lucide-vue-next';
+import { Link, router, useForm } from '@inertiajs/vue3';
+import { LogIn, PlusIcon, XIcon } from 'lucide-vue-next';
 import { ref } from 'vue';
+import { toast } from 'vue-sonner';
 import HeadingSmall from '../shared/HeadingSmall.vue';
 import { Button } from '../ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '../ui/dialog';
@@ -33,6 +34,11 @@ const handleSubmit = () => {
 const removeMember = (memberId: number) => {
     if (memberId === team.user_id) {
         console.warn('Cannot remove the team owner.');
+        toast('Cannot remove the team owner.', {
+            description: 'You cannot remove the owner of the team.',
+            duration: 5000,
+            closeButton: true,
+        });
         return;
     }
 
@@ -86,15 +92,24 @@ const removeMember = (memberId: number) => {
                 <div class="text-muted-foreground text-sm">
                     {{ member.id === team.user_id ? 'Owner' : 'Member' }}
                 </div>
-                <Button
-                    :disabled="member.id === team.user_id"
-                    variant="ghost"
-                    size="icon"
-                    @click="removeMember(member.id)"
-                    aria-label="Remove member"
-                >
-                    <XIcon class="h-4 w-4" />
-                </Button>
+                <div class="flex flex-wrap items-center gap-2">
+                    <template v-if="$page.props.auth.user.can_impersonate">
+                        <Button v-if="member.id !== $page.props.auth.user.id" variant="outline" size="icon" as-child aria-label="Impersonate member">
+                            <Link :preserve-state="false" :href="route('impersonate', { id: member.id })">
+                                <LogIn class="h-4 w-4" />
+                            </Link>
+                        </Button>
+                    </template>
+                    <Button
+                        :disabled="member.id === team.user_id"
+                        variant="ghost"
+                        size="icon"
+                        @click="removeMember(member.id)"
+                        aria-label="Remove member"
+                    >
+                        <XIcon class="h-4 w-4" />
+                    </Button>
+                </div>
             </li>
             <li v-if="!team.users?.length" class="text-muted-foreground p-4 text-center">No team members.</li>
         </ul>

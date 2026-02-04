@@ -12,6 +12,9 @@ export interface User extends Model {
     email_verified_at: string | null;
     metas: Record<string, DataType | DataType[]>;
     active_team_id: number | null;
+
+    is_impersonating?: boolean;
+    can_impersonate?: boolean;
 }
 
 export interface Category extends Model {
