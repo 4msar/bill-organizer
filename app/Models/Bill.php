@@ -193,7 +193,19 @@ final class Bill extends Model
                 ])
                 ->exists();
 
-            return $hasTransaction ? 'paid' : 'unpaid';
+            if ($hasTransaction) {
+                return 'paid';
+            }
+
+            /**
+             * If it's yearly and not within 90 days of due date, 
+             * consider it paid to avoid unnecessary reminders.
+             */
+            if ($this->isYearly() && !$this->isUpcomingIn(90)) {
+                return 'paid';
+            }
+
+            return 'unpaid';
         }
 
         // Not in current period - check if due date is in the past
@@ -257,6 +269,16 @@ final class Bill extends Model
     }
 
     /**
+     * Check if the bill is yearly.
+     *
+     * @return bool
+     */
+    public function isYearly()
+    {
+        return $this->recurrence_period === RecurrencePeriod::YEARLY;
+    }
+
+    /**
      * Check if the due date is upcoming.
      *
      * @return bool
@@ -268,8 +290,7 @@ final class Bill extends Model
         }
 
         return $this->due_date->lte(now()->addDays(intval($days))) &&
-            $this->due_date->gte(now()) &&
-            $this->status === 'unpaid';
+            $this->due_date->gte(now());
     }
 
     /**

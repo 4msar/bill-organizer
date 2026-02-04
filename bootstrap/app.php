@@ -54,6 +54,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 ]);
             }
 
+            if (
+                $response->getStatusCode() >= 500 &&
+                app()->environment('local', 'testing')
+            ) {
+                return $response;
+            }
+
             if (in_array($response->getStatusCode(), [403, 404, 500, 503])) {
                 return inertia('errors/404', [
                     'status' => $response->getStatusCode(),

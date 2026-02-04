@@ -9,6 +9,8 @@ if (app()->environment('local', 'dev', 'development')) {
 
         // dd($request->url());
 
+        abort(503, 'Testing exception handling.');
+
         $bill = \App\Models\Bill::find(71);
         dd($bill, $bill->calculateStatus());
 
