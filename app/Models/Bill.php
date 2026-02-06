@@ -219,8 +219,6 @@ final class Bill extends Model
             return 'paid';
         }
 
-        // info('Bill #' . $this->id . ' is not in the current period.');
-
         return $currentStatus;
     }
 
@@ -245,7 +243,7 @@ final class Bill extends Model
         }
 
         if ($dueDate) {
-            return Carbon::parse($dueDate);
+            return Carbon::parse($dueDate)->format('Y-m-d');
         }
 
         $currentDueDate = Carbon::parse($this->due_date);

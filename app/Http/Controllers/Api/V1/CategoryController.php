@@ -21,12 +21,12 @@ final class CategoryController extends Controller
                 if (str_contains($search, ':')) {
                     [$column, $value] = explode(':', $search);
                     if ($column && $value && in_fillable($column, Category::class)) {
-                        return $q->where($column, 'like', '%'.$value.'%');
+                        return $q->where($column, 'like', '%' . $value . '%');
                     }
                 }
 
-                $q->where('name', 'like', '%'.$search.'%')
-                    ->orWhere('description', 'like', '%'.$search.'%');
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%');
             })
             ->when($request->user_id, function ($q, $userId) {
                 $q->where('user_id', $userId);
@@ -36,6 +36,18 @@ final class CategoryController extends Controller
             })
             ->when($request->boolean('with_bills_count'), function ($q) {
                 $q->withCount('bills');
+            })
+            ->when($request->boolean('with_detailed_counts'), function ($q) {
+                $q->withCount([
+                    'bills as total_bills_count',
+                    'bills as unpaid_bills_count' => function ($query) {
+                        $query->where('status', 'unpaid');
+                    },
+                ])
+                    ->withSum('bills as total_amount', 'amount')
+                    ->withSum(['bills as unpaid_amount' => function ($query) {
+                        $query->where('status', 'unpaid');
+                    }], 'amount');
             });
 
         // Sorting
