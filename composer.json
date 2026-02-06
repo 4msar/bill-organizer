@@ -13,6 +13,7 @@
         "inertiajs/inertia-laravel": "^2.0.3",
         "lab404/laravel-impersonate": "^1.7",
         "laravel/framework": "^12.19.3",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "league/flysystem-aws-s3-v3": "^3.0",
         "tightenco/ziggy": "^2.5.3"
