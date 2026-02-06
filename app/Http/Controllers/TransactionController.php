@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Transaction\StoreTransactionRequest;
 use App\Models\Bill;
 use App\Models\Transaction;
+use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 final class TransactionController extends Controller
@@ -15,33 +15,12 @@ final class TransactionController extends Controller
     /**
      * Display a listing of the transactions.
      */
-    /**
-     * Display a listing of the transactions.
-     */
-    public function index(Request $request)
+    public function index(Request $request, PaymentService $paymentService)
     {
-        $query = Transaction::with(['bill', 'bill.category']);
-
-        // Apply filters
-        if ($request->filled('bill_id')) {
-            $query->where('bill_id', $request->bill_id);
-        }
-
-        if ($request->filled('payment_method')) {
-            $query->where('payment_method', $request->payment_method);
-        }
-
-        if ($request->filled('date_from')) {
-            $query->whereDate('payment_date', '>=', $request->date_from);
-        }
-
-        if ($request->filled('date_to')) {
-            $query->whereDate('payment_date', '<=', $request->date_to);
-        }
-
-        $transactions = $query->latest('payment_date')
-            ->paginate(10)
-            ->withQueryString();
+        $transactions = $paymentService->getTransactionsWithFilters([
+            ...$request->only(['bill_id', 'payment_method', 'date_from', 'date_to']),
+            'per_page' => 10,
+        ]);
 
         // Get all user's bills for the filter dropdown
         $bills = Bill::select('id', 'title')->orderBy('title')->get();
@@ -56,53 +35,15 @@ final class TransactionController extends Controller
     /**
      * Store a newly created transaction in storage.
      */
-    public function store(StoreTransactionRequest $request)
+    public function store(StoreTransactionRequest $request, PaymentService $paymentService)
     {
-        $validated = $request->validated();
+        $bill = Bill::findOrFail($request->validated('bill_id'));
 
-        $bill = Bill::findOrFail($validated['bill_id']);
-
-        // Handle file upload if present
-        $attachmentPath = null;
-        if ($request->hasFile('attachment')) {
-            $attachmentPath = $request->file('attachment')->storePublicly('attachments');
-        }
-
-        // Create transaction
-        $transaction = new Transaction([
-            'team_id' => active_team_id(),
-            'bill_id' => $bill->id,
-            'amount' => $validated['amount'],
-            'payment_date' => $validated['payment_date'],
-            'payment_method' => $validated['payment_method'] ?? null,
-            'notes' => $validated['notes'] ?? null,
-            'attachment' => $attachmentPath,
-        ]);
-
-        $transaction->save();
-
-        // Update bill status
-        $bill->status = 'paid';
-
-        // If it's a recurring bill and update_due_date is true, calculate next due date
-        if (
-            $bill->is_recurring &&
-            $request->boolean('update_due_date')
-        ) {
-            $nextDueDate = $bill->calculateNextDueDate(
-                $request->input('nextDueDate')
-            );
-            if ($nextDueDate) {
-                // Create a new bill for the next due date
-                $bill->status = 'unpaid';
-                $bill->due_date = $nextDueDate;
-                $bill->save();
-            }
-        } else {
-            // If it's not a recurring bill, set the due date to null
-            $bill->status = 'paid';
-            $bill->save();
-        }
+        $paymentService->recordPayment(
+            bill: $bill,
+            paymentData: $request->validated(),
+            updateDueDate: $request->boolean('update_due_date')
+        );
 
         return Redirect::back()->with('success', 'Payment recorded successfully.');
     }
@@ -120,26 +61,9 @@ final class TransactionController extends Controller
     /**
      * Remove the specified transaction from storage.
      */
-    public function destroy(Transaction $transaction)
+    public function destroy(Transaction $transaction, PaymentService $paymentService)
     {
-        // Delete attachment if exists
-        if (
-            $transaction->attachment &&
-            Storage::exists($transaction->attachment)
-        ) {
-            Storage::delete($transaction->attachment);
-        }
-
-        $billId = $transaction->bill_id;
-        $transaction->delete();
-
-        // If this was the only transaction for this bill, set bill back to unpaid
-        $bill = Bill::find($billId);
-        if ($bill && $bill->transactions()->count() === 0) {
-            $bill->update([
-                'status' => 'unpaid',
-            ]);
-        }
+        $paymentService->deletePayment($transaction);
 
         return back()->with('success', 'Transaction deleted successfully.');
     }
@@ -147,12 +71,8 @@ final class TransactionController extends Controller
     /**
      * Show receipt page for a transaction
      */
-    public function showReceipt(Transaction $transaction)
+    public function showReceipt(Transaction $transaction, PaymentService $paymentService)
     {
-        $transaction->load(['bill', 'bill.category', 'user']);
-
-        return inertia('Transactions/Receipt', [
-            'transaction' => $transaction,
-        ]);
+        return inertia('Transactions/Receipt', $paymentService->generateReceipt($transaction));
     }
 }

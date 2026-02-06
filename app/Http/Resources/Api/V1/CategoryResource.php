@@ -26,6 +26,10 @@ final class CategoryResource extends JsonResource
             'team' => new TeamResource($this->whenLoaded('team')),
             'bills' => BillResource::collection($this->whenLoaded('bills')),
             'bills_count' => $this->when(isset($this->bills_count), $this->bills_count),
+            'total_bills_count' => $this->when(isset($this->total_bills_count), $this->total_bills_count),
+            'unpaid_bills_count' => $this->when(isset($this->unpaid_bills_count), $this->unpaid_bills_count),
+            'total_amount' => $this->when(isset($this->total_amount), $this->total_amount),
+            'unpaid_amount' => $this->when(isset($this->unpaid_amount), $this->unpaid_amount),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];

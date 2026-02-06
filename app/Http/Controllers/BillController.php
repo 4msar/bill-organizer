@@ -6,62 +6,16 @@ use App\Http\Requests\Bill\StoreBillRequest;
 use App\Http\Requests\Bill\UpdateBillRequest;
 use App\Models\Bill;
 use App\Models\Category;
-use Carbon\Carbon;
+use App\Services\BillingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 
 final class BillController extends Controller
 {
-    public function index()
+    public function index(Request $request, BillingService $billingService)
     {
-        $billsQuery = Bill::with('category')
-            ->when(request('search'), function ($query) {
-                $search = request('search', '');
-
-                if (str_contains($search, ':')) {
-                    [$column, $value] = explode(':', request('search', ''));
-                    if ($column && $value && in_fillable($column, Bill::class)) {
-                        return $query->where($column, 'like', '%'.$value.'%');
-                    }
-                }
-
-                $query->where('title', 'like', '%'.$search.'%');
-            })
-            ->when(request('status'), function ($query) {
-                if (request('status') === 'upcoming') {
-                    $query->upcoming(7);
-
-                    return;
-                }
-                $query->where('status', request('status'));
-            })
-            ->when(request('category'), function ($query) {
-                $query->where('category_id', request('category'));
-            })
-            ->when(request('date'), function ($query) {
-                $date = Carbon::parse(request('date'));
-
-                $query->whereBetween('due_date', [
-                    $date->copy()->startOfMonth(),
-                    $date->copy()->endOfMonth(),
-                ]);
-            });
-
-        if (
-            request('sort_by') &&
-            in_fillable(request('sort_by'), Bill::class)
-        ) {
-            $sortDirection = request('sort_direction', 'asc') === 'desc' ? 'desc' : 'asc';
-            $billsQuery->orderBy(request('sort_by'), $sortDirection);
-        } else {
-            $billsQuery->orderBy('due_date', 'asc');
-        }
-
-        $bills = $billsQuery
-            ->paginate(15)
-            ->onEachSide(1)
-            ->withQueryString();
+        $bills = $billingService->getBillsWithFilters($request->all());
 
         $currentMonthBills = Bill::query()
             ->currentMonth()
@@ -89,13 +43,9 @@ final class BillController extends Controller
         ]);
     }
 
-    public function store(StoreBillRequest $request)
+    public function store(StoreBillRequest $request, BillingService $billingService)
     {
-        $data = $request->validated();
-
-        Bill::create($data + [
-            'team_id' => active_team_id(),
-        ]);
+        $billingService->createBill($request->validated());
 
         if (parse_url(url()->previous(), PHP_URL_PATH) === '/calendar') {
             return redirect()->back()->with('success', 'Bill created successfully.');
@@ -126,25 +76,23 @@ final class BillController extends Controller
         ]);
     }
 
-    public function update(UpdateBillRequest $request, Bill $bill)
+    public function update(UpdateBillRequest $request, Bill $bill, BillingService $billingService)
     {
-        $data = $request->validated();
-
-        $bill->update($data);
+        $billingService->updateBill($bill, $request->validated());
 
         return redirect()->back()->with('success', 'Bill updated successfully.');
     }
 
-    public function destroy(Bill $bill)
+    public function destroy(Bill $bill, BillingService $billingService)
     {
-        $bill->delete();
+        $billingService->deleteBill($bill);
 
         return redirect()->route('bills.index')->with('success', 'Bill deleted successfully.');
     }
 
-    public function markAsPaid(Bill $bill)
+    public function markAsPaid(Bill $bill, BillingService $billingService)
     {
-        $bill->markAsPaid();
+        $billingService->markBillAsPaid($bill);
 
         return redirect()->back()->with('success', 'Bill marked as paid successfully.');
     }

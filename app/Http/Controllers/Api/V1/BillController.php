@@ -7,6 +7,7 @@ use App\Http\Requests\Bill\StoreBillRequest;
 use App\Http\Requests\Bill\UpdateBillRequest;
 use App\Http\Resources\Api\V1\BillResource;
 use App\Models\Bill;
+use App\Services\BillingService;
 use Illuminate\Http\Request;
 
 final class BillController extends Controller
@@ -14,51 +15,9 @@ final class BillController extends Controller
     /**
      * Display a listing of the bills.
      */
-    public function index(Request $request)
+    public function index(Request $request, BillingService $billingService)
     {
-        $query = Bill::with(['category', 'user', 'team'])
-            ->when($request->search, function ($q, $search) {
-                if (str_contains($search, ':')) {
-                    [$column, $value] = explode(':', $search);
-                    if ($column && $value && in_fillable($column, Bill::class)) {
-                        return $q->where($column, 'like', '%'.$value.'%');
-                    }
-                }
-
-                $q->where('title', 'like', '%'.$search.'%')
-                    ->orWhere('description', 'like', '%'.$search.'%');
-            })
-            ->when($request->status, function ($q, $status) {
-                if ($status === 'upcoming') {
-                    $q->upcoming(7);
-                } else {
-                    $q->where('status', $status);
-                }
-            })
-            ->when($request->category_id, function ($q, $categoryId) {
-                $q->where('category_id', $categoryId);
-            })
-            ->when($request->is_recurring !== null, function ($q) use ($request) {
-                $q->where('is_recurring', $request->boolean('is_recurring'));
-            })
-            ->when($request->has('tags'), function ($q) use ($request) {
-                $tags = is_array($request->tags) ? $request->tags : [$request->tags];
-                foreach ($tags as $tag) {
-                    $q->whereJsonContains('tags', $tag);
-                }
-            });
-
-        // Sorting
-        $sortBy = $request->input('sort_by', 'due_date');
-        $sortDirection = $request->input('sort_direction', 'asc');
-
-        if (in_fillable($sortBy, Bill::class)) {
-            $query->orderBy($sortBy, $sortDirection === 'desc' ? 'desc' : 'asc');
-        }
-
-        // Pagination
-        $perPage = min($request->input('per_page', 15), 100);
-        $bills = $query->paginate($perPage);
+        $bills = $billingService->getBillsWithFilters($request->all());
 
         return BillResource::collection($bills);
     }
@@ -66,14 +25,9 @@ final class BillController extends Controller
     /**
      * Store a newly created bill.
      */
-    public function store(StoreBillRequest $request)
+    public function store(StoreBillRequest $request, BillingService $billingService)
     {
-        $validated = $request->validated();
-
-        $validated['user_id'] = $request->user()->id;
-        $validated['team_id'] = $request->user()->active_team_id;
-
-        $bill = Bill::create($validated);
+        $bill = $billingService->createBill($request->validated());
 
         return response()->json([
             'success' => true,
@@ -96,11 +50,9 @@ final class BillController extends Controller
     /**
      * Update the specified bill.
      */
-    public function update(UpdateBillRequest $request, Bill $bill)
+    public function update(UpdateBillRequest $request, Bill $bill, BillingService $billingService)
     {
-        $validated = $request->validated();
-
-        $bill->update($validated);
+        $billingService->updateBill($bill, $request->validated());
 
         return response()->json([
             'success' => true,
@@ -112,9 +64,9 @@ final class BillController extends Controller
     /**
      * Remove the specified bill.
      */
-    public function destroy(Bill $bill)
+    public function destroy(Bill $bill, BillingService $billingService)
     {
-        $bill->delete();
+        $billingService->deleteBill($bill);
 
         return response()->json([
             'success' => true,
@@ -125,9 +77,9 @@ final class BillController extends Controller
     /**
      * Mark bill as paid.
      */
-    public function markAsPaid(Request $request, Bill $bill)
+    public function markAsPaid(Request $request, Bill $bill, BillingService $billingService)
     {
-        $bill->update(['status' => 'paid']);
+        $billingService->markBillAsPaid($bill);
 
         return response()->json([
             'success' => true,
@@ -149,6 +101,21 @@ final class BillController extends Controller
         return response()->json([
             'success' => true,
             'data' => BillResource::collection($bills),
+        ]);
+    }
+
+    /**
+     * Get bill details for payment.
+     */
+    public function getPaymentDetails(Bill $bill)
+    {
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'bill' => new BillResource($bill->load('category')),
+                'payment_methods' => config('system.payment_methods'),
+                'next_due_date' => $bill->is_recurring ? $bill->calculateNextDueDate() : null,
+            ],
         ]);
     }
 }
