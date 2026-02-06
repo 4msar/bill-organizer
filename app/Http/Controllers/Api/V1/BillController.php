@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Bill\StoreBillRequest;
+use App\Http\Requests\Bill\UpdateBillRequest;
 use App\Http\Resources\Api\V1\BillResource;
 use App\Models\Bill;
 use Illuminate\Http\Request;
@@ -19,12 +21,12 @@ final class BillController extends Controller
                 if (str_contains($search, ':')) {
                     [$column, $value] = explode(':', $search);
                     if ($column && $value && in_fillable($column, Bill::class)) {
-                        return $q->where($column, 'like', '%'.$value.'%');
+                        return $q->where($column, 'like', '%' . $value . '%');
                     }
                 }
 
-                $q->where('title', 'like', '%'.$search.'%')
-                    ->orWhere('description', 'like', '%'.$search.'%');
+                $q->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%');
             })
             ->when($request->status, function ($q, $status) {
                 if ($status === 'upcoming') {
@@ -64,22 +66,9 @@ final class BillController extends Controller
     /**
      * Store a newly created bill.
      */
-    public function store(Request $request)
+    public function store(StoreBillRequest $request)
     {
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'amount' => ['required', 'numeric', 'min:0'],
-            'due_date' => ['required', 'date'],
-            'trial_start_date' => ['nullable', 'date'],
-            'trial_end_date' => ['nullable', 'date', 'after:trial_start_date'],
-            'has_trial' => ['nullable', 'boolean'],
-            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
-            'description' => ['nullable', 'string'],
-            'is_recurring' => ['nullable', 'boolean'],
-            'recurrence_period' => ['nullable', 'string', 'in:daily,weekly,monthly,yearly'],
-            'payment_url' => ['nullable', 'string', 'url'],
-            'tags' => ['nullable', 'array'],
-        ]);
+        $validated = $request->validated();
 
         $validated['user_id'] = $request->user()->id;
         $validated['team_id'] = $request->user()->active_team_id;
@@ -107,23 +96,9 @@ final class BillController extends Controller
     /**
      * Update the specified bill.
      */
-    public function update(Request $request, Bill $bill)
+    public function update(UpdateBillRequest $request, Bill $bill)
     {
-        $validated = $request->validate([
-            'title' => ['sometimes', 'string', 'max:255'],
-            'amount' => ['sometimes', 'numeric', 'min:0'],
-            'due_date' => ['sometimes', 'date'],
-            'trial_start_date' => ['nullable', 'date'],
-            'trial_end_date' => ['nullable', 'date', 'after:trial_start_date'],
-            'has_trial' => ['nullable', 'boolean'],
-            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
-            'description' => ['nullable', 'string'],
-            'is_recurring' => ['nullable', 'boolean'],
-            'recurrence_period' => ['nullable', 'string', 'in:daily,weekly,monthly,yearly'],
-            'payment_url' => ['nullable', 'string', 'url'],
-            'tags' => ['nullable', 'array'],
-            'status' => ['sometimes', 'string', 'in:paid,unpaid,pending,cancelled'],
-        ]);
+        $validated = $request->validated();
 
         $bill->update($validated);
 

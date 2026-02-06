@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Bill\StoreBillRequest;
+use App\Http\Requests\Bill\UpdateBillRequest;
 use App\Models\Bill;
 use App\Models\Category;
 use Carbon\Carbon;
@@ -11,21 +13,6 @@ use Illuminate\Support\Facades\Redirect;
 
 final class BillController extends Controller
 {
-    const ValidationRules = [
-        'title' => ['required', 'string', 'max:255'],
-        'amount' => ['required', 'numeric', 'min:1'],
-        'due_date' => ['required', 'date'],
-        'trial_start_date' => ['date', 'nullable'],
-        'trial_end_date' => ['date', 'nullable', 'after:trial_start_date'],
-        'has_trial' => ['boolean', 'nullable'],
-        'category_id' => ['integer', 'nullable'],
-        'description' => ['string', 'nullable'],
-        'is_recurring' => ['boolean', 'nullable'],
-        'recurrence_period' => ['string', 'nullable'],
-        'payment_url' => ['string', 'nullable'],
-        'tags' => ['array', 'nullable'],
-    ];
-
     public function index()
     {
         $billsQuery = Bill::with('category')
@@ -35,11 +22,11 @@ final class BillController extends Controller
                 if (str_contains($search, ':')) {
                     [$column, $value] = explode(':', request('search', ''));
                     if ($column && $value && in_fillable($column, Bill::class)) {
-                        return $query->where($column, 'like', '%'.$value.'%');
+                        return $query->where($column, 'like', '%' . $value . '%');
                     }
                 }
 
-                $query->where('title', 'like', '%'.$search.'%');
+                $query->where('title', 'like', '%' . $search . '%');
             })
             ->when(request('status'), function ($query) {
                 if (request('status') === 'upcoming') {
@@ -84,11 +71,11 @@ final class BillController extends Controller
 
         return inertia('Bills/Index', [
             'bills' => $bills,
-            'total_unpaid' => $currentMonthBills->filter(fn ($item) => ! $item->isPaid())->sum('amount'),
-            'unpaid_count' => $currentMonthBills->filter(fn ($item) => ! $item->isPaid())->count(),
+            'total_unpaid' => $currentMonthBills->filter(fn($item) => ! $item->isPaid())->sum('amount'),
+            'unpaid_count' => $currentMonthBills->filter(fn($item) => ! $item->isPaid())->count(),
             'upcoming_count' => $upcomingCount,
             'paid_count' => $currentMonthBills
-                ->filter(fn ($item) => $item->isPaid())
+                ->filter(fn($item) => $item->isPaid())
                 ->count(),
             'categories' => Category::all(),
         ]);
@@ -102,9 +89,9 @@ final class BillController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreBillRequest $request)
     {
-        $data = $request->validate(self::ValidationRules);
+        $data = $request->validated();
 
         Bill::create($data + [
             'team_id' => active_team_id(),
@@ -139,9 +126,9 @@ final class BillController extends Controller
         ]);
     }
 
-    public function update(Request $request, Bill $bill)
+    public function update(UpdateBillRequest $request, Bill $bill)
     {
-        $data = $request->validate(self::ValidationRules);
+        $data = $request->validated();
 
         $bill->update($data);
 

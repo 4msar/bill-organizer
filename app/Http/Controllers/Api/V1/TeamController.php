@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Enums\Status;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Team\AddTeamMemberRequest;
+use App\Http\Requests\Team\RemoveTeamMemberRequest;
+use App\Http\Requests\Team\StoreTeamRequest;
+use App\Http\Requests\Team\UpdateTeamRequest;
 use App\Http\Resources\Api\V1\TeamResource;
 use App\Models\Team;
 use App\Models\User;
@@ -22,13 +26,13 @@ final class TeamController extends Controller
                 if (str_contains($search, ':')) {
                     [$column, $value] = explode(':', $search);
                     if ($column && $value && in_fillable($column, Team::class)) {
-                        return $q->where($column, 'like', '%'.$value.'%');
+                        return $q->where($column, 'like', '%' . $value . '%');
                     }
                 }
 
-                $q->where('name', 'like', '%'.$search.'%')
-                    ->orWhere('description', 'like', '%'.$search.'%')
-                    ->orWhere('slug', 'like', '%'.$search.'%');
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%')
+                    ->orWhere('slug', 'like', '%' . $search . '%');
             })
             ->when($request->status, function ($q, $status) {
                 $q->where('status', $status);
@@ -55,16 +59,10 @@ final class TeamController extends Controller
     /**
      * Store a newly created team.
      */
-    public function store(Request $request)
+    public function store(StoreTeamRequest $request)
     {
         return DB::transaction(function () use ($request) {
-            $validated = $request->validate([
-                'name' => ['required', 'string', 'max:100'],
-                'slug' => ['required', 'string', 'max:100', 'alpha_dash', 'unique:teams,slug'],
-                'description' => ['nullable', 'string', 'max:255'],
-                'currency' => ['required', 'string'],
-                'currency_symbol' => ['required', 'string'],
-            ]);
+            $validated = $request->validated();
 
             $validated['user_id'] = $request->user()->id;
             $validated['status'] = Status::Active;
@@ -96,16 +94,9 @@ final class TeamController extends Controller
     /**
      * Update the specified team.
      */
-    public function update(Request $request, Team $team)
+    public function update(UpdateTeamRequest $request, Team $team)
     {
-        $validated = $request->validate([
-            'name' => ['sometimes', 'string', 'max:100'],
-            'slug' => ['sometimes', 'string', 'max:100', 'alpha_dash', 'unique:teams,slug,'.$team->id],
-            'description' => ['nullable', 'string', 'max:255'],
-            'currency' => ['sometimes', 'string'],
-            'currency_symbol' => ['sometimes', 'string'],
-            'status' => ['sometimes', 'string'],
-        ]);
+        $validated = $request->validated();
 
         $team->update($validated);
 
@@ -132,11 +123,9 @@ final class TeamController extends Controller
     /**
      * Add a member to the team.
      */
-    public function addMember(Request $request, Team $team)
+    public function addMember(AddTeamMemberRequest $request, Team $team)
     {
-        $validated = $request->validate([
-            'user_id' => ['required', 'integer', 'exists:users,id'],
-        ]);
+        $validated = $request->validated();
 
         $user = User::findOrFail($validated['user_id']);
 
@@ -160,11 +149,9 @@ final class TeamController extends Controller
     /**
      * Remove a member from the team.
      */
-    public function removeMember(Request $request, Team $team)
+    public function removeMember(RemoveTeamMemberRequest $request, Team $team)
     {
-        $validated = $request->validate([
-            'user_id' => ['required', 'integer', 'exists:users,id'],
-        ]);
+        $validated = $request->validated();
 
         $user = User::findOrFail($validated['user_id']);
 

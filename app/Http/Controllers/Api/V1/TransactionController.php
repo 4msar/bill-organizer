@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Transaction\StoreTransactionRequest;
+use App\Http\Requests\Transaction\UpdateTransactionRequest;
 use App\Http\Resources\Api\V1\TransactionResource;
 use App\Models\Bill;
 use App\Models\Transaction;
@@ -65,17 +67,9 @@ final class TransactionController extends Controller
     /**
      * Store a newly created transaction.
      */
-    public function store(Request $request)
+    public function store(StoreTransactionRequest $request)
     {
-        $validated = $request->validate([
-            'bill_id' => ['required', 'integer', 'exists:bills,id'],
-            'amount' => ['required', 'numeric', 'min:0.01'],
-            'payment_date' => ['required', 'date'],
-            'payment_method' => ['nullable', 'string', 'max:50'],
-            'notes' => ['nullable', 'string', 'max:1000'],
-            'attachment' => ['nullable', 'file', 'max:10240'],
-            'update_due_date' => ['nullable', 'boolean'],
-        ]);
+        $validated = $request->validated();
 
         $bill = Bill::findOrFail($validated['bill_id']);
 
@@ -131,15 +125,9 @@ final class TransactionController extends Controller
     /**
      * Update the specified transaction.
      */
-    public function update(Request $request, Transaction $transaction)
+    public function update(UpdateTransactionRequest $request, Transaction $transaction)
     {
-        $validated = $request->validate([
-            'amount' => ['sometimes', 'numeric', 'min:0.01'],
-            'payment_date' => ['sometimes', 'date'],
-            'payment_method' => ['nullable', 'string', 'max:50'],
-            'notes' => ['nullable', 'string', 'max:1000'],
-            'attachment' => ['nullable', 'file', 'max:10240'],
-        ]);
+        $validated = $request->validated();
 
         // Handle file upload if present
         if ($request->hasFile('attachment')) {

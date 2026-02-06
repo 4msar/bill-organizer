@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Category\StoreCategoryRequest;
+use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Models\Category;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -39,13 +40,9 @@ final class CategoryController extends Controller
     /**
      * Store a newly created category in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:1000',
-            'icon' => 'nullable|string|max:50',
-        ]);
+        $validated = $request->validated();
 
         $category = new Category($validated);
         $category->team_id = active_team_id();
@@ -57,13 +54,9 @@ final class CategoryController extends Controller
     /**
      * Update the specified category in storage.
      */
-    public function update(Request $request, Category $category)
+    public function update(UpdateCategoryRequest $request, Category $category)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:1000',
-            'icon' => 'nullable|string|max:50',
-        ]);
+        $validated = $request->validated();
 
         $category->update($validated);
 
