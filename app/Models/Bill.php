@@ -8,7 +8,6 @@ use App\Observers\BillObserver;
 use App\Traits\HasMetaData;
 use App\Traits\HasTeam;
 use App\Traits\Sluggable;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -115,11 +114,11 @@ final class Bill extends Model
 
         while (
             self::where($destination, $slug)
-                ->where('user_id', $this->user_id)
-                ->where('team_id', $this->team_id)
-                ->exists()
+            ->where('user_id', $this->user_id)
+            ->where('team_id', $this->team_id)
+            ->exists()
         ) {
-            $slug = $originalSlug.'-'.$counter++.Str::random(6);
+            $slug = $originalSlug . '-' . $counter++ . Str::random(6);
         }
 
         return $slug;
@@ -160,77 +159,12 @@ final class Bill extends Model
 
     /**
      * Calculate the status based on recurrence period and transactions.
-     * This is used for both the accessor and the command to keep logic consistent.
+     * This is used explicitly when status calculation is needed.
+     * Note: This is NOT an accessor - call it explicitly via calculateStatus().
      */
     public function calculateStatus(): string
     {
-        $currentStatus = $this->attributes['status'] ?? 'unpaid';
-
-        // For non-recurring bills, just return the current status
-        if (! $this->is_recurring || ! $this->recurrence_period) {
-            return $currentStatus;
-        }
-
-        $now = now();
-        $dueDate = Carbon::parse($this->due_date);
-
-        // Check if we're in the current period for this bill
-        $isCurrentPeriod = match ($this->recurrence_period) {
-            RecurrencePeriod::WEEKLY => $dueDate->isSameWeek($now),
-            RecurrencePeriod::MONTHLY => $dueDate->isSameMonth($now),
-            RecurrencePeriod::YEARLY => $dueDate->isSameYear($now),
-            default => false,
-        };
-
-        // if the bill is in the current recurrence period
-        // check for transactions to determine if it's paid or unpaid
-        if ($isCurrentPeriod) {
-            // In current period - check for recent transactions
-            $hasTransaction = $this->transactions()
-                ->whereBetween('payment_date', [
-                    $dueDate->copy()->startOfPeriod($this->recurrence_period),
-                    $dueDate->copy()->endOfPeriod($this->recurrence_period),
-                ])
-                ->exists();
-
-            if ($hasTransaction) {
-                return 'paid';
-            }
-
-            /**
-             * If it's yearly and not within 90 days of due date,
-             * consider it paid to avoid unnecessary reminders.
-             */
-            if ($this->isYearly() && ! $this->isUpcomingIn(90)) {
-                return 'paid';
-            }
-
-            return 'unpaid';
-        }
-
-        // Not in current period - check if due date is in the past
-        if ($dueDate->isBefore($now)) {
-            return 'overdue';
-        }
-
-        // check if due date is in the future and not in current period
-        // then it's considered paid for past periods
-        if ($dueDate->isAfter($now)) {
-            return 'paid';
-        }
-
-        return $currentStatus;
-    }
-
-    /**
-     * Accessor for status attribute.
-     * Calculates status dynamically for recurring bills.
-     *
-     * @return string
-     */
-    public function getStatusAttribute()
-    {
-        return $this->calculateStatus();
+        return (new \App\Actions\Bills\CalculateBillStatusAction)->execute($this);
     }
 
     /**
@@ -238,22 +172,7 @@ final class Bill extends Model
      */
     public function calculateNextDueDate($dueDate = null): ?string
     {
-        if (! $this->is_recurring || ! $this->recurrence_period) {
-            return null;
-        }
-
-        if ($dueDate) {
-            return Carbon::parse($dueDate)->format('Y-m-d');
-        }
-
-        $currentDueDate = Carbon::parse($this->due_date);
-
-        return match ($this->recurrence_period) {
-            RecurrencePeriod::WEEKLY => $currentDueDate->addWeek()->format('Y-m-d'),
-            RecurrencePeriod::MONTHLY => $currentDueDate->addMonth()->format('Y-m-d'),
-            RecurrencePeriod::YEARLY => $currentDueDate->addYear()->format('Y-m-d'),
-            default => null,
-        };
+        return (new \App\Actions\Bills\CalculateNextDueDateAction)->execute($this, $dueDate);
     }
 
     /**
@@ -428,7 +347,7 @@ final class Bill extends Model
             ->pluck('tags')
             ->filter()
             ->flatten()
-            ->map(fn ($tag) => strtolower(trim($tag)))
+            ->map(fn($tag) => strtolower(trim($tag)))
             ->unique()
             ->values();
     }
@@ -440,11 +359,11 @@ final class Bill extends Model
     {
         if ($this->tags) {
             $this->tags = array_map(
-                fn ($item) => strtolower(trim($item)),
+                fn($item) => strtolower(trim($item)),
                 $this->tags
             );
 
-            $this->tags = array_filter($this->tags, fn ($tag) => ! empty($tag));
+            $this->tags = array_filter($this->tags, fn($tag) => ! empty($tag));
 
             $this->tags = array_values(array_unique($this->tags));
         }

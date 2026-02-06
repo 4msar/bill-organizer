@@ -39,29 +39,13 @@ final class NoteController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreNoteRequest $request)
+    public function store(StoreNoteRequest $request, \App\Actions\Notes\CreateNoteAction $createAction)
     {
-        $data = $request->validated();
-
-        // Set team_id from current user's active team
-        $data['team_id'] = $request->user()->active_team_id;
-
-        // Handle team note logic: if is_team_note is true, set user_id to null
-        if (isset($data['is_team_note']) && $data['is_team_note']) {
-            $data['user_id'] = null;
-        } else {
-            // For personal notes, set user_id to current user
-            $data['user_id'] = $request->user()->id;
-        }
-
-        // Remove is_team_note from data as it's not a database field
-        unset($data['is_team_note']);
-
-        $note = Note::create($data);
-
-        if (isset($data['related']) && $data['related']) {
-            $note->bills()->sync($data['related']);
-        }
+        $note = $createAction->execute(
+            $request->validated(),
+            $request->user()->id,
+            $request->user()->active_team_id
+        );
 
         return redirect()
             ->route('notes.index')
@@ -72,27 +56,9 @@ final class NoteController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateNoteRequest $request, Note $note)
+    public function update(UpdateNoteRequest $request, Note $note, \App\Actions\Notes\UpdateNoteAction $updateAction)
     {
-        $data = $request->validated();
-
-        // Handle team note logic: if is_team_note is true, set user_id to null
-        if (isset($data['is_team_note'])) {
-            if ($data['is_team_note']) {
-                $data['user_id'] = null;
-            } else {
-                $data['user_id'] = $request->user()->id;
-            }
-        }
-
-        // Remove is_team_note from data as it's not a database field
-        unset($data['is_team_note']);
-
-        $note->update($data);
-
-        if (isset($data['related'])) {
-            $note->bills()->sync($data['related']);
-        }
+        $updateAction->execute($note, $request->validated(), $request->user()->id);
 
         return redirect()->route('notes.index')->with('success', 'Note updated successfully.');
     }
@@ -100,9 +66,9 @@ final class NoteController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Note $note)
+    public function destroy(Note $note, \App\Actions\Notes\DeleteNoteAction $deleteAction)
     {
-        $note->delete();
+        $deleteAction->execute($note);
 
         return redirect()->route('notes.index')->with('success', 'Note deleted successfully.');
     }

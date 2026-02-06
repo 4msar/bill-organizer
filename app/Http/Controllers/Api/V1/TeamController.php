@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Enums\Status;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Team\AddTeamMemberRequest;
 use App\Http\Requests\Team\StoreTeamRequest;
@@ -10,8 +9,8 @@ use App\Http\Requests\Team\UpdateTeamRequest;
 use App\Http\Resources\Api\V1\TeamResource;
 use App\Models\Team;
 use App\Models\User;
+use App\Services\TeamService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 final class TeamController extends Controller
 {
@@ -25,13 +24,13 @@ final class TeamController extends Controller
                 if (str_contains($search, ':')) {
                     [$column, $value] = explode(':', $search);
                     if ($column && $value && in_fillable($column, Team::class)) {
-                        return $q->where($column, 'like', '%'.$value.'%');
+                        return $q->where($column, 'like', '%' . $value . '%');
                     }
                 }
 
-                $q->where('name', 'like', '%'.$search.'%')
-                    ->orWhere('description', 'like', '%'.$search.'%')
-                    ->orWhere('slug', 'like', '%'.$search.'%');
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%')
+                    ->orWhere('slug', 'like', '%' . $search . '%');
             })
             ->when($request->status, function ($q, $status) {
                 $q->where('status', $status);
@@ -58,25 +57,15 @@ final class TeamController extends Controller
     /**
      * Store a newly created team.
      */
-    public function store(StoreTeamRequest $request)
+    public function store(StoreTeamRequest $request, TeamService $teamService)
     {
-        return DB::transaction(function () use ($request) {
-            $validated = $request->validated();
+        $team = $teamService->createTeam($request->user(), $request->validated());
 
-            $validated['user_id'] = $request->user()->id;
-            $validated['status'] = Status::Active;
-
-            $team = Team::create($validated);
-
-            // Attach the creator to the team
-            $request->user()->teams()->attach($team);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Team created successfully',
-                'data' => new TeamResource($team->load(['owner', 'users'])),
-            ], 201);
-        });
+        return response()->json([
+            'success' => true,
+            'message' => 'Team created successfully',
+            'data' => new TeamResource($team->load(['owner', 'users'])),
+        ], 201);
     }
 
     /**
@@ -93,11 +82,9 @@ final class TeamController extends Controller
     /**
      * Update the specified team.
      */
-    public function update(UpdateTeamRequest $request, Team $team)
+    public function update(UpdateTeamRequest $request, Team $team, TeamService $teamService)
     {
-        $validated = $request->validated();
-
-        $team->update($validated);
+        $teamService->updateTeam($team, $request->validated());
 
         return response()->json([
             'success' => true,
@@ -109,9 +96,9 @@ final class TeamController extends Controller
     /**
      * Remove the specified team.
      */
-    public function destroy(Team $team)
+    public function destroy(Team $team, TeamService $teamService)
     {
-        $team->delete();
+        $teamService->deleteTeam($team);
 
         return response()->json([
             'success' => true,
@@ -122,7 +109,7 @@ final class TeamController extends Controller
     /**
      * Add a member to the team.
      */
-    public function addMember(AddTeamMemberRequest $request, Team $team)
+    public function addMember(AddTeamMemberRequest $request, Team $team, TeamService $teamService)
     {
         $validated = $request->validated();
 
@@ -136,7 +123,7 @@ final class TeamController extends Controller
             ], 422);
         }
 
-        $team->users()->attach($user);
+        $teamService->inviteMember($team, $request->user(), $user->email);
 
         return response()->json([
             'success' => true,
@@ -148,16 +135,8 @@ final class TeamController extends Controller
     /**
      * Remove a member from the team.
      */
-    public function removeMember(Request $request, Team $team, User $user)
+    public function removeMember(Request $request, Team $team, User $user, TeamService $teamService)
     {
-        // Check if the user is the owner
-        if ($user->id === $team->user_id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cannot remove the team owner',
-            ], 422);
-        }
-
         // Check if the current user is the team owner
         if ($request->user()->id !== $team->user_id) {
             return response()->json([
@@ -166,19 +145,26 @@ final class TeamController extends Controller
             ], 403);
         }
 
-        $team->users()->detach($user);
+        try {
+            $teamService->removeMember($team, $user);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Member removed successfully',
-            'data' => new TeamResource($team->fresh()->load(['owner', 'users'])),
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Member removed successfully',
+                'data' => new TeamResource($team->fresh()->load(['owner', 'users'])),
+            ]);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 422);
+        }
     }
 
     /**
      * Switch the active team for the authenticated user.
      */
-    public function switch(Request $request, Team $team)
+    public function switch(Request $request, Team $team, TeamService $teamService)
     {
         $user = $request->user();
 
@@ -190,7 +176,7 @@ final class TeamController extends Controller
             ], 403);
         }
 
-        $user->switchTeam($team);
+        $teamService->switchTeam($user, $team);
 
         return response()->json([
             'success' => true,

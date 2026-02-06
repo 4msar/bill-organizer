@@ -74,7 +74,7 @@ test('can filter teams by user_id', function () {
     ]);
 
     $response = $this->withToken($this->token)
-        ->getJson('/api/v1/teams?user_id='.$this->user->id);
+        ->getJson('/api/v1/teams?user_id=' . $this->user->id);
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(2); // including the initial team from beforeEach
@@ -283,7 +283,7 @@ test('cannot remove team owner from team', function () {
     $response->assertStatus(422)
         ->assertJson([
             'success' => false,
-            'message' => 'Cannot remove the team owner',
+            'message' => 'Cannot remove the team owner.',
         ]);
 });
 
