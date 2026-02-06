@@ -21,6 +21,7 @@
     "require-dev": {
         "fakerphp/faker": "^1.23",
         "fruitcake/laravel-debugbar": "^4.0",
+        "laravel/boost": "^1.1",
         "laravel/pail": "^1.2.3",
         "laravel/pint": "^1.22",
         "laravel/sail": "^1.43.1",
