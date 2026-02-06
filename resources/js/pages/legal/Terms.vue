@@ -135,18 +135,14 @@ import { Head, Link } from '@inertiajs/vue3';
                     </section>
 
                     <section>
-                        <h2 class="text-foreground mb-3 text-2xl font-semibold">9. Open Source License</h2>
+                        <h2 class="text-foreground mb-3 text-2xl font-semibold">9. Software License</h2>
                         <p>
-                            Bill Organizer is open-source software licensed under the
-                            <a
-                                href="https://www.gnu.org/licenses/gpl-3.0.en.html"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="text-primary hover:underline"
-                            >
-                                GNU General Public License v3.0 (GPL-3.0) </a
-                            >.
+                            Bill Organizer is dual-licensed software. The software is available under the following terms:
                         </p>
+                        <ul class="mt-2 ml-6 list-disc space-y-1">
+                            <li><strong>Personal Use:</strong> Free for personal, non-commercial use</li>
+                            <li><strong>Commercial Use:</strong> Requires a paid commercial license</li>
+                        </ul>
                         <p class="mt-2">
                             The source code is available on
                             <a
@@ -155,8 +151,17 @@ import { Head, Link } from '@inertiajs/vue3';
                                 rel="noopener noreferrer"
                                 class="text-primary hover:underline"
                             >
-                                GitHub </a
-                            >. You are free to view, modify, and distribute the software in accordance with the GPL-3.0 license terms.
+                                GitHub</a
+                            >. Please review the
+                            <a
+                                href="https://github.com/4msar/bill-organizer/blob/main/LICENSE"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="text-primary hover:underline"
+                            >
+                                LICENSE
+                            </a>
+                            file for complete details. For commercial licensing inquiries, please contact the repository owner.
                         </p>
                     </section>
 

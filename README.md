@@ -132,5 +132,12 @@ Contributions are welcome! Please follow these steps to contribute:
 
 ## License
 
-This project is open-source and available under the [GNU GENERAL PUBLIC LICENSE](LICENSE).
+This project is dual-licensed:
+
+- **Personal Use**: Free for personal, non-commercial use
+- **Commercial Use**: Requires a paid commercial license
+
+For more details, see the [LICENSE](LICENSE) file.
+
+To obtain a commercial license or if you have questions about licensing, please contact the repository owner.
 
