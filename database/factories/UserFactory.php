@@ -41,4 +41,19 @@ final class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /**
+     * Create a user with a team and attach the user to the team.
+     */
+    public function withTeam(): static
+    {
+        return $this->afterCreating(function ($user) {
+            $team = \App\Models\Team::factory()->create([
+                'user_id' => $user->id,
+            ]);
+
+            $user->teams()->attach($team);
+            $user->load('teams'); // Reload the teams relationship
+        });
+    }
 }

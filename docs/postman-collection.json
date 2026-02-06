@@ -1,0 +1,626 @@
+{
+    "info": {
+        "name": "Bill Organizer API",
+        "description": "Complete API collection for Bill Organizer application",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "version": "1.0.0"
+    },
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost/api/v1",
+            "type": "string"
+        },
+        {
+            "key": "api_token",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"api_token\", jsonData.data.token);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"device_name\": \"postman\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Register",
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/register",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "register"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get User Profile",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/user",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "user"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Profile",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Updated Name\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/user",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "user"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/logout",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "logout"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Bills",
+            "item": [
+                {
+                    "name": "List Bills",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/bills?per_page=15&status=unpaid",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "bills"
+                            ],
+                            "query": [
+                                {
+                                    "key": "per_page",
+                                    "value": "15"
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "unpaid"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Bill",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Netflix Subscription\",\n  \"amount\": 15.99,\n  \"due_date\": \"2026-03-01\",\n  \"description\": \"Monthly streaming service\",\n  \"is_recurring\": true,\n  \"recurrence_period\": \"monthly\",\n  \"tags\": [\"entertainment\", \"subscription\"]\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/bills",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "bills"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Bill",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/bills/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "bills",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Bill",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Netflix Premium\",\n  \"amount\": 19.99\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/bills/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "bills",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Bill",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/bills/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "bills",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Mark Bill as Paid",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/bills/1/pay",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "bills",
+                                "1",
+                                "pay"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Categories",
+            "item": [
+                {
+                    "name": "List Categories",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/categories",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "categories"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Category",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Entertainment\",\n  \"description\": \"Streaming and entertainment services\",\n  \"icon\": \"🎬\",\n  \"color\": \"#FF5733\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/categories",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "categories"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Transactions",
+            "item": [
+                {
+                    "name": "List Transactions",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/transactions",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "transactions"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Transaction",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"bill_id\": 1,\n  \"amount\": 15.99,\n  \"payment_date\": \"2026-02-01\",\n  \"payment_method\": \"credit_card\",\n  \"notes\": \"Paid via auto-billing\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/transactions",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "transactions"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Teams",
+            "item": [
+                {
+                    "name": "List Teams",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/teams",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "teams"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Team",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Family Bills\",\n  \"description\": \"Shared family expenses\",\n  \"currency\": \"USD\",\n  \"currency_symbol\": \"$\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/teams",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "teams"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Add Team Member",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"user_id\": 2\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/teams/1/members",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "teams",
+                                "1",
+                                "members"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Switch Team",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/teams/1/switch",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "teams",
+                                "1",
+                                "switch"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Notes",
+            "item": [
+                {
+                    "name": "List Notes",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/notes",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notes"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Note",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Payment Reminder\",\n  \"content\": \"Remember to update payment method\",\n  \"is_pinned\": false\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/notes",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notes"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
