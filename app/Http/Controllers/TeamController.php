@@ -2,17 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\Status;
 use App\Http\Requests\Team\AddTeamMemberRequest;
 use App\Http\Requests\Team\StoreTeamRequest;
 use App\Http\Requests\Team\UpdateTeamRequest;
-use App\Mail\TeamInvitation;
 use App\Models\Team;
 use App\Models\User;
+use App\Services\TeamService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
 
 final class TeamController extends Controller
 {
@@ -34,15 +30,12 @@ final class TeamController extends Controller
     /**
      * Switch the current team.
      */
-    public function switch(Request $request, Team $team)
+    public function switch(Request $request, Team $team, TeamService $teamService)
     {
-        $request->user()->switchTeam($team);
+        $teamService->switchTeam($request->user(), $team);
 
         $refererUrlPath = parse_url(url()->previous(), PHP_URL_PATH);
-        if (
-            // If it's bill details page
-            preg_match('/^\/bills\/[0-9]+$/', $refererUrlPath)
-        ) {
+        if (preg_match('/^\/bills\/[0-9]+$/', $refererUrlPath)) {
             return to_route('bills.index')->with('success', 'Team switched successfully.');
         }
 
@@ -60,36 +53,25 @@ final class TeamController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTeamRequest $request)
+    public function store(StoreTeamRequest $request, TeamService $teamService)
     {
-        return DB::transaction(function () use ($request) {
-            $data = $request->validated();
+        $data = $request->validated();
 
-            if ($request->hasFile('icon')) {
-                $data['icon'] = $request->file('icon')->storePublicly('teams');
-            }
+        if ($request->hasFile('icon')) {
+            $data['icon'] = $request->file('icon')->storePublicly('teams');
+        }
 
-            $team = $request->user()->teams()->create($data + [
-                'user_id' => $request->user()->id,
-                'status' => Status::Active,
-            ]);
+        $teamService->createTeam($request->user(), $data);
 
-            $request->user()->teams()->attach($team);
-
-            $request->user()->switchTeam($team);
-
-            return to_route('dashboard')->with('success', 'Team created successfully.');
-        });
+        return to_route('dashboard')->with('success', 'Team created successfully.');
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTeamRequest $request)
+    public function update(UpdateTeamRequest $request, TeamService $teamService)
     {
-        /** @var Team $team */
         $team = $request->user()->activeTeam;
-
         $data = $request->validated();
 
         if ($request->hasFile('icon')) {
@@ -98,7 +80,7 @@ final class TeamController extends Controller
             unset($data['icon']);
         }
 
-        $request->user()->activeTeam()->update($data);
+        $teamService->updateTeam($team, $data);
 
         return back()->with('success', 'Team updated successfully.');
     }
@@ -106,7 +88,7 @@ final class TeamController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request, TeamService $teamService)
     {
         $request->validate([
             'password' => ['required', 'current_password'],
@@ -114,10 +96,10 @@ final class TeamController extends Controller
 
         $user = $request->user();
 
-        $user->activeTeam()->delete();
+        $teamService->deleteTeam($user->activeTeam);
 
         if ($user->teams->count() > 1) {
-            $user->switchTeam($user->teams()->first());
+            $teamService->switchTeam($user, $user->teams()->first());
 
             return to_route('dashboard');
         }
@@ -128,19 +110,17 @@ final class TeamController extends Controller
     /**
      * Show the form for joining a team.
      */
-    public function join(string $teamId)
+    public function join(string $teamId, TeamService $teamService)
     {
         $team = Team::query()->withoutGlobalScope('user')->findOrFail($teamId);
 
         $mail = request()->query('email');
         if ($mail && $user = User::where('email', $mail)->first()) {
-            // If the user already exists, switch to invited team
-            $user->switchTeam($team);
+            $teamService->switchTeam($user, $team);
 
             return to_route('dashboard')->with('success', 'Switched to your team successfully.');
         }
 
-        // If the user does not exist, store the email in the session
         session(['join_team' => [
             'email' => $mail,
             'team' => $teamId,
@@ -154,65 +134,38 @@ final class TeamController extends Controller
     /**
      * Add a member to the team.
      */
-    public function addMember(AddTeamMemberRequest $request)
+    public function addMember(AddTeamMemberRequest $request, TeamService $teamService)
     {
         $validated = $request->validated();
-
         $user = $request->user();
         $team = $user->activeTeam;
 
-        // Check if the user already exists
-        $member = User::where('email', $validated['email'])->first();
+        $teamService->inviteMember($team, $user, $validated['email']);
 
-        if ($member) {
-            // If the user exists, invite them to the team
-            $team->users()->attach($member);
-
-            return back()->with('success', 'Member added successfully.');
-        }
-
-        try {
-            Mail::to($validated['email'])->send(new TeamInvitation($team, $user, $validated['email']));
-        } catch (\Throwable $th) {
-            // throw $th;
-        }
-
-        return back()->with('success', 'Invitation sent successfully.');
+        return back()->with('success', 'Member added successfully.');
     }
 
     /**
      * Remove a member from the team.
      */
-    public function removeMember(Request $request, User $user)
+    public function removeMember(Request $request, User $user, TeamService $teamService)
     {
         $team = $request->user()->activeTeam;
 
-        // Check if the user is the owner of the team
-        if ($user->id === $team->user_id) {
-            return back()->withErrors(['error' => 'Cannot remove the team owner.']);
+        try {
+            $teamService->removeMember($team, $user);
+
+            return back()->with('success', 'Member removed successfully.');
+        } catch (\InvalidArgumentException $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
         }
-
-        // Remove the member from the team
-        $team->users()->detach($user);
-
-        return back()->with('success', 'Member removed successfully.');
     }
 
-    public function removeLogo()
+    public function removeLogo(TeamService $teamService)
     {
-        /** @var Team $team */
         $team = request()->user()->activeTeam;
 
-        if (
-            $team->icon &&
-            ! str($team->icon)->startsWith('http') &&
-            Storage::exists($team->icon)
-        ) {
-            Storage::delete($team->icon);
-        }
-
-        $team->icon = null;
-        $team->save();
+        $teamService->removeLogo($team);
 
         return back()->with('success', 'Team logo removed successfully.');
     }

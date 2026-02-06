@@ -40,13 +40,9 @@ final class CategoryController extends Controller
     /**
      * Store a newly created category in storage.
      */
-    public function store(StoreCategoryRequest $request)
+    public function store(StoreCategoryRequest $request, \App\Actions\Categories\CreateCategoryAction $createAction)
     {
-        $validated = $request->validated();
-
-        $category = new Category($validated);
-        $category->team_id = active_team_id();
-        $category->save();
+        $createAction->execute($request->validated());
 
         return Redirect::route('categories.index')->with('success', 'Category created successfully.');
     }
@@ -54,11 +50,9 @@ final class CategoryController extends Controller
     /**
      * Update the specified category in storage.
      */
-    public function update(UpdateCategoryRequest $request, Category $category)
+    public function update(UpdateCategoryRequest $request, Category $category, \App\Actions\Categories\UpdateCategoryAction $updateAction)
     {
-        $validated = $request->validated();
-
-        $category->update($validated);
+        $updateAction->execute($category, $request->validated());
 
         return Redirect::route('categories.index')->with('success', 'Category updated successfully.');
     }
@@ -66,18 +60,15 @@ final class CategoryController extends Controller
     /**
      * Remove the specified category from storage.
      */
-    public function destroy(Category $category)
+    public function destroy(Category $category, \App\Actions\Categories\DeleteCategoryAction $deleteAction)
     {
-        // Check if the category has any bills
-        $billsCount = $category->bills()->count();
+        try {
+            $deleteAction->execute($category);
 
-        if ($billsCount > 0) {
-            return Redirect::route('categories.index')->with('error', "Cannot delete category - it has {$billsCount} bill(s) associated with it.");
+            return Redirect::route('categories.index')->with('success', 'Category deleted successfully.');
+        } catch (\InvalidArgumentException $e) {
+            return Redirect::route('categories.index')->with('error', $e->getMessage());
         }
-
-        $category->delete();
-
-        return Redirect::route('categories.index')->with('success', 'Category deleted successfully.');
     }
 
     /**
