@@ -195,7 +195,7 @@ final class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->teams()->withoutGlobalScopes()
             ->whereHas('users', function ($query) use ($targetUser) {
-                $query->where(Team::PivotTableName . '.user_id', $targetUser->id);
+                $query->where(Team::PivotTableName.'.user_id', $targetUser->id);
             })->exists();
     }
 

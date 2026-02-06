@@ -11,11 +11,7 @@ use Illuminate\Support\Facades\Storage;
 beforeEach(function () {
     $this->user = User::factory()->withTeam()->create();
     $this->user->refresh();
-    $this->team = $this->user->teams()->first();
-    if ($this->team) {
-        $this->user->switchTeam($this->team);
-        $this->user->refresh();
-    }
+    $this->team = Team::withoutGlobalScopes()->find($this->user->active_team_id);
     $this->token = $this->user->createToken('test')->plainTextToken;
     Storage::fake('public');
     config()->set('filesystems.default', 'public');
@@ -75,7 +71,7 @@ test('can filter transactions by bill_id', function () {
     ]);
 
     $response = $this->withToken($this->token)
-        ->getJson('/api/v1/transactions?bill_id=' . $bill1->id);
+        ->getJson('/api/v1/transactions?bill_id='.$bill1->id);
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(1);

@@ -13,8 +13,8 @@ use Illuminate\Database\Eloquent\Model;
 #[ScopedBy([TeamScope::class, UserScope::class])]
 final class Note extends Model
 {
-    use HasTeam;
     use HasFactory;
+    use HasTeam;
 
     protected $fillable = [
         'user_id',
@@ -25,7 +25,7 @@ final class Note extends Model
     ];
 
     protected $appends = [
-        'was_recently_created'
+        'was_recently_created',
     ];
 
     public function user()

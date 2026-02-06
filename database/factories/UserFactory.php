@@ -37,7 +37,7 @@ final class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
     }
@@ -48,8 +48,14 @@ final class UserFactory extends Factory
     public function withTeam(): static
     {
         return $this->afterCreating(function ($user) {
-            $team = \App\Models\Team::factory()->create([
+            $team = \App\Models\Team::withoutGlobalScopes()->create([
                 'user_id' => $user->id,
+                'name' => fake()->company(),
+                'slug' => fake()->unique()->slug(),
+                'description' => fake()->sentence(),
+                'status' => 'active',
+                'currency' => 'USD',
+                'currency_symbol' => '$',
             ]);
 
             $user->teams()->attach($team);

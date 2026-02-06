@@ -22,11 +22,11 @@ final class BillController extends Controller
                 if (str_contains($search, ':')) {
                     [$column, $value] = explode(':', request('search', ''));
                     if ($column && $value && in_fillable($column, Bill::class)) {
-                        return $query->where($column, 'like', '%' . $value . '%');
+                        return $query->where($column, 'like', '%'.$value.'%');
                     }
                 }
 
-                $query->where('title', 'like', '%' . $search . '%');
+                $query->where('title', 'like', '%'.$search.'%');
             })
             ->when(request('status'), function ($query) {
                 if (request('status') === 'upcoming') {
@@ -71,11 +71,11 @@ final class BillController extends Controller
 
         return inertia('Bills/Index', [
             'bills' => $bills,
-            'total_unpaid' => $currentMonthBills->filter(fn($item) => ! $item->isPaid())->sum('amount'),
-            'unpaid_count' => $currentMonthBills->filter(fn($item) => ! $item->isPaid())->count(),
+            'total_unpaid' => $currentMonthBills->filter(fn ($item) => ! $item->isPaid())->sum('amount'),
+            'unpaid_count' => $currentMonthBills->filter(fn ($item) => ! $item->isPaid())->count(),
             'upcoming_count' => $upcomingCount,
             'paid_count' => $currentMonthBills
-                ->filter(fn($item) => $item->isPaid())
+                ->filter(fn ($item) => $item->isPaid())
                 ->count(),
             'categories' => Category::all(),
         ]);

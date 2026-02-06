@@ -26,6 +26,7 @@ final class UserHasTeam
                     return to_route('team.create')
                         ->with('info', 'You must create a team first.');
                 }
+
                 return response()->json([
                     'status' => 403,
                     'message' => 'You must create a team first.',

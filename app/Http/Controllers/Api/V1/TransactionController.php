@@ -23,12 +23,12 @@ final class TransactionController extends Controller
                 if (str_contains($search, ':')) {
                     [$column, $value] = explode(':', $search);
                     if ($column && $value && in_fillable($column, Transaction::class)) {
-                        return $q->where($column, 'like', '%' . $value . '%');
+                        return $q->where($column, 'like', '%'.$value.'%');
                     }
                 }
 
-                $q->where('notes', 'like', '%' . $search . '%')
-                    ->orWhere('payment_method', 'like', '%' . $search . '%');
+                $q->where('notes', 'like', '%'.$search.'%')
+                    ->orWhere('payment_method', 'like', '%'.$search.'%');
             })
             ->when($request->bill_id, function ($q, $billId) {
                 $q->where('bill_id', $billId);

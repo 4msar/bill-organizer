@@ -40,7 +40,7 @@ Artisan::command('app:update-slugs', function () {
     // Example for Bill model
     \App\Models\Bill::withoutGlobalScopes()->get()->each(function ($bill) {
         $bill->fillSlug();
-        $this->info('Updated slug for Bill: ' . $bill->title . ' to ' . $bill->slug);
+        $this->info('Updated slug for Bill: '.$bill->title.' to '.$bill->slug);
         $bill->save();
     });
 
@@ -49,7 +49,7 @@ Artisan::command('app:update-slugs', function () {
     // Example for Team model
     \App\Models\Team::withoutGlobalScopes()->get()->each(function ($team) {
         $team->fillSlug();
-        $this->info('Updated slug for Team: ' . $team->name . ' to ' . $team->slug);
+        $this->info('Updated slug for Team: '.$team->name.' to '.$team->slug);
         $team->save();
     });
 

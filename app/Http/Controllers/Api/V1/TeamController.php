@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\V1;
 use App\Enums\Status;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Team\AddTeamMemberRequest;
-use App\Http\Requests\Team\RemoveTeamMemberRequest;
 use App\Http\Requests\Team\StoreTeamRequest;
 use App\Http\Requests\Team\UpdateTeamRequest;
 use App\Http\Resources\Api\V1\TeamResource;
@@ -26,13 +25,13 @@ final class TeamController extends Controller
                 if (str_contains($search, ':')) {
                     [$column, $value] = explode(':', $search);
                     if ($column && $value && in_fillable($column, Team::class)) {
-                        return $q->where($column, 'like', '%' . $value . '%');
+                        return $q->where($column, 'like', '%'.$value.'%');
                     }
                 }
 
-                $q->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('description', 'like', '%' . $search . '%')
-                    ->orWhere('slug', 'like', '%' . $search . '%');
+                $q->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('description', 'like', '%'.$search.'%')
+                    ->orWhere('slug', 'like', '%'.$search.'%');
             })
             ->when($request->status, function ($q, $status) {
                 $q->where('status', $status);
@@ -127,7 +126,7 @@ final class TeamController extends Controller
     {
         $validated = $request->validated();
 
-        $user = User::findOrFail($validated['user_id']);
+        $user = User::findOrFail($validated['user_id'] ?? $validated['email']);
 
         // Check if user is already a member
         if ($team->users()->where('users.id', $user->id)->exists()) {
@@ -149,18 +148,22 @@ final class TeamController extends Controller
     /**
      * Remove a member from the team.
      */
-    public function removeMember(RemoveTeamMemberRequest $request, Team $team)
+    public function removeMember(Request $request, Team $team, User $user)
     {
-        $validated = $request->validated();
-
-        $user = User::findOrFail($validated['user_id']);
-
         // Check if the user is the owner
         if ($user->id === $team->user_id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Cannot remove the team owner',
             ], 422);
+        }
+
+        // Check if the current user is the team owner
+        if ($request->user()->id !== $team->user_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only the team owner can remove members',
+            ], 403);
         }
 
         $team->users()->detach($user);

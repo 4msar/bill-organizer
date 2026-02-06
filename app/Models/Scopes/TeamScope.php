@@ -14,7 +14,7 @@ final class TeamScope implements Scope
     public function apply(Builder $builder, Model $model): void
     {
         // if running in console but not in tests, skip the scope
-        if (app()->runningInConsole()) {
+        if (app()->runningInConsole() && ! app()->runningUnitTests()) {
             return;
         }
 

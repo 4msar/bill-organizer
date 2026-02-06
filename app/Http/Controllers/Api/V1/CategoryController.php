@@ -21,12 +21,12 @@ final class CategoryController extends Controller
                 if (str_contains($search, ':')) {
                     [$column, $value] = explode(':', $search);
                     if ($column && $value && in_fillable($column, Category::class)) {
-                        return $q->where($column, 'like', '%' . $value . '%');
+                        return $q->where($column, 'like', '%'.$value.'%');
                     }
                 }
 
-                $q->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('description', 'like', '%' . $search . '%');
+                $q->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('description', 'like', '%'.$search.'%');
             })
             ->when($request->user_id, function ($q, $userId) {
                 $q->where('user_id', $userId);

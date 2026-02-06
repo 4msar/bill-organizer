@@ -21,12 +21,12 @@ final class NoteController extends Controller
                 if (str_contains($search, ':')) {
                     [$column, $value] = explode(':', $search);
                     if ($column && $value && in_fillable($column, Note::class)) {
-                        return $q->where($column, 'like', '%' . $value . '%');
+                        return $q->where($column, 'like', '%'.$value.'%');
                     }
                 }
 
-                $q->where('title', 'like', '%' . $search . '%')
-                    ->orWhere('content', 'like', '%' . $search . '%');
+                $q->where('title', 'like', '%'.$search.'%')
+                    ->orWhere('content', 'like', '%'.$search.'%');
             })
             ->when($request->user_id, function ($q, $userId) {
                 $q->where('user_id', $userId);

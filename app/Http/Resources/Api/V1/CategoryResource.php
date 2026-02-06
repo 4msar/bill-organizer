@@ -25,6 +25,7 @@ final class CategoryResource extends JsonResource
             'user' => new UserResource($this->whenLoaded('user')),
             'team' => new TeamResource($this->whenLoaded('team')),
             'bills' => BillResource::collection($this->whenLoaded('bills')),
+            'bills_count' => $this->when(isset($this->bills_count), $this->bills_count),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];
