@@ -50,7 +50,7 @@ final class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $user?->append('metas'),
             ],
-            'team' => fn () => $this->getTeam($request),
+            'team' => fn() => $this->getTeam($request),
             'ziggy' => [
                 ...(new Ziggy())->toArray(),
                 'location' => $request->url(),
