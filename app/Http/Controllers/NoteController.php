@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Note\StoreNoteRequest;
+use App\Http\Requests\Note\UpdateNoteRequest;
 use App\Models\Bill;
 use App\Models\Note;
 use App\Models\Scopes\TeamScope;
-use Illuminate\Http\Request;
 
 final class NoteController extends Controller
 {
@@ -38,15 +39,9 @@ final class NoteController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreNoteRequest $request)
     {
-        $data = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'content' => ['required', 'string'],
-            'is_pinned' => 'boolean',
-            'is_team_note' => 'boolean',
-            'related' => ['array', 'nullable'],
-        ]);
+        $data = $request->validated();
 
         // Set team_id from current user's active team
         $data['team_id'] = $request->user()->active_team_id;
@@ -77,15 +72,9 @@ final class NoteController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Note $note)
+    public function update(UpdateNoteRequest $request, Note $note)
     {
-        $data = $request->validate([
-            'title' => ['required', 'sometimes', 'string', 'max:255'],
-            'content' => ['required', 'sometimes', 'string'],
-            'is_pinned' => ['boolean', 'sometimes'],
-            'is_team_note' => ['boolean', 'sometimes'],
-            'related' => ['array', 'nullable'],
-        ]);
+        $data = $request->validated();
 
         // Handle team note logic: if is_team_note is true, set user_id to null
         if (isset($data['is_team_note'])) {

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Status;
+use App\Http\Requests\Team\AddTeamMemberRequest;
+use App\Http\Requests\Team\StoreTeamRequest;
+use App\Http\Requests\Team\UpdateTeamRequest;
 use App\Mail\TeamInvitation;
 use App\Models\Team;
 use App\Models\User;
@@ -13,15 +16,6 @@ use Illuminate\Support\Facades\Storage;
 
 final class TeamController extends Controller
 {
-    const ValidationRules = [
-        'name' => ['required', 'string', 'max:100'],
-        'slug' => ['required', 'string', 'max:100', 'alpha_dash', 'unique:teams,slug'],
-        'description' => ['string', 'max:255'],
-        'icon' => ['image', 'nullable', 'max:512'],
-        'currency' => ['string', 'required'],
-        'currency_symbol' => ['string', 'required'],
-    ];
-
     /**
      * Display a listing of the resource.
      */
@@ -66,10 +60,10 @@ final class TeamController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreTeamRequest $request)
     {
         return DB::transaction(function () use ($request) {
-            $data = $request->validate(self::ValidationRules);
+            $data = $request->validated();
 
             if ($request->hasFile('icon')) {
                 $data['icon'] = $request->file('icon')->storePublicly('teams');
@@ -91,16 +85,12 @@ final class TeamController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request)
+    public function update(UpdateTeamRequest $request)
     {
         /** @var Team $team */
         $team = $request->user()->activeTeam;
 
-        $rules = array_merge(self::ValidationRules, [
-            'slug' => ['required', 'string', 'max:100', 'alpha_dash', 'unique:teams,slug,' . $team->id],
-        ]);
-
-        $data = $request->validate($rules);
+        $data = $request->validated();
 
         if ($request->hasFile('icon')) {
             $data['icon'] = $request->file('icon')->store('teams');
@@ -164,17 +154,15 @@ final class TeamController extends Controller
     /**
      * Add a member to the team.
      */
-    public function addMember(Request $request)
+    public function addMember(AddTeamMemberRequest $request)
     {
-        $request->validate([
-            'email' => ['required', 'email'],
-        ]);
+        $validated = $request->validated();
 
         $user = $request->user();
         $team = $user->activeTeam;
 
         // Check if the user already exists
-        $member = User::where('email', $request->email)->first();
+        $member = User::where('email', $validated['email'])->first();
 
         if ($member) {
             // If the user exists, invite them to the team
@@ -184,7 +172,7 @@ final class TeamController extends Controller
         }
 
         try {
-            Mail::to($request->email)->send(new TeamInvitation($team, $user, $request->email));
+            Mail::to($validated['email'])->send(new TeamInvitation($team, $user, $validated['email']));
         } catch (\Throwable $th) {
             // throw $th;
         }

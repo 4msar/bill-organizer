@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Note\StoreNoteRequest;
+use App\Http\Requests\Note\UpdateNoteRequest;
 use App\Http\Resources\Api\V1\NoteResource;
 use App\Models\Note;
 use Illuminate\Http\Request;
@@ -19,12 +21,12 @@ final class NoteController extends Controller
                 if (str_contains($search, ':')) {
                     [$column, $value] = explode(':', $search);
                     if ($column && $value && in_fillable($column, Note::class)) {
-                        return $q->where($column, 'like', '%'.$value.'%');
+                        return $q->where($column, 'like', '%' . $value . '%');
                     }
                 }
 
-                $q->where('title', 'like', '%'.$search.'%')
-                    ->orWhere('content', 'like', '%'.$search.'%');
+                $q->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('content', 'like', '%' . $search . '%');
             })
             ->when($request->user_id, function ($q, $userId) {
                 $q->where('user_id', $userId);
@@ -60,15 +62,9 @@ final class NoteController extends Controller
     /**
      * Store a newly created note.
      */
-    public function store(Request $request)
+    public function store(StoreNoteRequest $request)
     {
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'content' => ['required', 'string'],
-            'is_pinned' => ['nullable', 'boolean'],
-            'is_team_note' => ['nullable', 'boolean'],
-            'related' => ['nullable', 'array'],
-        ]);
+        $validated = $request->validated();
 
         $validated['team_id'] = $request->user()->active_team_id;
 
@@ -109,15 +105,9 @@ final class NoteController extends Controller
     /**
      * Update the specified note.
      */
-    public function update(Request $request, Note $note)
+    public function update(UpdateNoteRequest $request, Note $note)
     {
-        $validated = $request->validate([
-            'title' => ['sometimes', 'string', 'max:255'],
-            'content' => ['sometimes', 'string'],
-            'is_pinned' => ['nullable', 'boolean'],
-            'is_team_note' => ['nullable', 'boolean'],
-            'related' => ['nullable', 'array'],
-        ]);
+        $validated = $request->validated();
 
         // Handle team note logic: if is_team_note is true, set user_id to null
         if (isset($validated['is_team_note'])) {

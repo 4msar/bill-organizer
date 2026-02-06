@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Category\StoreCategoryRequest;
+use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Http\Resources\Api\V1\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -19,12 +21,12 @@ final class CategoryController extends Controller
                 if (str_contains($search, ':')) {
                     [$column, $value] = explode(':', $search);
                     if ($column && $value && in_fillable($column, Category::class)) {
-                        return $q->where($column, 'like', '%'.$value.'%');
+                        return $q->where($column, 'like', '%' . $value . '%');
                     }
                 }
 
-                $q->where('name', 'like', '%'.$search.'%')
-                    ->orWhere('description', 'like', '%'.$search.'%');
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%');
             })
             ->when($request->user_id, function ($q, $userId) {
                 $q->where('user_id', $userId);
@@ -54,14 +56,9 @@ final class CategoryController extends Controller
     /**
      * Store a newly created category.
      */
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string', 'max:1000'],
-            'icon' => ['nullable', 'string', 'max:50'],
-            'color' => ['nullable', 'string', 'max:7'],
-        ]);
+        $validated = $request->validated();
 
         $validated['user_id'] = $request->user()->id;
         $validated['team_id'] = $request->user()->active_team_id;
@@ -89,14 +86,9 @@ final class CategoryController extends Controller
     /**
      * Update the specified category.
      */
-    public function update(Request $request, Category $category)
+    public function update(UpdateCategoryRequest $request, Category $category)
     {
-        $validated = $request->validate([
-            'name' => ['sometimes', 'string', 'max:255'],
-            'description' => ['nullable', 'string', 'max:1000'],
-            'icon' => ['nullable', 'string', 'max:50'],
-            'color' => ['nullable', 'string', 'max:7'],
-        ]);
+        $validated = $request->validated();
 
         $category->update($validated);
 

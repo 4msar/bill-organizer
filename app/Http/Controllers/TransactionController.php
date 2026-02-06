@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Transaction\StoreTransactionRequest;
 use App\Models\Bill;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -55,17 +56,9 @@ final class TransactionController extends Controller
     /**
      * Store a newly created transaction in storage.
      */
-    public function store(Request $request)
+    public function store(StoreTransactionRequest $request)
     {
-        $validated = $request->validate([
-            'bill_id' => 'required|exists:bills,id',
-            'amount' => 'required|numeric|min:0.01',
-            'payment_date' => 'required|date',
-            'payment_method' => 'nullable|string|max:50',
-            'notes' => 'nullable|string|max:1000',
-            'attachment' => 'nullable|file|max:10240', // 10MB max
-            'update_due_date' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
         $bill = Bill::findOrFail($validated['bill_id']);
 
