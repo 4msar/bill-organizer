@@ -101,7 +101,12 @@ final class User extends Authenticatable implements MustVerifyEmail
      */
     public function teams()
     {
-        return $this->belongsToMany(Team::class, Team::PivotTableName)
+        return $this->belongsToMany(
+            Team::class,
+            Team::PivotTableName,
+            'user_id',
+            'team_id'
+        )
             ->distinct();
     }
 
@@ -174,7 +179,11 @@ final class User extends Authenticatable implements MustVerifyEmail
      */
     public function hasTeam(int $teamId): bool
     {
-        return $this->teams()->where('id', $teamId)->exists();
+        return $this->teams()
+            ->withoutGlobalScopes()
+            ->where('teams.id', $teamId)
+            ->where('teams.user_id', $this->id)
+            ->exists();
     }
 
     /**
@@ -184,9 +193,9 @@ final class User extends Authenticatable implements MustVerifyEmail
      */
     public function canImpersonate($targetUser = null): bool
     {
-        return $this->teams()
+        return $this->teams()->withoutGlobalScopes()
             ->whereHas('users', function ($query) use ($targetUser) {
-                $query->where(Team::PivotTableName.'.user_id', $targetUser->id);
+                $query->where(Team::PivotTableName . '.user_id', $targetUser->id);
             })->exists();
     }
 

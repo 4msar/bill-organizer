@@ -24,16 +24,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/user', [AuthController::class, 'updateProfile'])->name('api.v1.auth.update');
     });
 
-    // User routes
-    Route::apiResource('users', UserController::class)->only(['index', 'show']);
+    // Team routes - no active team required
+    Route::apiResource('teams', TeamController::class);
+    Route::post('teams/{team}/switch', [TeamController::class, 'switch'])->name('api.v1.teams.switch');
 
     // Team routes - require active team
     Route::middleware('team')->group(function () {
         // Teams
-        Route::apiResource('teams', TeamController::class);
         Route::post('teams/{team}/members', [TeamController::class, 'addMember'])->name('api.v1.teams.members.add');
         Route::delete('teams/{team}/members/{user}', [TeamController::class, 'removeMember'])->name('api.v1.teams.members.remove');
-        Route::post('teams/{team}/switch', [TeamController::class, 'switch'])->name('api.v1.teams.switch');
+
+        // User routes
+        Route::apiResource('users', UserController::class)->only(['index', 'show']);
 
         // Bills
         Route::apiResource('bills', BillController::class);

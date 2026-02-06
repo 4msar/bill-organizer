@@ -22,7 +22,14 @@ final class UserHasTeam
 
         if ($user) {
             if ($user?->teams?->count() <= 0) {
-                return to_route('team.create')->with('info', 'You must create a team first.');
+                if (! $request->expectsJson()) {
+                    return to_route('team.create')
+                        ->with('info', 'You must create a team first.');
+                }
+                return response()->json([
+                    'status' => 403,
+                    'message' => 'You must create a team first.',
+                ], 403);
             }
 
             if (! $user->activeTeam) {

@@ -74,7 +74,7 @@ test('can filter teams by user_id', function () {
     ]);
 
     $response = $this->withToken($this->token)
-        ->getJson('/api/v1/teams?user_id='.$this->user->id);
+        ->getJson('/api/v1/teams?user_id=' . $this->user->id);
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(2); // including the initial team from beforeEach
@@ -147,7 +147,7 @@ test('can create team', function () {
     ]);
 
     $team = Team::where('slug', 'new-team')->first();
-    expect($this->user->teams->contains($team))->toBeTrue();
+    expect($this->user->teams->pluck('id')->contains($team->id))->toBeTrue();
 });
 
 test('can show team', function () {

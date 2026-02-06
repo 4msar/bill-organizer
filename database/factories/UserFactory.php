@@ -37,7 +37,7 @@ final class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }
@@ -54,6 +54,7 @@ final class UserFactory extends Factory
 
             $user->teams()->attach($team);
             $user->load('teams'); // Reload the teams relationship
+            $user->switchTeam($team);
         });
     }
 }

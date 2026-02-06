@@ -10,6 +10,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -49,11 +50,20 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->respond(function (
             Response $response,
-            $exception,
-            $request
+            Exception $exception,
+            Request $request
         ) {
             // handle /api requests with JSON responses, and web requests with Inertia error pages
             if ($request->is('api/*')) {
+
+                if ($exception instanceof ValidationException) {
+                    return response()->json([
+                        'status' => 422,
+                        'message' => 'The given data was invalid.',
+                        'errors' => $exception->errors(),
+                    ], 422);
+                }
+
                 return response()->json([
                     'status' => $response->getStatusCode(),
                     'message' => $exception->getMessage() ?? 'Something went wrong.',
