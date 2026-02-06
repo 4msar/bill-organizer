@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureJsonResponse;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\UserCanAccessFeature;
@@ -14,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__ . '/../routes/web.php',
+        api: __DIR__ . '/../routes/api.php',
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
@@ -26,6 +28,10 @@ return Application::configure(basePath: dirname(__DIR__))
             at: '*',
             headers: Request::HEADER_X_FORWARDED_HOST | Request::HEADER_X_FORWARDED_PROTO,
         );
+
+        $middleware->api(append: [
+            EnsureJsonResponse::class,
+        ]);
 
         // Web middleware group
         $middleware->web(append: [
@@ -46,6 +52,14 @@ return Application::configure(basePath: dirname(__DIR__))
             $exception,
             $request
         ) {
+            // handle /api requests with JSON responses, and web requests with Inertia error pages
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status' => $response->getStatusCode(),
+                    'message' => $exception->getMessage() ?? 'Something went wrong.',
+                ], $response->getStatusCode());
+            }
+
             /** @var Illuminate\Http\Response $response */
             $response = $response;
             if ($response->getStatusCode() === 419) {

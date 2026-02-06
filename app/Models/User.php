@@ -10,12 +10,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Lab404\Impersonate\Models\Impersonate;
+use Laravel\Sanctum\HasApiTokens;
 
 #[ObservedBy([UserObserver::class])]
 final class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, HasMetaData, Notifiable;
+    use HasApiTokens, HasFactory, HasMetaData, Notifiable;
+
     use Impersonate;
 
     /**
@@ -179,19 +181,19 @@ final class User extends Authenticatable implements MustVerifyEmail
      * Return true or false if the user can impersonate an other user.
      *
      * @param void
-     * @return  bool
      */
     public function canImpersonate($targetUser = null): bool
     {
         return $this->teams()
             ->whereHas('users', function ($query) use ($targetUser) {
-                $query->where(Team::PivotTableName . '.user_id', $targetUser->id);
+                $query->where(Team::PivotTableName.'.user_id', $targetUser->id);
             })->exists();
     }
 
     /**
      * Get if the user is impersonating.
-     * @return  bool
+     *
+     * @return bool
      */
     public function getIsImpersonatingAttribute()
     {
@@ -200,7 +202,8 @@ final class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Get if the user can impersonate.
-     * @return  bool
+     *
+     * @return bool
      */
     public function getCanImpersonateAttribute()
     {
