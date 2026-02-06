@@ -115,11 +115,11 @@ final class Bill extends Model
 
         while (
             self::where($destination, $slug)
-            ->where('user_id', $this->user_id)
-            ->where('team_id', $this->team_id)
-            ->exists()
+                ->where('user_id', $this->user_id)
+                ->where('team_id', $this->team_id)
+                ->exists()
         ) {
-            $slug = $originalSlug . '-' . $counter++ . Str::random(6);
+            $slug = $originalSlug.'-'.$counter++.Str::random(6);
         }
 
         return $slug;
@@ -198,10 +198,10 @@ final class Bill extends Model
             }
 
             /**
-             * If it's yearly and not within 90 days of due date, 
+             * If it's yearly and not within 90 days of due date,
              * consider it paid to avoid unnecessary reminders.
              */
-            if ($this->isYearly() && !$this->isUpcomingIn(90)) {
+            if ($this->isYearly() && ! $this->isUpcomingIn(90)) {
                 return 'paid';
             }
 
@@ -430,7 +430,7 @@ final class Bill extends Model
             ->pluck('tags')
             ->filter()
             ->flatten()
-            ->map(fn($tag) => strtolower(trim($tag)))
+            ->map(fn ($tag) => strtolower(trim($tag)))
             ->unique()
             ->values();
     }
@@ -442,11 +442,11 @@ final class Bill extends Model
     {
         if ($this->tags) {
             $this->tags = array_map(
-                fn($item) => strtolower(trim($item)),
+                fn ($item) => strtolower(trim($item)),
                 $this->tags
             );
 
-            $this->tags = array_filter($this->tags, fn($tag) => ! empty($tag));
+            $this->tags = array_filter($this->tags, fn ($tag) => ! empty($tag));
 
             $this->tags = array_values(array_unique($this->tags));
         }

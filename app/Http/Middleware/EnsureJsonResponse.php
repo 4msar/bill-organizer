@@ -18,8 +18,8 @@ final class EnsureJsonResponse
         $request->headers->set('Content-Type', 'application/json');
 
         if (
-            !$request->expectsJson() ||
-            $request->headers->get('Accept') !== "*/*"
+            ! $request->expectsJson() ||
+            $request->headers->get('Accept') !== '*/*'
         ) {
             $request->headers->set('Accept', 'application/json');
         }

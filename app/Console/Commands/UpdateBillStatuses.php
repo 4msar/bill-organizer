@@ -45,7 +45,7 @@ final class UpdateBillStatuses extends Command
 
         if (! empty($billIds)) {
             $query->whereIn('id', $billIds);
-            $this->info('Filtering by bill IDs: ' . implode(', ', $billIds));
+            $this->info('Filtering by bill IDs: '.implode(', ', $billIds));
         }
 
         $bills = $query->get();
@@ -69,7 +69,7 @@ final class UpdateBillStatuses extends Command
                     $this->line("  Current: {$currentDbStatus} → Calculated: {$calculatedStatus}");
 
                     if ($bill->is_recurring) {
-                        $this->line("  Recurring: " . $bill->recurrence_period->value);
+                        $this->line('  Recurring: '.$bill->recurrence_period->value);
                         $this->line("  Due Date: {$bill->due_date->format('Y-m-d')}");
                     }
                 }

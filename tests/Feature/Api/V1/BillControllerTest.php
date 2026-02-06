@@ -2,16 +2,13 @@
 
 use App\Models\Bill;
 use App\Models\Category;
+use App\Models\Team;
 use App\Models\User;
 
 beforeEach(function () {
     $this->user = User::factory()->withTeam()->create();
     $this->user->refresh();
-    $this->team = $this->user->teams()->first();
-    if ($this->team) {
-        $this->user->switchTeam($this->team);
-        $this->user->refresh();
-    }
+    $this->team = Team::withoutGlobalScopes()->find($this->user->active_team_id);
     $this->token = $this->user->createToken('test')->plainTextToken;
 });
 
@@ -45,12 +42,14 @@ test('can filter bills by status', function () {
         'user_id' => $this->user->id,
         'team_id' => $this->team->id,
         'status' => 'paid',
+        'is_recurring' => false,
     ]);
 
     Bill::factory()->create([
         'user_id' => $this->user->id,
         'team_id' => $this->team->id,
         'status' => 'unpaid',
+        'is_recurring' => false,
     ]);
 
     $response = $this->withToken($this->token)

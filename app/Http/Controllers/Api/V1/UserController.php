@@ -24,12 +24,12 @@ final class UserController extends Controller
                 if (str_contains($search, ':')) {
                     [$column, $value] = explode(':', $search);
                     if ($column && $value && in_fillable($column, User::class)) {
-                        return $q->where($column, 'like', '%' . $value . '%');
+                        return $q->where($column, 'like', '%'.$value.'%');
                     }
                 }
 
-                $q->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('email', 'like', '%' . $search . '%');
+                $q->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('email', 'like', '%'.$search.'%');
             })
             ->when($request->active_team_id, function ($q, $teamId) {
                 $q->where('active_team_id', $teamId);
@@ -88,7 +88,7 @@ final class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['sometimes', 'string', 'max:255'],
-            'email' => ['sometimes', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'email' => ['sometimes', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
             'password' => ['sometimes', 'string', 'min:8'],
             'active_team_id' => ['sometimes', 'integer', 'exists:teams,id'],
         ]);

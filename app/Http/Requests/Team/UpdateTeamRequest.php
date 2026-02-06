@@ -25,7 +25,7 @@ final class UpdateTeamRequest extends FormRequest
 
         return [
             'name' => ['sometimes', 'string', 'max:100'],
-            'slug' => ['sometimes', 'string', 'max:100', 'alpha_dash', 'unique:teams,slug,' . $team?->id],
+            'slug' => ['sometimes', 'string', 'max:100', 'alpha_dash', 'unique:teams,slug,'.$team?->id],
             'description' => ['nullable', 'string', 'max:255'],
             'icon' => ['nullable', 'image', 'max:512'],
             'currency' => ['sometimes', 'string'],

@@ -2,16 +2,13 @@
 
 use App\Models\Bill;
 use App\Models\Category;
+use App\Models\Team;
 use App\Models\User;
 
 beforeEach(function () {
     $this->user = User::factory()->withTeam()->create();
     $this->user->refresh();
-    $this->team = $this->user->teams()->first();
-    if ($this->team) {
-        $this->user->switchTeam($this->team);
-        $this->user->refresh();
-    }
+    $this->team = Team::withoutGlobalScopes()->find($this->user->active_team_id);
     $this->token = $this->user->createToken('test')->plainTextToken;
 });
 
@@ -282,11 +279,11 @@ test('cannot access categories without team', function () {
 
 test('categories are team scoped', function () {
     $otherUser = User::factory()->withTeam()->create();
-    $otherUser->switchTeam($otherUser->teams->first());
+    $otherUserTeam = Team::withoutGlobalScopes()->find($otherUser->active_team_id);
 
     Category::factory()->create([
         'user_id' => $otherUser->id,
-        'team_id' => $otherUser->activeTeam->id,
+        'team_id' => $otherUserTeam->id,
         'name' => 'Other Team Category',
     ]);
 

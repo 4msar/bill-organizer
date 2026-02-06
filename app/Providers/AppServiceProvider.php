@@ -49,6 +49,7 @@ final class AppServiceProvider extends ServiceProvider
             if ($period instanceof BackedEnum) {
                 $period = $period->value;
             }
+
             return match ($period) {
                 'weekly' => $this->endOfWeek(),
                 'monthly' => $this->endOfMonth(),

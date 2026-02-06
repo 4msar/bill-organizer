@@ -5,13 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class ImpersonateController extends Controller
+final class ImpersonateController extends Controller
 {
     /**
      * Take impersonation of the given user.
-     * 
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function take(Request $request, User $user)
@@ -30,16 +28,15 @@ class ImpersonateController extends Controller
         $redirectTo = config('laravel-impersonate.take_redirect_to', '/');
 
         if ($redirectTo === 'back') {
-            return redirect()->back()->with('success', 'You are now impersonating ' . $user->name . '.');
+            return redirect()->back()->with('success', 'You are now impersonating '.$user->name.'.');
         }
 
-        return redirect($redirectTo)->with('success', 'You are now impersonating ' . $user->name . '.');
+        return redirect($redirectTo)->with('success', 'You are now impersonating '.$user->name.'.');
     }
 
     /**
      * Leave impersonation.
-     * 
-     * @param  \Illuminate\Http\Request  $request
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function leave(Request $request)
