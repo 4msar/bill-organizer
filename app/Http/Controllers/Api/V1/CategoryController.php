@@ -19,7 +19,7 @@ final class CategoryController extends Controller
     /**
      * Display a listing of the categories.
      */
-    public function index(Request $request)
+    public function index()
     {
         $categories = $this->categoryService->getCategory();
 

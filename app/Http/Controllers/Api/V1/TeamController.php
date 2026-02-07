@@ -14,12 +14,16 @@ use Illuminate\Http\Request;
 
 final class TeamController extends Controller
 {
+    function __construct(
+        protected TeamService $teamService
+    ) {}
+
     /**
      * Display a listing of the teams.
      */
-    public function index(Request $request, TeamService $teamService)
+    public function index(Request $request)
     {
-        $teams = $teamService->getTeams($request);
+        $teams = $this->teamService->getTeams($request);
 
         return TeamResource::collection($teams);
     }
@@ -27,9 +31,9 @@ final class TeamController extends Controller
     /**
      * Store a newly created team.
      */
-    public function store(StoreTeamRequest $request, TeamService $teamService)
+    public function store(StoreTeamRequest $request)
     {
-        $team = $teamService->createTeam($request->user(), $request->validated());
+        $team = $this->teamService->createTeam($request->user(), $request->validated());
 
         return response()->json([
             'success' => true,
@@ -52,9 +56,9 @@ final class TeamController extends Controller
     /**
      * Update the specified team.
      */
-    public function update(UpdateTeamRequest $request, Team $team, TeamService $teamService)
+    public function update(UpdateTeamRequest $request, Team $team)
     {
-        $teamService->updateTeam($team, $request->validated());
+        $this->teamService->updateTeam($team, $request->validated());
 
         return response()->json([
             'success' => true,
@@ -66,9 +70,9 @@ final class TeamController extends Controller
     /**
      * Remove the specified team.
      */
-    public function destroy(Team $team, TeamService $teamService)
+    public function destroy(Team $team)
     {
-        $teamService->deleteTeam($team);
+        $this->teamService->deleteTeam($team);
 
         return response()->json([
             'success' => true,
@@ -79,7 +83,7 @@ final class TeamController extends Controller
     /**
      * Add a member to the team.
      */
-    public function addMember(AddTeamMemberRequest $request, Team $team, TeamService $teamService)
+    public function addMember(AddTeamMemberRequest $request, Team $team)
     {
         $email = $request->validated('email');
         $userId = $request->validated('user_id');
@@ -90,7 +94,14 @@ final class TeamController extends Controller
             $email = User::find($userId)->email;
         }
 
-        $teamService->inviteMember($team, $user, $email);
+        if ($this->teamService->isMember($team, $email)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are already a member of this team',
+            ], 422);
+        }
+
+        $this->teamService->inviteMember($team, $user, $email);
 
         return response()->json([
             'success' => true,
