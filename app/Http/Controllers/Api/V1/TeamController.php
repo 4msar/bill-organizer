@@ -113,7 +113,7 @@ final class TeamController extends Controller
     /**
      * Remove a member from the team.
      */
-    public function removeMember(Request $request, Team $team, User $user, TeamService $teamService)
+    public function removeMember(Request $request, Team $team, User $user)
     {
         // Check if the current user is the team owner
         if ($request->user()->id !== $team->user_id) {
@@ -124,7 +124,7 @@ final class TeamController extends Controller
         }
 
         try {
-            $teamService->removeMember($team, $user);
+            $this->teamService->removeMember($team, $user);
 
             return response()->json([
                 'success' => true,
