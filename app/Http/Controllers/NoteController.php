@@ -7,9 +7,14 @@ use App\Http\Requests\Note\UpdateNoteRequest;
 use App\Models\Bill;
 use App\Models\Note;
 use App\Models\Scopes\TeamScope;
+use App\Services\NoteService;
 
 final class NoteController extends Controller
 {
+    public function __construct(
+        private readonly NoteService $noteService,
+    ) {}
+
     /**
      * Display a listing of the resource.
      *
@@ -39,9 +44,9 @@ final class NoteController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreNoteRequest $request, \App\Actions\Notes\CreateNoteAction $createAction)
+    public function store(StoreNoteRequest $request)
     {
-        $note = $createAction->execute(
+        $note = $this->noteService->createNote(
             $request->validated(),
             $request->user()->id,
             $request->user()->active_team_id
@@ -56,9 +61,9 @@ final class NoteController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateNoteRequest $request, Note $note, \App\Actions\Notes\UpdateNoteAction $updateAction)
+    public function update(UpdateNoteRequest $request, Note $note)
     {
-        $updateAction->execute($note, $request->validated(), $request->user()->id);
+        $this->noteService->updateNote($note, $request->validated(), $request->user()->id);
 
         return redirect()->route('notes.index')->with('success', 'Note updated successfully.');
     }
@@ -66,9 +71,9 @@ final class NoteController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Note $note, \App\Actions\Notes\DeleteNoteAction $deleteAction)
+    public function destroy(Note $note)
     {
-        $deleteAction->execute($note);
+        $this->noteService->deleteNote($note);
 
         return redirect()->route('notes.index')->with('success', 'Note deleted successfully.');
     }

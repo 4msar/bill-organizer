@@ -5,12 +5,17 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Models\Category;
+use App\Services\CategoryService;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class CategoryController extends Controller
 {
+    public function __construct(
+        private readonly CategoryService $categoryService,
+    ) {}
+
     /**
      * Display a listing of the categories.
      */
@@ -40,9 +45,9 @@ final class CategoryController extends Controller
     /**
      * Store a newly created category in storage.
      */
-    public function store(StoreCategoryRequest $request, \App\Actions\Categories\CreateCategoryAction $createAction)
+    public function store(StoreCategoryRequest $request)
     {
-        $createAction->execute($request->validated());
+        $this->categoryService->createCategory($request->validated());
 
         return Redirect::route('categories.index')->with('success', 'Category created successfully.');
     }
@@ -50,9 +55,9 @@ final class CategoryController extends Controller
     /**
      * Update the specified category in storage.
      */
-    public function update(UpdateCategoryRequest $request, Category $category, \App\Actions\Categories\UpdateCategoryAction $updateAction)
+    public function update(UpdateCategoryRequest $request, Category $category)
     {
-        $updateAction->execute($category, $request->validated());
+        $this->categoryService->updateCategory($category, $request->validated());
 
         return Redirect::route('categories.index')->with('success', 'Category updated successfully.');
     }
@@ -60,10 +65,10 @@ final class CategoryController extends Controller
     /**
      * Remove the specified category from storage.
      */
-    public function destroy(Category $category, \App\Actions\Categories\DeleteCategoryAction $deleteAction)
+    public function destroy(Category $category)
     {
         try {
-            $deleteAction->execute($category);
+            $this->categoryService->deleteCategory($category);
 
             return Redirect::route('categories.index')->with('success', 'Category deleted successfully.');
         } catch (\InvalidArgumentException $e) {
