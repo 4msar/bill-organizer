@@ -17,39 +17,9 @@ final class TeamController extends Controller
     /**
      * Display a listing of the teams.
      */
-    public function index(Request $request)
+    public function index(Request $request, TeamService $teamService)
     {
-        $query = Team::with(['owner', 'users'])
-            ->when($request->search, function ($q, $search) {
-                if (str_contains($search, ':')) {
-                    [$column, $value] = explode(':', $search);
-                    if ($column && $value && in_fillable($column, Team::class)) {
-                        return $q->where($column, 'like', '%' . $value . '%');
-                    }
-                }
-
-                $q->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('description', 'like', '%' . $search . '%')
-                    ->orWhere('slug', 'like', '%' . $search . '%');
-            })
-            ->when($request->status, function ($q, $status) {
-                $q->where('status', $status);
-            })
-            ->when($request->user_id, function ($q, $userId) {
-                $q->where('user_id', $userId);
-            });
-
-        // Sorting
-        $sortBy = $request->input('sort_by', 'name');
-        $sortDirection = $request->input('sort_direction', 'asc');
-
-        if (in_fillable($sortBy, Team::class)) {
-            $query->orderBy($sortBy, $sortDirection === 'desc' ? 'desc' : 'asc');
-        }
-
-        // Pagination
-        $perPage = min($request->input('per_page', 15), 100);
-        $teams = $query->paginate($perPage);
+        $teams = $teamService->getTeams($request);
 
         return TeamResource::collection($teams);
     }
@@ -111,19 +81,16 @@ final class TeamController extends Controller
      */
     public function addMember(AddTeamMemberRequest $request, Team $team, TeamService $teamService)
     {
-        $validated = $request->validated();
+        $email = $request->validated('email');
+        $userId = $request->validated('user_id');
+        $user = $request->user();
+        $team = $user->activeTeam;
 
-        $user = User::findOrFail($validated['user_id'] ?? $validated['email']);
-
-        // Check if user is already a member
-        if ($team->users()->where('users.id', $user->id)->exists()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User is already a member of this team',
-            ], 422);
+        if ($userId ?? false) {
+            $email = User::find($userId)->email;
         }
 
-        $teamService->inviteMember($team, $request->user(), $user->email);
+        $teamService->inviteMember($team, $user, $email);
 
         return response()->json([
             'success' => true,
