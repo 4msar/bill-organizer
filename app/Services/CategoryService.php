@@ -10,15 +10,21 @@ final class CategoryService
 {
     function getCategory(): Collection
     {
-        $categories = Category::withCount([
-            'bills as total_bills_count',
-            'bills as unpaid_bills_count' => function ($query) {
-                $query->where('status', 'unpaid');
-            },
-        ])->withSum('bills as total_amount', 'amount')
+        $categories = Category::query()
+            ->withCount([
+                'bills as total_bills_count',
+                'bills as unpaid_bills_count' => function ($query) {
+                    $query->where('status', 'unpaid');
+                },
+            ])
+            ->withSum('bills as total_amount', 'amount')
             ->withSum(['bills as unpaid_amount' => function ($query) {
                 $query->where('status', 'unpaid');
             }], 'amount')
+            ->when(request('search'), function ($q, $search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%');
+            })
             ->latest()
             ->get();
 

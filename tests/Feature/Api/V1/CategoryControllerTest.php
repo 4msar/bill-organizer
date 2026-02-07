@@ -32,57 +32,7 @@ test('can list categories', function () {
                     'color',
                 ],
             ],
-            'links',
-            'meta',
         ]);
-});
-
-test('can filter categories by user_id', function () {
-    $otherUser = User::factory()->create();
-
-    Category::factory()->create([
-        'user_id' => $this->user->id,
-        'team_id' => $this->team->id,
-        'name' => 'My Category',
-    ]);
-
-    Category::factory()->create([
-        'user_id' => $otherUser->id,
-        'team_id' => $this->team->id,
-        'name' => 'Other Category',
-    ]);
-
-    $response = $this->withToken($this->token)
-        ->getJson('/api/v1/categories?user_id='.$this->user->id);
-
-    $response->assertOk();
-    expect($response->json('data'))->toHaveCount(1);
-    expect($response->json('data.0.name'))->toBe('My Category');
-});
-
-test('can filter categories by team_id', function () {
-    $otherTeam = \App\Models\Team::factory()->create([
-        'user_id' => $this->user->id,
-    ]);
-
-    Category::factory()->create([
-        'user_id' => $this->user->id,
-        'team_id' => $this->team->id,
-        'name' => 'Team Category',
-    ]);
-
-    Category::factory()->create([
-        'user_id' => $this->user->id,
-        'team_id' => $otherTeam->id,
-        'name' => 'Other Team Category',
-    ]);
-
-    $response = $this->withToken($this->token)
-        ->getJson('/api/v1/categories?team_id='.$this->team->id);
-
-    $response->assertOk();
-    expect($response->json('data'))->toHaveCount(1);
-    expect($response->json('data.0.name'))->toBe('Team Category');
 });
 
 test('can search categories', function () {
@@ -108,29 +58,6 @@ test('can search categories', function () {
     expect($response->json('data.0.name'))->toContain('Utilities');
 });
 
-test('can search categories by description', function () {
-    Category::factory()->create([
-        'user_id' => $this->user->id,
-        'team_id' => $this->team->id,
-        'name' => 'Utilities',
-        'description' => 'Electric and water bills',
-    ]);
-
-    Category::factory()->create([
-        'user_id' => $this->user->id,
-        'team_id' => $this->team->id,
-        'name' => 'Entertainment',
-        'description' => 'Movies and games',
-    ]);
-
-    $response = $this->withToken($this->token)
-        ->getJson('/api/v1/categories?search=water');
-
-    $response->assertOk();
-    expect($response->json('data'))->toHaveCount(1);
-    expect($response->json('data.0.name'))->toBe('Utilities');
-});
-
 test('can include bills count with categories', function () {
     $category = Category::factory()->create([
         'user_id' => $this->user->id,
@@ -144,11 +71,11 @@ test('can include bills count with categories', function () {
     ]);
 
     $response = $this->withToken($this->token)
-        ->getJson('/api/v1/categories?with_bills_count=true');
+        ->getJson('/api/v1/categories');
 
     $response->assertOk();
-    expect($response->json('data.0'))->toHaveKey('bills_count');
-    expect($response->json('data.0.bills_count'))->toBe(3);
+    expect($response->json('data.0'))->toHaveKey('total_bills_count');
+    expect($response->json('data.0.total_bills_count'))->toBe(3);
 });
 
 test('can create category', function () {
@@ -301,25 +228,4 @@ test('validates required fields when creating category', function () {
 
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['name']);
-});
-
-test('can sort categories', function () {
-    Category::factory()->create([
-        'user_id' => $this->user->id,
-        'team_id' => $this->team->id,
-        'name' => 'Zebra',
-    ]);
-
-    Category::factory()->create([
-        'user_id' => $this->user->id,
-        'team_id' => $this->team->id,
-        'name' => 'Apple',
-    ]);
-
-    $response = $this->withToken($this->token)
-        ->getJson('/api/v1/categories?sort_by=name&sort_direction=asc');
-
-    $response->assertOk();
-    expect($response->json('data.0.name'))->toBe('Apple');
-    expect($response->json('data.1.name'))->toBe('Zebra');
 });

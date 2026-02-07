@@ -162,5 +162,11 @@ final class TeamService
         return $team;
     }
 
-    function getTeamMembers() {}
+    /*
+    * Check if a user is a member of the team
+    */
+    function isMember(Team $team, string $email): bool
+    {
+        return $team->users()->where('users.email', $email)->exists();
+    }
 }
