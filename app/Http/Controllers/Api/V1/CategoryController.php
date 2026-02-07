@@ -7,60 +7,21 @@ use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Http\Resources\Api\V1\CategoryResource;
 use App\Models\Category;
+use App\Services\CategoryService;
 use Illuminate\Http\Request;
 
 final class CategoryController extends Controller
 {
+    public function __construct(
+        private readonly CategoryService $categoryService,
+    ) {}
+
     /**
      * Display a listing of the categories.
      */
     public function index(Request $request)
     {
-        $query = Category::with(['user', 'team'])
-            ->when($request->search, function ($q, $search) {
-                if (str_contains($search, ':')) {
-                    [$column, $value] = explode(':', $search);
-                    if ($column && $value && in_fillable($column, Category::class)) {
-                        return $q->where($column, 'like', '%' . $value . '%');
-                    }
-                }
-
-                $q->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('description', 'like', '%' . $search . '%');
-            })
-            ->when($request->user_id, function ($q, $userId) {
-                $q->where('user_id', $userId);
-            })
-            ->when($request->team_id, function ($q, $teamId) {
-                $q->where('team_id', $teamId);
-            })
-            ->when($request->boolean('with_bills_count'), function ($q) {
-                $q->withCount('bills');
-            })
-            ->when($request->boolean('with_detailed_counts'), function ($q) {
-                $q->withCount([
-                    'bills as total_bills_count',
-                    'bills as unpaid_bills_count' => function ($query) {
-                        $query->where('status', 'unpaid');
-                    },
-                ])
-                    ->withSum('bills as total_amount', 'amount')
-                    ->withSum(['bills as unpaid_amount' => function ($query) {
-                        $query->where('status', 'unpaid');
-                    }], 'amount');
-            });
-
-        // Sorting
-        $sortBy = $request->input('sort_by', 'name');
-        $sortDirection = $request->input('sort_direction', 'asc');
-
-        if (in_fillable($sortBy, Category::class)) {
-            $query->orderBy($sortBy, $sortDirection === 'desc' ? 'desc' : 'asc');
-        }
-
-        // Pagination
-        $perPage = min($request->input('per_page', 15), 100);
-        $categories = $query->paginate($perPage);
+        $categories = $this->categoryService->getCategory();
 
         return CategoryResource::collection($categories);
     }
@@ -70,12 +31,9 @@ final class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        $validated = $request->validated();
-
-        $validated['user_id'] = $request->user()->id;
-        $validated['team_id'] = $request->user()->active_team_id;
-
-        $category = Category::create($validated);
+        $category = $this->categoryService->createCategory(
+            $request->validated()
+        );
 
         return response()->json([
             'success' => true,
@@ -91,7 +49,9 @@ final class CategoryController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => new CategoryResource($category->load(['user', 'team', 'bills'])),
+            'data' => new CategoryResource(
+                $category->load(['user', 'team', 'bills'])
+            ),
         ]);
     }
 
@@ -100,14 +60,17 @@ final class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        $validated = $request->validated();
-
-        $category->update($validated);
+        $category = $this->categoryService->updateCategory(
+            $category,
+            $request->validated()
+        );
 
         return response()->json([
             'success' => true,
             'message' => 'Category updated successfully',
-            'data' => new CategoryResource($category->fresh()->load(['user', 'team'])),
+            'data' => new CategoryResource(
+                $category->load(['user', 'team'])
+            ),
         ]);
     }
 
@@ -116,21 +79,18 @@ final class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        // Check if the category has any bills
-        $billsCount = $category->bills()->count();
+        try {
+            $this->categoryService->deleteCategory($category);
 
-        if ($billsCount > 0) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Category deleted successfully',
+            ]);
+        } catch (\Throwable $th) {
             return response()->json([
                 'success' => false,
-                'message' => "Cannot delete category - it has {$billsCount} bill(s) associated with it",
+                'message' => $th->getMessage(),
             ], 422);
         }
-
-        $category->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Category deleted successfully',
-        ]);
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -17,7 +18,7 @@ final class TeamService
     /**
      * Get teams with filtering, sorting, and pagination
      */
-    public function getTeams(Request $request): LengthAwarePaginator
+    public function getTeams(Request $request): LengthAwarePaginator|Collection
     {
         $query = Team::with(['owner', 'users'])
             ->when($request->search, function ($q, $search) {
@@ -49,6 +50,10 @@ final class TeamService
 
         // Pagination
         $perPage = min($request->input('per_page', 15), 100);
+
+        if ($request->has('all') && $request->boolean('all')) {
+            return $query->get();
+        }
 
         return $query->paginate($perPage);
     }
@@ -156,4 +161,6 @@ final class TeamService
 
         return $team;
     }
+
+    function getTeamMembers() {}
 }

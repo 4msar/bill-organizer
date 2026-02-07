@@ -2,12 +2,11 @@
 
 namespace App\Actions\Bills;
 
-use App\Contracts\Action;
 use App\Enums\RecurrencePeriod;
 use App\Models\Bill;
 use Carbon\Carbon;
 
-final class CalculateNextDueDateAction implements Action
+final class CalculateNextDueDateAction
 {
     /**
      * Calculate next due date based on recurrence period
@@ -15,11 +14,8 @@ final class CalculateNextDueDateAction implements Action
      * @param  Bill  $bill
      * @param  string|null  $dueDate
      */
-    public function execute(mixed ...$params): ?string
+    public function execute(Bill $bill, ?string $dueDate = null): ?string
     {
-        $bill = $params[0];
-        $dueDate = $params[1] ?? null;
-
         if (! $bill->is_recurring || ! $bill->recurrence_period) {
             return null;
         }
