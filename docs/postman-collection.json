@@ -63,7 +63,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"device_name\": \"postman\"\n}"
+                            "raw": "{\"email\": \"user@example.com\",\"password\": \"password123\",\"device_name\": \"postman\"}"
                         },
                         "url": {
                             "raw": "{{base_url}}/auth/login",
@@ -96,7 +96,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\"\n}"
+                            "raw": "{\"name\": \"John Doe\",\"email\": \"newuser@example.com\",\"password\": \"password123\",\"password_confirmation\": \"password123\"}"
                         },
                         "url": {
                             "raw": "{{base_url}}/auth/register",
@@ -148,7 +148,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Updated Name\"\n}"
+                            "raw": "{\"name\": \"Updated Name\"}"
                         },
                         "url": {
                             "raw": "{{base_url}}/auth/user",
@@ -236,7 +236,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"title\": \"Netflix Subscription\",\n  \"amount\": 15.99,\n  \"due_date\": \"2026-03-01\",\n  \"description\": \"Monthly streaming service\",\n  \"is_recurring\": true,\n  \"recurrence_period\": \"monthly\",\n  \"tags\": [\"entertainment\", \"subscription\"]\n}"
+                            "raw": "{\"title\": \"Netflix Subscription\",\"amount\": 15.99,\"due_date\": \"2026-03-01\",\"description\": \"Monthly streaming service\",\"is_recurring\": true,\"recurrence_period\": \"monthly\",\"tags\": [\"entertainment\", \"subscription\"]}"
                         },
                         "url": {
                             "raw": "{{base_url}}/bills",
@@ -287,7 +287,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"title\": \"Netflix Premium\",\n  \"amount\": 19.99\n}"
+                            "raw": "{\"title\": \"Netflix Premium\",\"amount\": 19.99}"
                         },
                         "url": {
                             "raw": "{{base_url}}/bills/1",
@@ -345,6 +345,35 @@
                             ]
                         }
                     }
+                },
+                {
+                    "name": "Get Upcoming Bills",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/bills/1/upcoming?days=7",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "bills",
+                                "1",
+                                "upcoming"
+                            ],
+                            "query": [
+                                {
+                                    "key": "days",
+                                    "value": "7"
+                                }
+                            ]
+                        }
+                    }
                 }
             ]
         },
@@ -388,7 +417,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Entertainment\",\n  \"description\": \"Streaming and entertainment services\",\n  \"icon\": \"🎬\",\n  \"color\": \"#FF5733\"\n}"
+                            "raw": "{\"name\": \"Entertainment\",\"description\": \"Streaming and entertainment services\",\"icon\": \"🎬\",\"color\": \"#FF5733\"}"
                         },
                         "url": {
                             "raw": "{{base_url}}/categories",
@@ -397,6 +426,80 @@
                             ],
                             "path": [
                                 "categories"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Category",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/categories/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "categories",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Category",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\": \"Entertainment Plus\",\"color\": \"#FF6B35\"}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/categories/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "categories",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Category",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/categories/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "categories",
+                                "1"
                             ]
                         }
                     }
@@ -443,7 +546,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"bill_id\": 1,\n  \"amount\": 15.99,\n  \"payment_date\": \"2026-02-01\",\n  \"payment_method\": \"credit_card\",\n  \"notes\": \"Paid via auto-billing\"\n}"
+                            "raw": "{\"bill_id\": 1,\"amount\": 15.99,\"payment_date\": \"2026-02-01\",\"payment_method\": \"credit_card\",\"notes\": \"Paid via auto-billing\"}"
                         },
                         "url": {
                             "raw": "{{base_url}}/transactions",
@@ -452,6 +555,103 @@
                             ],
                             "path": [
                                 "transactions"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Transaction",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/transactions/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "transactions",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Transaction",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"amount\": 16.99,\"notes\": \"Updated payment notes\"}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/transactions/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "transactions",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Transaction",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/transactions/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "transactions",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Transaction Receipt",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/transactions/1/receipt",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "transactions",
+                                "1",
+                                "receipt"
                             ]
                         }
                     }
@@ -498,7 +698,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Family Bills\",\n  \"description\": \"Shared family expenses\",\n  \"currency\": \"USD\",\n  \"currency_symbol\": \"$\"\n}"
+                            "raw": "{\"name\": \"Family Bills\",\"description\": \"Shared family expenses\",\"currency\": \"USD\",\"currency_symbol\": \"$\"}"
                         },
                         "url": {
                             "raw": "{{base_url}}/teams",
@@ -507,6 +707,80 @@
                             ],
                             "path": [
                                 "teams"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Team",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/teams/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "teams",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Team",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\": \"Family Bills Updated\",\"currency\": \"EUR\"}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/teams/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "teams",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Team",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/teams/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "teams",
+                                "1"
                             ]
                         }
                     }
@@ -527,7 +801,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"user_id\": 2\n}"
+                            "raw": "{\"user_id\": 2}"
                         },
                         "url": {
                             "raw": "{{base_url}}/teams/1/members",
@@ -538,6 +812,30 @@
                                 "teams",
                                 "1",
                                 "members"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Remove Team Member",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/teams/1/members/2",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "teams",
+                                "1",
+                                "members",
+                                "2"
                             ]
                         }
                     }
@@ -607,7 +905,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"title\": \"Payment Reminder\",\n  \"content\": \"Remember to update payment method\",\n  \"is_pinned\": false\n}"
+                            "raw": "{\"title\": \"Payment Reminder\",\"content\": \"Remember to update payment method\",\"is_pinned\": false}"
                         },
                         "url": {
                             "raw": "{{base_url}}/notes",
@@ -616,6 +914,134 @@
                             ],
                             "path": [
                                 "notes"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Note",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/notes/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notes",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Note",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"title\": \"Updated Reminder\",\"content\": \"Updated payment note content\",\"is_pinned\": true}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/notes/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notes",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Note",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/notes/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notes",
+                                "1"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Users",
+            "item": [
+                {
+                    "name": "List Users",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/users?per_page=15",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users"
+                            ],
+                            "query": [
+                                {
+                                    "key": "per_page",
+                                    "value": "15"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get User",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/users/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users",
+                                "1"
                             ]
                         }
                     }
