@@ -15,6 +15,10 @@ const sidebarNavItems: NavItem[] = [
         href: '/settings/password',
     },
     {
+        title: 'Sessions',
+        href: '/settings/sessions',
+    },
+    {
         title: 'Application',
         href: '/settings/preferences',
     },

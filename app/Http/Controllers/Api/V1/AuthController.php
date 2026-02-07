@@ -31,7 +31,10 @@ final class AuthController extends Controller
         }
 
         $deviceName = $request->device_name ?? $request->userAgent() ?? 'api-token';
-        $token = $user->createToken($deviceName)->plainTextToken;
+        $token = $user->createToken(
+            name: $deviceName,
+            expiresAt: now()->addMinutes(config('sanctum.expiration'))
+        )->plainTextToken;
 
         return response()->json([
             'success' => true,
@@ -63,7 +66,10 @@ final class AuthController extends Controller
         ]);
 
         $deviceName = $request->device_name ?? $request->userAgent() ?? 'api-token';
-        $token = $user->createToken($deviceName)->plainTextToken;
+        $token = $user->createToken(
+            name: $deviceName,
+            expiresAt: now()->addMinutes(config('sanctum.expiration'))
+        )->plainTextToken;
 
         return response()->json([
             'success' => true,
@@ -122,7 +128,13 @@ final class AuthController extends Controller
             $validated['password'] = Hash::make($validated['password']);
         }
 
-        $user->update($validated);
+        $user->fill($validated);
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
 
         return response()->json([
             'success' => true,

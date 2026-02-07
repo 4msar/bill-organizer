@@ -3,6 +3,7 @@
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\PreferenceController;
 use App\Http\Controllers\Settings\ProfileController;
+use App\Http\Controllers\Settings\SessionController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -10,6 +11,8 @@ Route::middleware('auth')->group(function () {
     Route::redirect('settings', '/settings/profile');
 
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('settings/sessions', [SessionController::class, 'sessions'])->name('profile.sessions');
+    Route::delete('settings/sessions/revoke', [SessionController::class, 'revoke'])->name('profile.sessions.revoke');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('settings/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
