@@ -207,8 +207,9 @@ final class Bill extends Model
             $days = 0;
         }
 
-        return $this->due_date->lte(now()->addDays(intval($days))) &&
-            $this->due_date->gte(now());
+        $targetDate = now()->addDays(intval($days));
+
+        return $this->due_date->gte($targetDate);
     }
 
     /**
@@ -370,11 +371,27 @@ final class Bill extends Model
         }
     }
 
+    /**
+     * Mark the bill as paid.
+     *
+     * @return void
+     */
     public function markAsPaid()
     {
         $this->update([
             'status' => 'paid',
         ]);
+    }
+
+    /**
+     * Accessor for status attribute.
+     * Calculates status dynamically for recurring bills.
+     *
+     * @return string
+     */
+    public function getStatusAttribute()
+    {
+        return $this->calculateStatus();
     }
 
     /**

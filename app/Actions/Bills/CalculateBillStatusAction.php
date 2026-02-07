@@ -15,7 +15,7 @@ final class CalculateBillStatusAction
      */
     public function execute(Bill $bill): string
     {
-        $currentStatus = $bill->getAttributeValue('status') ?? 'unpaid';
+        $currentStatus = $bill->getRawOriginal('status') ?? 'unpaid';
 
         // For non-recurring bills, just return the current status
         if (! $bill->is_recurring || ! $bill->recurrence_period) {
@@ -52,7 +52,10 @@ final class CalculateBillStatusAction
              * If it's yearly and not within 90 days of due date,
              * consider it paid to avoid unnecessary reminders.
              */
-            if ($bill->recurrence_period === RecurrencePeriod::YEARLY && $dueDate->diffInDays($now) > 90) {
+            if (
+                $bill->isYearly() &&
+                $bill->isUpcomingIn(90)
+            ) {
                 return 'paid';
             }
 
