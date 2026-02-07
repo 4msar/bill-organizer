@@ -6,12 +6,53 @@ use App\Enums\Status;
 use App\Mail\TeamInvitation;
 use App\Models\Team;
 use App\Models\User;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 final class TeamService
 {
+    /**
+     * Get teams with filtering, sorting, and pagination
+     */
+    public function getTeams(Request $request): LengthAwarePaginator
+    {
+        $query = Team::with(['owner', 'users'])
+            ->when($request->search, function ($q, $search) {
+                if (str_contains($search, ':')) {
+                    [$column, $value] = explode(':', $search);
+                    if ($column && $value && in_fillable($column, Team::class)) {
+                        return $q->where($column, 'like', '%' . $value . '%');
+                    }
+                }
+
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%')
+                    ->orWhere('slug', 'like', '%' . $search . '%');
+            })
+            ->when($request->status, function ($q, $status) {
+                $q->where('status', $status);
+            })
+            ->when($request->user_id, function ($q, $userId) {
+                $q->where('user_id', $userId);
+            });
+
+        // Sorting
+        $sortBy = $request->input('sort_by', 'name');
+        $sortDirection = $request->input('sort_direction', 'asc');
+
+        if (in_fillable($sortBy, Team::class)) {
+            $query->orderBy($sortBy, $sortDirection === 'desc' ? 'desc' : 'asc');
+        }
+
+        // Pagination
+        $perPage = min($request->input('per_page', 15), 100);
+
+        return $query->paginate($perPage);
+    }
+
     /**
      * Create a new team with file upload
      */
