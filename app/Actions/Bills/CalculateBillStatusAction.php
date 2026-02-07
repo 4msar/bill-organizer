@@ -2,21 +2,19 @@
 
 namespace App\Actions\Bills;
 
-use App\Contracts\Action;
 use App\Enums\RecurrencePeriod;
 use App\Models\Bill;
 use Carbon\Carbon;
 
-final class CalculateBillStatusAction implements Action
+final class CalculateBillStatusAction
 {
     /**
      * Calculate the status based on recurrence period and transactions
      *
      * @param  Bill  $bill
      */
-    public function execute(mixed ...$params): string
+    public function execute(Bill $bill): string
     {
-        $bill = $params[0];
         $currentStatus = $bill->getAttributeValue('status') ?? 'unpaid';
 
         // For non-recurring bills, just return the current status

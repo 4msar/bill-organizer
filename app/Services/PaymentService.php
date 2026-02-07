@@ -77,8 +77,10 @@ final class PaymentService
      *
      * Updates bill status and due date for recurring bills
      */
-    public function handleRecurringBillPayment(Bill $bill, mixed $nextDueDate = null): Bill
-    {
+    public function handleRecurringBillPayment(
+        Bill $bill,
+        mixed $nextDueDate = null
+    ): Bill {
         if (! $bill->is_recurring) {
             $bill->status = 'paid';
             $bill->save();
@@ -103,10 +105,15 @@ final class PaymentService
     /**
      * Upload payment attachment to storage
      */
-    public function uploadPaymentAttachment(mixed $file): ?string
+    public function uploadPaymentAttachment(mixed $file, ?string $existingFile = null): ?string
     {
         if (! $file instanceof UploadedFile) {
             return null;
+        }
+
+        // Delete old attachment if exists
+        if ($existingFile && Storage::exists($existingFile)) {
+            Storage::delete($existingFile);
         }
 
         return $file->storePublicly('attachments');

@@ -24,16 +24,7 @@ final class NoteController extends Controller
      */
     public function index()
     {
-        $notes = Note::when(
-            request('team', 'current') === 'all',
-            function ($query) {
-                $query->withoutGlobalScope(TeamScope::class);
-                $query->with('team');
-            }
-        )
-            ->with('related')
-            ->latest('updated_at')
-            ->get();
+        $notes = $this->noteService->getNotes();
 
         return inertia('Notes/Index', [
             'bills' => Bill::all(['id', 'title']),
@@ -63,7 +54,11 @@ final class NoteController extends Controller
      */
     public function update(UpdateNoteRequest $request, Note $note)
     {
-        $this->noteService->updateNote($note, $request->validated(), $request->user()->id);
+        $this->noteService->updateNote(
+            $note,
+            $request->validated(),
+            $request->user()->id
+        );
 
         return redirect()->route('notes.index')->with('success', 'Note updated successfully.');
     }

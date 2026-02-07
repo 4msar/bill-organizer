@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\RecurrencePeriod;
 use App\Models\Scopes\TeamScope;
 use App\Observers\BillObserver;
+use App\Services\BillingService;
 use App\Traits\HasMetaData;
 use App\Traits\HasTeam;
 use App\Traits\Sluggable;
@@ -164,7 +165,7 @@ final class Bill extends Model
      */
     public function calculateStatus(): string
     {
-        return app(\App\Services\BillingService::class)->calculateBillStatus($this);
+        return app(BillingService::class)->calculateBillStatus($this);
     }
 
     /**
@@ -172,7 +173,7 @@ final class Bill extends Model
      */
     public function calculateNextDueDate($dueDate = null): ?string
     {
-        return app(\App\Services\BillingService::class)->calculateNextDueDate($this, $dueDate);
+        return app(BillingService::class)->calculateNextDueDate($this, $dueDate);
     }
 
     /**

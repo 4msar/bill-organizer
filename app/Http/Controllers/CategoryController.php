@@ -21,17 +21,7 @@ final class CategoryController extends Controller
      */
     public function index(): Response
     {
-        $categories = Category::withCount([
-            'bills as total_bills_count',
-            'bills as unpaid_bills_count' => function ($query) {
-                $query->where('status', 'unpaid');
-            },
-        ])->withSum('bills as total_amount', 'amount')
-            ->withSum(['bills as unpaid_amount' => function ($query) {
-                $query->where('status', 'unpaid');
-            }], 'amount')
-            ->latest()
-            ->get();
+        $categories = $this->categoryService->getCategory();
 
         // Get all available icons for the select dropdown
         $availableIcons = $this->getAvailableIcons();

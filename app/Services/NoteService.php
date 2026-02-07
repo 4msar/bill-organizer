@@ -3,9 +3,28 @@
 namespace App\Services;
 
 use App\Models\Note;
+use App\Models\Scopes\TeamScope;
+use Illuminate\Support\Collection;
 
 final class NoteService
 {
+    /**
+     * Get notes for the current team
+     */
+    public function getNotes(): Collection
+    {
+        return Note::when(
+            request('team', 'current') === 'all',
+            function ($query) {
+                $query->withoutGlobalScope(TeamScope::class);
+                $query->with('team');
+            }
+        )
+            ->with('related')
+            ->latest('updated_at')
+            ->get();
+    }
+
     /**
      * Create a new note
      */

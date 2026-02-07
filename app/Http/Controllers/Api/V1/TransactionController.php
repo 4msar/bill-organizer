@@ -14,12 +14,16 @@ use Illuminate\Support\Facades\Storage;
 
 final class TransactionController extends Controller
 {
+    function __construct(
+        private PaymentService $paymentService
+    ) {}
+
     /**
      * Display a listing of the transactions.
      */
-    public function index(Request $request, PaymentService $paymentService)
+    public function index(Request $request)
     {
-        $transactions = $paymentService->getTransactionsWithFilters($request->all());
+        $transactions = $this->paymentService->getTransactionsWithFilters($request->all());
 
         return TransactionResource::collection($transactions);
     }
@@ -27,11 +31,11 @@ final class TransactionController extends Controller
     /**
      * Store a newly created transaction.
      */
-    public function store(StoreTransactionRequest $request, PaymentService $paymentService)
+    public function store(StoreTransactionRequest $request)
     {
         $bill = Bill::findOrFail($request->validated('bill_id'));
 
-        $transaction = $paymentService->recordPayment(
+        $transaction = $this->paymentService->recordPayment(
             bill: $bill,
             paymentData: $request->validated(),
             updateDueDate: $request->boolean('update_due_date')
@@ -64,12 +68,10 @@ final class TransactionController extends Controller
 
         // Handle file upload if present
         if ($request->hasFile('attachment')) {
-            // Delete old attachment if exists
-            if ($transaction->attachment && Storage::exists($transaction->attachment)) {
-                Storage::delete($transaction->attachment);
-            }
-
-            $validated['attachment'] = $request->file('attachment')->storePublicly('attachments');
+            $validated['attachment'] = $this->paymentService->uploadPaymentAttachment(
+                $request->file('attachment'),
+                $transaction->attachment
+            );
         }
 
         $transaction->update($validated);
@@ -84,9 +86,9 @@ final class TransactionController extends Controller
     /**
      * Remove the specified transaction.
      */
-    public function destroy(Transaction $transaction, PaymentService $paymentService)
+    public function destroy(Transaction $transaction)
     {
-        $paymentService->deletePayment($transaction);
+        $this->paymentService->deletePayment($transaction);
 
         return response()->json([
             'success' => true,
