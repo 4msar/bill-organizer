@@ -2,26 +2,17 @@
 
 namespace App\Services;
 
-use App\Actions\Payments\DeletePaymentAction;
-use App\Actions\Payments\HandleRecurringBillPaymentAction;
-use App\Actions\Payments\RecordPaymentAction;
-use App\Actions\Payments\UploadPaymentAttachmentAction;
 use App\Models\Bill;
 use App\Models\Transaction;
 use App\Queries\Transactions\GetTransactionsQuery;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 final class PaymentService
 {
-    public function __construct(
-        private readonly UploadPaymentAttachmentAction $uploadAttachment,
-        private readonly RecordPaymentAction $recordPayment,
-        private readonly HandleRecurringBillPaymentAction $handleRecurring,
-        private readonly DeletePaymentAction $deletePayment,
-    ) {}
-
     /**
      * Record a new payment for a bill
      */
@@ -34,11 +25,11 @@ final class PaymentService
             // Upload attachment if present
             $attachmentPath = null;
             if (isset($paymentData['attachment'])) {
-                $attachmentPath = $this->uploadAttachment->execute($paymentData['attachment']);
+                $attachmentPath = $this->uploadPaymentAttachment($paymentData['attachment']);
             }
 
             // Create transaction
-            $transaction = $this->recordPayment->execute([
+            $transaction = Transaction::create([
                 'team_id' => active_team_id(),
                 'user_id' => Auth::id(),
                 'bill_id' => $bill->id,
@@ -51,7 +42,7 @@ final class PaymentService
 
             // Handle bill status and recurring logic
             if ($bill->is_recurring && $updateDueDate) {
-                $this->handleRecurring->execute($bill, $paymentData['nextDueDate'] ?? null);
+                $this->handleRecurringBillPayment($bill, $paymentData['nextDueDate'] ?? null);
             } else {
                 $bill->status = 'paid';
                 $bill->save();
@@ -66,7 +57,59 @@ final class PaymentService
      */
     public function deletePayment(Transaction $transaction): void
     {
-        $this->deletePayment->execute($transaction);
+        // Delete attachment if exists
+        if ($transaction->attachment && Storage::exists($transaction->attachment)) {
+            Storage::delete($transaction->attachment);
+        }
+
+        $billId = $transaction->bill_id;
+        $transaction->delete();
+
+        // If this was the only transaction for this bill, set bill back to unpaid
+        $bill = Bill::find($billId);
+        if ($bill && $bill->transactions()->count() === 0) {
+            $bill->update(['status' => 'unpaid']);
+        }
+    }
+
+    /**
+     * Handle recurring bill payment logic
+     *
+     * Updates bill status and due date for recurring bills
+     */
+    public function handleRecurringBillPayment(Bill $bill, mixed $nextDueDate = null): Bill
+    {
+        if (! $bill->is_recurring) {
+            $bill->status = 'paid';
+            $bill->save();
+
+            return $bill;
+        }
+
+        $calculatedNextDueDate = $bill->calculateNextDueDate($nextDueDate);
+
+        if ($calculatedNextDueDate) {
+            $bill->status = 'unpaid';
+            $bill->due_date = $calculatedNextDueDate;
+        } else {
+            $bill->status = 'paid';
+        }
+
+        $bill->save();
+
+        return $bill;
+    }
+
+    /**
+     * Upload payment attachment to storage
+     */
+    public function uploadPaymentAttachment(mixed $file): ?string
+    {
+        if (! $file instanceof UploadedFile) {
+            return null;
+        }
+
+        return $file->storePublicly('attachments');
     }
 
     /**

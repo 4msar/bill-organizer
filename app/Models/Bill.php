@@ -164,7 +164,7 @@ final class Bill extends Model
      */
     public function calculateStatus(): string
     {
-        return (new \App\Actions\Bills\CalculateBillStatusAction)->execute($this);
+        return app(\App\Services\BillingService::class)->calculateBillStatus($this);
     }
 
     /**
@@ -172,7 +172,7 @@ final class Bill extends Model
      */
     public function calculateNextDueDate($dueDate = null): ?string
     {
-        return (new \App\Actions\Bills\CalculateNextDueDateAction)->execute($this, $dueDate);
+        return app(\App\Services\BillingService::class)->calculateNextDueDate($this, $dueDate);
     }
 
     /**
