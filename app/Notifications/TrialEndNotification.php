@@ -39,7 +39,7 @@ final class TrialEndNotification extends Notification
     public function toMail($notifiable)
     {
         $this->bill->load('team');
-        $currency = $this->bill->team->currency_symbol ?? '$';
+        $currency = $this->bill->team?->currency_symbol ?? '$';
         $amount = $this->bill->amount;
 
         return (new MailMessage())
