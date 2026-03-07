@@ -10,6 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { Head, router } from '@inertiajs/vue3';
+import { parseDate } from '@internationalized/date';
+import { format } from 'date-fns';
 import { BarChart3, Calendar as CalendarIcon, CircleDollarSign, CreditCard, DollarSign, FileText, TrendingUp, Wallet } from 'lucide-vue-next';
 import { DateValue } from 'reka-ui';
 import { computed, ref } from 'vue';
@@ -83,33 +85,33 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const startDate = ref<Date>(new Date(props.filters.start_date));
-const endDate = ref<Date>(new Date(props.filters.end_date));
+const startDate = ref<DateValue>(parseDate(format(props.filters.start_date, 'yyyy-MM-dd')));
+const endDate = ref<DateValue>(parseDate(format(props.filters.end_date, 'yyyy-MM-dd')));
 
 const formattedStartDate = computed((): string => {
-    return formatDate(startDate.value);
+    return formatDate(startDate.value.toString());
 });
 
 const formattedEndDate = computed((): string => {
-    return formatDate(endDate.value);
+    return formatDate(endDate.value.toString());
 });
 
 function updateStartDate(date?: DateValue): void {
     const value = date ? date.toString() : new Date().toISOString().split('T')[0];
-    startDate.value = new Date(value);
+    startDate.value = parseDate(value);
 }
 
 function updateEndDate(date?: DateValue): void {
     const value = date ? date.toString() : new Date().toISOString().split('T')[0];
-    endDate.value = new Date(value);
+    endDate.value = parseDate(value);
 }
 
 function applyFilters(): void {
     router.get(
         route('reports.index'),
         {
-            start_date: startDate.value.toISOString().split('T')[0],
-            end_date: endDate.value.toISOString().split('T')[0],
+            start_date: new Date(startDate.value as unknown as string).toISOString().split('T')[0],
+            end_date: new Date(endDate.value as unknown as string).toISOString().split('T')[0],
         },
         {
             preserveState: true,
@@ -150,8 +152,8 @@ function setDateRange(range: 'this_month' | 'last_month' | 'this_year' | 'last_y
             break;
     }
 
-    startDate.value = start;
-    endDate.value = end;
+    startDate.value = parseDate(format(start, 'yyyy-MM-dd'));
+    endDate.value = parseDate(format(end, 'yyyy-MM-dd'));
     applyFilters();
 }
 
@@ -184,7 +186,7 @@ const lifetimePaymentRate = computed((): number => {
                     <CardDescription>Select a date range to view your reports</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div class="flex flex-col gap-4 sm:flex-row sm:items-end">
+                    <div class="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
                         <div class="flex flex-col gap-2">
                             <label class="text-sm font-medium">Start Date</label>
                             <Popover>
@@ -195,7 +197,7 @@ const lifetimePaymentRate = computed((): number => {
                                     </Button>
                                 </PopoverTrigger>
                                 <PopoverContent class="w-auto p-0">
-                                    <Calendar :model-value="startDate" @update:model-value="updateStartDate" />
+                                    <Calendar :model-value="startDate as DateValue" @update:model-value="updateStartDate" />
                                 </PopoverContent>
                             </Popover>
                         </div>
@@ -210,7 +212,7 @@ const lifetimePaymentRate = computed((): number => {
                                     </Button>
                                 </PopoverTrigger>
                                 <PopoverContent class="w-auto p-0">
-                                    <Calendar :model-value="endDate" @update:model-value="updateEndDate" />
+                                    <Calendar :model-value="endDate as DateValue" @update:model-value="updateEndDate" />
                                 </PopoverContent>
                             </Popover>
                         </div>
@@ -268,7 +270,9 @@ const lifetimePaymentRate = computed((): number => {
                                     <DollarSign class="text-muted-foreground h-4 w-4" />
                                 </CardHeader>
                                 <CardContent>
-                                    <div class="text-2xl font-bold">{{ formatCurrency(dateRangeStats.total_bills_amount) }}</div>
+                                    <div class="text-2xl font-bold">
+                                        {{ formatCurrency(dateRangeStats.total_bills_amount, $page.props.team.current.currency) }}
+                                    </div>
                                     <p class="text-muted-foreground text-xs">All bills in period</p>
                                 </CardContent>
                             </Card>
@@ -280,7 +284,7 @@ const lifetimePaymentRate = computed((): number => {
                                 </CardHeader>
                                 <CardContent>
                                     <div class="text-2xl font-bold text-green-600">
-                                        {{ formatCurrency(dateRangeStats.paid_amount) }}
+                                        {{ formatCurrency(dateRangeStats.paid_amount, $page.props.team.current.currency) }}
                                     </div>
                                     <div class="text-muted-foreground flex items-center gap-1 text-xs">
                                         <TrendingUp class="h-3 w-3" />
@@ -296,7 +300,7 @@ const lifetimePaymentRate = computed((): number => {
                                 </CardHeader>
                                 <CardContent>
                                     <div class="text-2xl font-bold text-amber-600">
-                                        {{ formatCurrency(dateRangeStats.unpaid_amount) }}
+                                        {{ formatCurrency(dateRangeStats.unpaid_amount, $page.props.team.current.currency) }}
                                     </div>
                                     <p class="text-muted-foreground text-xs">Outstanding amount</p>
                                 </CardContent>
@@ -329,7 +333,7 @@ const lifetimePaymentRate = computed((): number => {
                                         </TableCell>
                                         <TableCell class="text-right">{{ method.count }}</TableCell>
                                         <TableCell class="text-right font-semibold">
-                                            {{ formatCurrency(method.total_amount) }}
+                                            {{ formatCurrency(method.total_amount, $page.props.team.current.currency) }}
                                         </TableCell>
                                     </TableRow>
                                 </TableBody>
@@ -365,8 +369,12 @@ const lifetimePaymentRate = computed((): number => {
                                         </div>
                                     </div>
                                     <div class="text-right">
-                                        <div class="text-lg font-bold">{{ formatCurrency(category.total_amount) }}</div>
-                                        <div class="text-sm text-green-600">{{ formatCurrency(category.paid_amount) }} paid</div>
+                                        <div class="text-lg font-bold">
+                                            {{ formatCurrency(category.total_amount, $page.props.team.current.currency) }}
+                                        </div>
+                                        <div class="text-sm text-green-600">
+                                            {{ formatCurrency(category.paid_amount, $page.props.team.current.currency) }} paid
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -399,9 +407,11 @@ const lifetimePaymentRate = computed((): number => {
                                         <TableCell class="font-medium">{{ month.month }}</TableCell>
                                         <TableCell class="text-right">{{ month.total_bills }}</TableCell>
                                         <TableCell class="text-right">{{ month.paid_bills }}</TableCell>
-                                        <TableCell class="text-right">{{ formatCurrency(month.bills_amount) }}</TableCell>
+                                        <TableCell class="text-right">{{
+                                            formatCurrency(month.bills_amount, $page.props.team.current.currency)
+                                        }}</TableCell>
                                         <TableCell class="text-right text-green-600">
-                                            {{ formatCurrency(month.paid_amount) }}
+                                            {{ formatCurrency(month.paid_amount, $page.props.team.current.currency) }}
                                         </TableCell>
                                     </TableRow>
                                 </TableBody>
@@ -432,9 +442,11 @@ const lifetimePaymentRate = computed((): number => {
                                         <TableCell class="font-medium">{{ year.year }}</TableCell>
                                         <TableCell class="text-right">{{ year.total_bills }}</TableCell>
                                         <TableCell class="text-right">{{ year.paid_bills }}</TableCell>
-                                        <TableCell class="text-right">{{ formatCurrency(year.bills_amount) }}</TableCell>
+                                        <TableCell class="text-right">{{
+                                            formatCurrency(year.bills_amount, $page.props.team.current.currency)
+                                        }}</TableCell>
                                         <TableCell class="text-right text-green-600">
-                                            {{ formatCurrency(year.paid_amount) }}
+                                            {{ formatCurrency(year.paid_amount, $page.props.team.current.currency) }}
                                         </TableCell>
                                         <TableCell class="text-right">
                                             <Badge variant="outline">
@@ -473,7 +485,9 @@ const lifetimePaymentRate = computed((): number => {
                                     <DollarSign class="text-muted-foreground h-4 w-4" />
                                 </CardHeader>
                                 <CardContent>
-                                    <div class="text-2xl font-bold">{{ formatCurrency(lifetimeStats.total_bills_amount) }}</div>
+                                    <div class="text-2xl font-bold">
+                                        {{ formatCurrency(lifetimeStats.total_bills_amount, $page.props.team.current.currency) }}
+                                    </div>
                                     <p class="text-muted-foreground text-xs">All bills ever created</p>
                                 </CardContent>
                             </Card>
@@ -485,7 +499,7 @@ const lifetimePaymentRate = computed((): number => {
                                 </CardHeader>
                                 <CardContent>
                                     <div class="text-2xl font-bold text-green-600">
-                                        {{ formatCurrency(lifetimeStats.total_paid_amount) }}
+                                        {{ formatCurrency(lifetimeStats.total_paid_amount, $page.props.team.current.currency) }}
                                     </div>
                                     <div class="text-muted-foreground flex items-center gap-1 text-xs">
                                         <TrendingUp class="h-3 w-3" />
@@ -501,7 +515,7 @@ const lifetimePaymentRate = computed((): number => {
                                 </CardHeader>
                                 <CardContent>
                                     <div class="text-2xl font-bold text-amber-600">
-                                        {{ formatCurrency(lifetimeStats.total_unpaid_amount) }}
+                                        {{ formatCurrency(lifetimeStats.total_unpaid_amount, $page.props.team.current.currency) }}
                                     </div>
                                     <p class="text-muted-foreground text-xs">Outstanding amount</p>
                                 </CardContent>
@@ -534,18 +548,20 @@ const lifetimePaymentRate = computed((): number => {
                                 <div class="space-y-2">
                                     <div class="flex justify-between">
                                         <span class="text-muted-foreground text-sm">Total Amount</span>
-                                        <span class="font-semibold">{{ formatCurrency(lifetimeStats.total_bills_amount) }}</span>
+                                        <span class="font-semibold">{{
+                                            formatCurrency(lifetimeStats.total_bills_amount, $page.props.team.current.currency)
+                                        }}</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-muted-foreground text-sm">Total Paid</span>
                                         <span class="font-semibold text-green-600">
-                                            {{ formatCurrency(lifetimeStats.total_paid_amount) }}
+                                            {{ formatCurrency(lifetimeStats.total_paid_amount, $page.props.team.current.currency) }}
                                         </span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-muted-foreground text-sm">Total Unpaid</span>
                                         <span class="font-semibold text-amber-600">
-                                            {{ formatCurrency(lifetimeStats.total_unpaid_amount) }}
+                                            {{ formatCurrency(lifetimeStats.total_unpaid_amount, $page.props.team.current.currency) }}
                                         </span>
                                     </div>
                                 </div>

@@ -2,6 +2,7 @@ import { NotablePivot } from '@/types';
 import { clsx, type ClassValue } from 'clsx';
 import * as LucideIcons from 'lucide-vue-next';
 import { twMerge } from 'tailwind-merge';
+import { capitalize } from 'vue';
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -105,7 +106,8 @@ export const paymentMethods = {
 
 export function getPaymentMethodName(method: string | null): string {
     if (!method) return 'Other';
-    return paymentMethods[method as keyof typeof paymentMethods] || method;
+
+    return paymentMethods[method as keyof typeof paymentMethods] || capitalize(method);
 }
 
 export function simpleMarkdown(text: string): string {

@@ -202,7 +202,7 @@ final class ReportingService
             ->get()
             ->map(function ($item) {
                 return [
-                    'method' => $item->payment_method ?? 'Unknown',
+                    'method' => $item->payment_method_name,
                     'count' => $item->count,
                     'total_amount' => $item->total_amount,
                 ];

@@ -79,7 +79,7 @@ final class Transaction extends Model
     {
         $methods = config('system.payment_methods');
 
-        return $methods[$this->payment_method] ?? null;
+        return $methods[$this->payment_method] ?? ucfirst($this->payment_method);
     }
 
     public function getTnxIdAttribute(): string
@@ -89,6 +89,6 @@ final class Transaction extends Model
         $number .= str_pad($this->team_id, 2, '0', STR_PAD_LEFT);
         $number .= str_pad($this->bill_id, 2, '0', STR_PAD_LEFT);
 
-        return 'TNX-'.$number;
+        return 'TNX-' . $number;
     }
 }

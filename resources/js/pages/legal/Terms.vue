@@ -136,9 +136,7 @@ import { Head, Link } from '@inertiajs/vue3';
 
                     <section>
                         <h2 class="text-foreground mb-3 text-2xl font-semibold">9. Software License</h2>
-                        <p>
-                            Bill Organizer is dual-licensed software. The software is available under the following terms:
-                        </p>
+                        <p>Bill Organizer is dual-licensed software. The software is available under the following terms:</p>
                         <ul class="mt-2 ml-6 list-disc space-y-1">
                             <li><strong>Personal Use:</strong> Free for personal, non-commercial use</li>
                             <li><strong>Commercial Use:</strong> Requires a paid commercial license</li>
