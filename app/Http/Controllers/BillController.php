@@ -25,11 +25,11 @@ final class BillController extends Controller
 
         return inertia('Bills/Index', [
             'bills' => $bills,
-            'total_unpaid' => $currentMonthBills->filter(fn ($item) => ! $item->isPaid())->sum('amount'),
-            'unpaid_count' => $currentMonthBills->filter(fn ($item) => ! $item->isPaid())->count(),
+            'total_unpaid' => $currentMonthBills->filter(fn($item) => ! $item->isPaid())->sum('amount'),
+            'unpaid_count' => $currentMonthBills->filter(fn($item) => ! $item->isPaid())->count(),
             'upcoming_count' => $upcomingCount,
             'paid_count' => $currentMonthBills
-                ->filter(fn ($item) => $item->isPaid())
+                ->filter(fn($item) => $item->isPaid())
                 ->count(),
             'categories' => Category::all(),
         ]);
@@ -160,7 +160,9 @@ final class BillController extends Controller
 
         /** @var Bill $billItem */
         $billItem = Bill::withoutGlobalScopes()
-            ->whereId($bill)
+            ->where(
+                fn($query) => $query->where('id', $bill)->orWhere('slug', $bill)
+            )
             ->whereUserId($user->id)
             ->with('team')
             ->firstOrFail();
