@@ -220,7 +220,7 @@ function resetFilters(): void {
                 <TransactionList :transactions="transactions.data" :showBillLink="true" />
 
                 <!-- Pagination -->
-                <div v-if="hasTransactions && transactions?.meta?.last_page > 1" class="mt-6 flex justify-center">
+                <div v-if="hasTransactions && transactions?.next_page_url" class="mt-6 flex justify-center">
                     <div class="flex items-center space-x-2">
                         <Button
                             variant="outline"
