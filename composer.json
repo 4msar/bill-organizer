@@ -9,7 +9,7 @@
     ],
     "license": "proprietary",
     "require": {
-        "php": "^8.4",
+        "php": "^8.3|^8.4|^8.5",
         "inertiajs/inertia-laravel": "^2.0.3",
         "lab404/laravel-impersonate": "^1.7",
         "laravel/framework": "^12.19.3",
