@@ -7,14 +7,14 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatDate, paymentMethods } from '@/lib/utils';
-import { PaginatedData } from '@/types';
+import { PaginationData } from '@/types';
 import { Bill, Transaction } from '@/types/model';
 import { Head, router } from '@inertiajs/vue3';
 import { CalendarIcon, Filter, RefreshCw } from 'lucide-vue-next';
 import { DateValue } from 'reka-ui';
 import { computed, ref } from 'vue';
 
-type Transactions = PaginatedData<Transaction>;
+type Transactions = PaginationData<Transaction[]>;
 
 interface Filters {
     bill_id?: string | null;
@@ -220,26 +220,24 @@ function resetFilters(): void {
                 <TransactionList :transactions="transactions.data" :showBillLink="true" />
 
                 <!-- Pagination -->
-                <div v-if="hasTransactions && transactions?.next_page_url" class="mt-6 flex justify-center">
-                    <div class="flex items-center space-x-2">
+                <div v-if="hasTransactions && transactions?.next_page_url" class="mt-6 flex items-center justify-between">
+                    <div class="flex flex-1 items-center justify-between space-x-2">
                         <Button
                             variant="outline"
                             size="sm"
-                            :disabled="!transactions.links.prev"
-                            @click="transactions?.links?.prev ? router.get(transactions?.links?.prev) : 0"
+                            :disabled="!transactions.prev_page_url"
+                            @click="transactions?.prev_page_url ? router.get(transactions?.prev_page_url) : 0"
                         >
                             Previous
                         </Button>
 
-                        <span class="text-muted-foreground text-sm">
-                            Page {{ transactions.meta.current_page }} of {{ transactions.meta.last_page }}
-                        </span>
+                        <span class="text-muted-foreground text-sm"> Page {{ transactions.current_page }} of {{ transactions.total }} </span>
 
                         <Button
                             variant="outline"
                             size="sm"
-                            :disabled="!transactions.links.next"
-                            @click="transactions?.links?.next ? router.get(transactions?.links?.next) : 0"
+                            :disabled="!transactions.next_page_url"
+                            @click="transactions?.next_page_url ? router.get(transactions?.next_page_url) : 0"
                         >
                             Next
                         </Button>
