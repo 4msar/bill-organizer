@@ -4,10 +4,9 @@ namespace App\Services;
 
 use App\Actions\Bills\CalculateBillStatusAction;
 use App\Actions\Bills\CalculateNextDueDateAction;
-use App\Enums\RecurrencePeriod;
+use App\Enums\WebhookEvent;
 use App\Models\Bill;
 use App\Queries\Bills\GetBillsQuery;
-use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 final class BillingService
@@ -46,6 +45,12 @@ final class BillingService
     public function markBillAsPaid(Bill $bill): Bill
     {
         $bill->markAsPaid();
+
+        app(WebhookService::class)->dispatch(
+            WebhookEvent::BillingPaid,
+            $bill->team_id,
+            $bill->fresh()->toArray()
+        );
 
         return $bill;
     }

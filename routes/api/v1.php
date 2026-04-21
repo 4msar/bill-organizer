@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\NoteController;
 use App\Http\Controllers\Api\V1\TeamController;
 use App\Http\Controllers\Api\V1\TransactionController;
 use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\Api\V1\WebhookController;
 use Illuminate\Support\Facades\Route;
 
 // Public authentication routes
@@ -51,5 +52,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Notes
         Route::apiResource('notes', NoteController::class);
+
+        // Webhooks
+        Route::get('webhooks/events', [WebhookController::class, 'events'])->name('api.v1.webhooks.events');
+        Route::apiResource('webhooks', WebhookController::class);
+        Route::get('webhooks/{webhook}/deliveries', [WebhookController::class, 'deliveries'])->name('api.v1.webhooks.deliveries');
+        Route::post('webhooks/{webhook}/deliveries/{delivery}/retry', [WebhookController::class, 'retry'])->name('api.v1.webhooks.deliveries.retry');
     });
 });
