@@ -2,7 +2,9 @@
 
 namespace App\Observers;
 
+use App\Enums\WebhookEvent;
 use App\Models\Bill;
+use App\Services\WebhookService;
 use Illuminate\Support\Facades\DB;
 
 final class BillObserver
@@ -12,7 +14,11 @@ final class BillObserver
      */
     public function created(Bill $bill): void
     {
-        //
+        app(WebhookService::class)->dispatch(
+            WebhookEvent::BillingCreated,
+            $bill->team_id,
+            $bill->toArray()
+        );
     }
 
     /**
@@ -20,7 +26,11 @@ final class BillObserver
      */
     public function updated(Bill $bill): void
     {
-        //
+        app(WebhookService::class)->dispatch(
+            WebhookEvent::BillingUpdated,
+            $bill->team_id,
+            $bill->toArray()
+        );
     }
 
     /**
@@ -33,6 +43,12 @@ final class BillObserver
             $bill->notes()->detach();
             $bill->meta()->delete();
         });
+
+        app(WebhookService::class)->dispatch(
+            WebhookEvent::BillingDeleted,
+            $bill->team_id,
+            ['id' => $bill->id, 'title' => $bill->title, 'team_id' => $bill->team_id]
+        );
     }
 
     /**

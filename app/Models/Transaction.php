@@ -3,14 +3,16 @@
 namespace App\Models;
 
 use App\Models\Scopes\TeamScope;
+use App\Observers\TransactionObserver;
 use App\Traits\HasTeam;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 
-#[ScopedBy(TeamScope::class)]
+#[ScopedBy(TeamScope::class), ObservedBy(TransactionObserver::class)]
 final class Transaction extends Model
 {
     use HasFactory;
@@ -89,6 +91,6 @@ final class Transaction extends Model
         $number .= str_pad($this->team_id, 2, '0', STR_PAD_LEFT);
         $number .= str_pad($this->bill_id, 2, '0', STR_PAD_LEFT);
 
-        return 'TNX-' . $number;
+        return 'TNX-'.$number;
     }
 }
