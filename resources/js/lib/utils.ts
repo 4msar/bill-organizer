@@ -60,7 +60,7 @@ export function getIconComponent(iconName: string | null): LucideIcons.LucideIco
 }
 
 export const getLink = (related: NotablePivot) => {
-    return related.type === 'Bill' ? route('bills.show', related.notable_id) : route('transactions.show', related.notable_id);
+    return related.type === 'Bill' ? route('bills.show', related.notable.slug || related.notable_id) : route('transactions.show', related.notable_id);
 };
 
 export function getFileExtension(path: string): string {
