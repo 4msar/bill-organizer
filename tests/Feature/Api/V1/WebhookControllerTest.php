@@ -30,7 +30,7 @@ test('can list webhooks', function () {
         ->assertJsonStructure([
             'success',
             'data' => [
-                '*' => ['id', 'name', 'url', 'events', 'is_active'],
+                '*' => ['id', 'name', 'url', 'method', 'events', 'is_active'],
             ],
             'meta',
         ]);
