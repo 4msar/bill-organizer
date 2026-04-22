@@ -28,6 +28,7 @@ final class WebhookFactory extends Factory
             'user_id' => User::factory(),
             'name' => fake()->words(3, true),
             'url' => fake()->url(),
+            'method' => 'POST',
             'secret' => Str::random(40),
             'events' => [WebhookEvent::BillingCreated->value],
             'is_active' => true,

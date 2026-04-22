@@ -16,6 +16,7 @@ final class WebhookResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'url' => $this->url,
+            'method' => $this->method,
             'events' => $this->events,
             'is_active' => $this->is_active,
             'team_id' => $this->team_id,

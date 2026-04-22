@@ -7,6 +7,7 @@ use App\Http\Requests\Team\StoreTeamRequest;
 use App\Http\Requests\Team\UpdateTeamRequest;
 use App\Models\Team;
 use App\Models\User;
+use App\Models\Webhook;
 use App\Services\TeamService;
 use Illuminate\Http\Request;
 
@@ -24,7 +25,16 @@ final class TeamController extends Controller
             abort(403, 'You are not the owner of this team, only owner can update team.');
         }
 
-        return inertia('Teams/Edit');
+        $webhooks = Webhook::query()
+            ->where('team_id', $user->activeTeam->id)
+            ->latest()
+            ->get();
+
+        return inertia('Teams/Edit', [
+            'webhooks' => $webhooks,
+            'webhookEvents' => WebhookController::availableEvents(),
+            'webhookMethods' => WebhookController::availableMethods(),
+        ]);
     }
 
     /**

@@ -97,3 +97,20 @@ export interface Note extends Model {
     team?: Team;
     user?: User;
 }
+
+export type WebhookMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+
+export interface Webhook extends Model {
+    team_id: number;
+    user_id: number;
+    name: string;
+    url: string;
+    method: WebhookMethod;
+    events: string[];
+    is_active: boolean;
+}
+
+export interface WebhookEvent {
+    value: string;
+    label: string;
+}

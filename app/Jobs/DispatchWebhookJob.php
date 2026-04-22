@@ -66,7 +66,7 @@ final class DispatchWebhookJob implements ShouldQueue
                     'X-Signature' => 'sha256='.$signature,
                     'X-Event' => $this->event->value,
                 ])
-                ->send('POST', $this->webhook->url, ['body' => $body]);
+                ->send($this->webhook->method ?? 'POST', $this->webhook->url, ['body' => $body]);
 
             $delivery->update([
                 'status' => $response->successful() ? 'success' : 'failed',
