@@ -10,6 +10,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -47,6 +48,13 @@ Route::middleware(['auth', 'verified', 'team'])->group(function () {
         Route::delete('member/{user}', 'removeMember')->name('member.remove');
 
         Route::delete('logo/remove', 'removeLogo')->name('logo.remove');
+    });
+
+    // Webhook routes (Inertia)
+    Route::prefix('team/webhooks')->name('webhooks.')->middleware(['auth', 'verified', 'team'])->group(function () {
+        Route::post('/', [WebhookController::class, 'store'])->name('store');
+        Route::put('/{webhook}', [WebhookController::class, 'update'])->name('update');
+        Route::delete('/{webhook}', [WebhookController::class, 'destroy'])->name('destroy');
     });
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');

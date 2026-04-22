@@ -21,6 +21,7 @@ final class UpdateWebhookRequest extends FormRequest
         return [
             'name' => ['sometimes', 'string', 'max:255'],
             'url' => ['sometimes', 'url', 'max:500'],
+            'method' => ['sometimes', 'string', Rule::in(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])],
             'events' => ['sometimes', 'array', 'min:1'],
             'events.*' => ['required_with:events', 'string', Rule::in(WebhookEvent::values())],
             'is_active' => ['sometimes', 'boolean'],

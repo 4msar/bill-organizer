@@ -5,12 +5,20 @@ import HeadingSmall from '@/components/shared/HeadingSmall.vue';
 import DeleteTeam from '@/components/team/DeleteTeam.vue';
 import TeamForm from '@/components/team/TeamForm.vue';
 import TeamUserList from '@/components/team/TeamUserList.vue';
+import WebhookList from '@/components/team/WebhookList.vue';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { SharedData, type BreadcrumbItem } from '@/types';
+import { type Webhook, type WebhookEvent } from '@/types/model';
 
-const { props } = usePage<SharedData>();
+interface Props extends SharedData {
+    webhooks: Webhook[];
+    webhookEvents: WebhookEvent[];
+    webhookMethods: string[];
+}
+
+const { props } = usePage<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -34,6 +42,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <TabsList class="mb-6">
                         <TabsTrigger value="info"> Team information </TabsTrigger>
                         <TabsTrigger value="members"> Team members</TabsTrigger>
+                        <TabsTrigger value="webhooks"> Webhooks</TabsTrigger>
                     </TabsList>
                     <TabsContent value="info">
                         <div class="flex flex-col space-y-6">
@@ -63,6 +72,13 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </TabsContent>
                     <TabsContent value="members">
                         <TeamUserList :team="props.team.current" />
+                    </TabsContent>
+                    <TabsContent value="webhooks">
+                        <WebhookList
+                            :webhooks="props.webhooks"
+                            :events="props.webhookEvents"
+                            :methods="props.webhookMethods"
+                        />
                     </TabsContent>
                 </Tabs>
             </div>

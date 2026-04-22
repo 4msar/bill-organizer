@@ -21,6 +21,7 @@ final class WebhookService
             'user_id' => $data['user_id'] ?? auth()->id(),
             'name' => $data['name'],
             'url' => $data['url'],
+            'method' => $data['method'] ?? 'POST',
             'secret' => $data['secret'] ?? Str::random(40),
             'events' => $data['events'],
             'is_active' => $data['is_active'] ?? true,

@@ -21,6 +21,7 @@ final class StoreWebhookRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'url' => ['required', 'url', 'max:500'],
+            'method' => ['nullable', 'string', Rule::in(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])],
             'events' => ['required', 'array', 'min:1'],
             'events.*' => ['required', 'string', Rule::in(WebhookEvent::values())],
             'is_active' => ['nullable', 'boolean'],

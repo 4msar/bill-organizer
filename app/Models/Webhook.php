@@ -17,6 +17,7 @@ final class Webhook extends Model
         'user_id',
         'name',
         'url',
+        'method',
         'secret',
         'events',
         'is_active',
