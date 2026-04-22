@@ -99,6 +99,19 @@ export interface Note extends Model {
 }
 
 export type WebhookMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+export type WebhookDeliveryStatus = 'pending' | 'delivered' | 'failed';
+
+export interface WebhookDelivery extends Model {
+    webhook_id: number;
+    event: string;
+    event_name?: string; // Computed property for display name of the event
+    payload: Record<string, unknown>;
+    status: WebhookDeliveryStatus;
+    response_status: number | null;
+    response_body: string | null;
+    attempts: number;
+    delivered_at: string | null;
+}
 
 export interface Webhook extends Model {
     team_id: number;
@@ -108,6 +121,7 @@ export interface Webhook extends Model {
     method: WebhookMethod;
     events: string[];
     is_active: boolean;
+    deliveries?: WebhookDelivery[];
 }
 
 export interface WebhookEvent {
