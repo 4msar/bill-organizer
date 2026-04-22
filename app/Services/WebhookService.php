@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\WebhookEvent;
 use App\Jobs\DispatchWebhookJob;
 use App\Models\Webhook;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 final class WebhookService
@@ -18,7 +19,7 @@ final class WebhookService
     {
         return Webhook::create([
             'team_id' => $data['team_id'] ?? active_team_id(),
-            'user_id' => $data['user_id'] ?? auth()->id(),
+            'user_id' => $data['user_id'] ?? Auth::id(),
             'name' => $data['name'],
             'url' => $data['url'],
             'method' => $data['method'] ?? 'POST',
@@ -59,7 +60,7 @@ final class WebhookService
             ->where('team_id', $teamId)
             ->where('is_active', true)
             ->get()
-            ->filter(fn (Webhook $webhook) => $webhook->isSubscribedTo($event))
+            ->filter(fn(Webhook $webhook) => $webhook->isSubscribedTo($event))
             ->each(function (Webhook $webhook) use ($event, $payload) {
                 DispatchWebhookJob::dispatch($webhook, $event, $payload);
             });
