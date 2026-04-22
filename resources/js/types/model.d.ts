@@ -78,12 +78,12 @@ export interface Team extends Model {
     users?: User[];
 }
 
-export type NotablePivot = {
+export type NotablePivot<T = Bill> = {
     notable_id: number;
     notable_type: string;
     note_id: number;
     type: string;
-    notable: Bill;
+    notable: T;
 };
 
 export interface Note extends Model {
