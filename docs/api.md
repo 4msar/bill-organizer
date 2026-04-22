@@ -13,13 +13,20 @@
 - [Teams](#teams)
 - [Notes](#notes)
 - [Users](#users)
+- [Webhooks](#webhooks)
 - [Error Handling](#error-handling)
 
 ---
 
 ## Authentication
 
-All API endpoints (except login and register) require authentication using Bearer tokens.
+All API endpoints (except login and register) require authentication using Bearer tokens via Laravel Sanctum.
+
+### Authentication Levels
+
+- **Public Routes:** `/auth/login`, `/auth/register`
+- **Authenticated Routes:** Require valid Bearer token (user must be logged in)
+- **Team-Scoped Routes:** Require valid Bearer token + active team context (set via `/auth/user` or `/teams/{team}/switch`)
 
 ### Headers
 
@@ -405,15 +412,59 @@ Create a new category.
 
 ### GET /categories/{category}
 
-Get a single category.
+Get a single category by ID.
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "name": "Entertainment",
+    "description": "Streaming and entertainment services",
+    "icon": "🎬",
+    "color": "#FF5733"
+  }
+}
+```
 
 ### PUT /categories/{category}
 
 Update a category.
 
+**Request:**
+```json
+{
+  "name": "Updated Name", // optional
+  "description": "Updated description", // optional
+  "icon": "🎬", // optional
+  "color": "#FF5733" // optional
+}
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "message": "Category updated successfully",
+  "data": {
+    "id": 1,
+    "name": "Updated Name"
+  }
+}
+```
+
 ### DELETE /categories/{category}
 
 Delete a category (only if no bills are associated).
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "message": "Category deleted successfully"
+}
+```
 
 ---
 
@@ -475,17 +526,84 @@ Create a new transaction.
 }
 ```
 
+**Response (201):**
+```json
+{
+  "success": true,
+  "message": "Transaction created successfully",
+  "data": {
+    "id": 1,
+    "tnx_id": "TXN-001",
+    "amount": 15.99,
+    "payment_date": "2026-02-01T00:00:00.000Z",
+    "bill_id": 1
+  }
+}
+```
+
 ### GET /transactions/{transaction}
 
-Get a single transaction.
+Get a single transaction by ID.
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "tnx_id": "TXN-001",
+    "amount": 15.99,
+    "payment_date": "2026-02-01T00:00:00.000Z",
+    "payment_method": "credit_card",
+    "payment_method_name": "Credit Card",
+    "attachment_link": "https://...",
+    "notes": "Paid via auto-billing",
+    "bill": {
+      "id": 1,
+      "title": "Netflix Subscription"
+    }
+  }
+}
+```
 
 ### PUT /transactions/{transaction}
 
 Update a transaction.
 
+**Request:**
+```json
+{
+  "amount": 19.99, // optional
+  "payment_date": "2026-02-01", // optional
+  "payment_method": "credit_card", // optional
+  "notes": "Updated notes" // optional
+}
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "message": "Transaction updated successfully",
+  "data": {
+    "id": 1,
+    "tnx_id": "TXN-001",
+    "amount": 19.99
+  }
+}
+```
+
 ### DELETE /transactions/{transaction}
 
 Delete a transaction.
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "message": "Transaction deleted successfully"
+}
+```
 
 ### GET /transactions/{transaction}/receipt
 
@@ -559,17 +677,90 @@ Create a new team.
 }
 ```
 
+**Response (201):**
+```json
+{
+  "success": true,
+  "message": "Team created successfully",
+  "data": {
+    "id": 1,
+    "name": "Family Bills",
+    "slug": "family-bills",
+    "currency": "USD"
+  }
+}
+```
+
 ### GET /teams/{team}
 
-Get a single team.
+Get a single team by ID or slug.
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "name": "Family Bills",
+    "slug": "family-bills",
+    "description": "Shared family expenses",
+    "currency": "USD",
+    "currency_symbol": "$",
+    "icon_url": "https://...",
+    "owner": {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com"
+    },
+    "members": [
+      {
+        "id": 2,
+        "name": "Jane Doe",
+        "email": "jane@example.com"
+      }
+    ]
+  }
+}
+```
 
 ### PUT /teams/{team}
 
 Update a team.
 
+**Request:**
+```json
+{
+  "name": "Updated Team Name", // optional
+  "description": "Updated description", // optional
+  "currency": "EUR", // optional
+  "currency_symbol": "€" // optional
+}
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "message": "Team updated successfully",
+  "data": {
+    "id": 1,
+    "name": "Updated Team Name",
+    "currency": "EUR"
+  }
+}
+```
+
 ### DELETE /teams/{team}
 
 Delete a team (only owner can delete).
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "message": "Team deleted successfully"
+}
+```
 
 ### POST /teams/{team}/members
 
@@ -582,9 +773,30 @@ Add a member to the team.
 }
 ```
 
+**Response (201):**
+```json
+{
+  "success": true,
+  "message": "Member added successfully",
+  "data": {
+    "id": 2,
+    "name": "Jane Doe",
+    "email": "jane@example.com"
+  }
+}
+```
+
 ### DELETE /teams/{team}/members/{user}
 
 Remove a member from the team.
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "message": "Member removed successfully"
+}
+```
 
 ### POST /teams/{team}/switch
 
@@ -649,13 +861,278 @@ Create a new note.
 
 Get a single note.
 
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "title": "Payment Reminder",
+    "content": "Remember to update payment method",
+    "is_pinned": true,
+    "team_id": null,
+    "created_at": "2026-02-01T00:00:00.000Z"
+  }
+}
+```
+
 ### PUT /notes/{note}
 
 Update a note.
 
+**Request:**
+```json
+{
+  "title": "Updated Title", // optional
+  "content": "Updated content", // optional
+  "is_pinned": true // optional
+}
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "message": "Note updated successfully",
+  "data": {
+    "id": 1,
+    "title": "Updated Title",
+    "content": "Updated content"
+  }
+}
+```
+
 ### DELETE /notes/{note}
 
 Delete a note.
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "message": "Note deleted successfully"
+}
+```
+
+---
+
+## Webhooks
+
+Manage webhooks for real-time event notifications. All webhook operations require an active team context.
+
+### GET /webhooks/events
+
+Get available webhook events that can be subscribed to.
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "name": "bill.created",
+      "description": "Triggered when a new bill is created"
+    },
+    {
+      "name": "bill.updated",
+      "description": "Triggered when a bill is updated"
+    },
+    {
+      "name": "bill.paid",
+      "description": "Triggered when a bill is marked as paid"
+    },
+    {
+      "name": "bill.deleted",
+      "description": "Triggered when a bill is deleted"
+    },
+    {
+      "name": "transaction.created",
+      "description": "Triggered when a new transaction is created"
+    },
+    {
+      "name": "transaction.updated",
+      "description": "Triggered when a transaction is updated"
+    },
+    {
+      "name": "transaction.deleted",
+      "description": "Triggered when a transaction is deleted"
+    }
+  ]
+}
+```
+
+### GET /webhooks
+
+List all webhooks for the active team.
+
+**Query Parameters:**
+- `search` - Search in name/url
+- `status` - Filter by status: `active`, `inactive`, `failed`
+- `event` - Filter by specific event
+- `sort_by` - Column to sort by
+- `sort_direction` - `asc` or `desc`
+- `per_page` - Results per page (max: 100)
+
+**Response (200):**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Bill Notifications",
+      "url": "https://example.com/webhooks/bills",
+      "events": ["bill.created", "bill.paid"],
+      "status": "active",
+      "retry_count": 0,
+      "created_at": "2026-02-01T00:00:00.000Z"
+    }
+  ],
+  "links": { /* ... */ },
+  "meta": { /* ... */ }
+}
+```
+
+### POST /webhooks
+
+Create a new webhook.
+
+**Request:**
+```json
+{
+  "name": "Bill Notifications",
+  "url": "https://example.com/webhooks/bills",
+  "events": ["bill.created", "bill.paid"],
+  "active": true // optional, default: true
+}
+```
+
+**Response (201):**
+```json
+{
+  "success": true,
+  "message": "Webhook created successfully",
+  "data": {
+    "id": 1,
+    "name": "Bill Notifications",
+    "url": "https://example.com/webhooks/bills",
+    "events": ["bill.created", "bill.paid"],
+    "status": "active"
+  }
+}
+```
+
+### GET /webhooks/{webhook}
+
+Get a single webhook by ID.
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "name": "Bill Notifications",
+    "url": "https://example.com/webhooks/bills",
+    "events": ["bill.created", "bill.paid"],
+    "status": "active",
+    "retry_count": 0,
+    "last_triggered_at": "2026-02-05T10:30:00.000Z",
+    "created_at": "2026-02-01T00:00:00.000Z",
+    "updated_at": "2026-02-01T00:00:00.000Z"
+  }
+}
+```
+
+### PUT /webhooks/{webhook}
+
+Update a webhook.
+
+**Request:**
+```json
+{
+  "name": "Updated Webhook Name", // optional
+  "url": "https://example.com/webhooks/updated", // optional
+  "events": ["bill.created", "bill.updated", "bill.paid"], // optional
+  "active": true // optional
+}
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "message": "Webhook updated successfully",
+  "data": {
+    "id": 1,
+    "name": "Updated Webhook Name",
+    "url": "https://example.com/webhooks/updated"
+  }
+}
+```
+
+### DELETE /webhooks/{webhook}
+
+Delete a webhook.
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "message": "Webhook deleted successfully"
+}
+```
+
+### GET /webhooks/{webhook}/deliveries
+
+Get delivery history for a webhook.
+
+**Query Parameters:**
+- `status` - Filter by delivery status: `pending`, `delivered`, `failed`
+- `event` - Filter by specific event
+- `date_from` - Filter from date (YYYY-MM-DD)
+- `date_to` - Filter to date (YYYY-MM-DD)
+- `sort_direction` - `asc` or `desc` (default: `desc`)
+- `per_page` - Results per page (max: 100)
+
+**Response (200):**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "webhook_id": 1,
+      "event": "bill.created",
+      "status": "delivered",
+      "payload": { /* event data */ },
+      "response_status_code": 200,
+      "response_body": "OK",
+      "attempts": 1,
+      "next_retry_at": null,
+      "delivered_at": "2026-02-05T10:30:00.000Z",
+      "created_at": "2026-02-05T10:30:00.000Z"
+    }
+  ],
+  "links": { /* ... */ },
+  "meta": { /* ... */ }
+}
+```
+
+### POST /webhooks/{webhook}/deliveries/{delivery}/retry
+
+Retry a failed webhook delivery.
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "message": "Delivery retry queued successfully",
+  "data": {
+    "id": 1,
+    "status": "pending",
+    "next_retry_at": "2026-02-05T10:35:00.000Z"
+  }
+}
+```
 
 ---
 
@@ -802,7 +1279,7 @@ All list endpoints support pagination using Laravel's standard pagination format
 
 ## Support
 
-For API support, please contact: support@bill-organizer.com
+For API support, please contact: support@bills.msar.me
 
-**Last Updated:** February 6, 2026  
+**Last Updated:** April 22, 2026  
 **API Version:** 1.0

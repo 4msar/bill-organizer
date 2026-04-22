@@ -1047,6 +1047,217 @@
                     }
                 }
             ]
+        },
+        {
+            "name": "Webhooks",
+            "item": [
+                {
+                    "name": "Get Available Events",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/webhooks/events",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "webhooks",
+                                "events"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "List Webhooks",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/webhooks?per_page=15",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "webhooks"
+                            ],
+                            "query": [
+                                {
+                                    "key": "per_page",
+                                    "value": "15"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Webhook",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\": \"Bill Notifications\",\"url\": \"https://example.com/webhooks/bills\",\"events\": [\"bill.created\", \"bill.paid\"],\"active\": true}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/webhooks",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "webhooks"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Webhook",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/webhooks/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "webhooks",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Webhook",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\": \"Updated Webhook Name\",\"url\": \"https://example.com/webhooks/updated\",\"events\": [\"bill.created\", \"bill.updated\", \"bill.paid\"]}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/webhooks/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "webhooks",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Webhook",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/webhooks/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "webhooks",
+                                "1"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Webhook Deliveries",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/webhooks/1/deliveries?per_page=15",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "webhooks",
+                                "1",
+                                "deliveries"
+                            ],
+                            "query": [
+                                {
+                                    "key": "per_page",
+                                    "value": "15"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Retry Webhook Delivery",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/webhooks/1/deliveries/1/retry",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "webhooks",
+                                "1",
+                                "deliveries",
+                                "1",
+                                "retry"
+                            ]
+                        }
+                    }
+                }
+            ]
         }
     ]
 }
