@@ -27,6 +27,7 @@ final class TeamController extends Controller
 
         $webhooks = Webhook::query()
             ->where('team_id', $user->activeTeam->id)
+            ->with('deliveries')
             ->latest()
             ->get();
 
