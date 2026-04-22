@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import InputError from '@/components/shared/InputError.vue';
+import MultiSelect from '@/components/shared/MultiSelect.vue';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import MultiSelect from '@/components/shared/MultiSelect.vue';
-import InputError from '@/components/shared/InputError.vue';
 import { type Webhook, type WebhookEvent, type WebhookMethod } from '@/types/model';
 import { useForm } from '@inertiajs/vue3';
 import { watchEffect } from 'vue';
@@ -22,7 +22,13 @@ const emit = defineEmits<{
     'update:open': [value: boolean];
 }>();
 
-const form = useForm({
+const form = useForm<{
+    name: string;
+    url: string;
+    method: WebhookMethod;
+    events: string[];
+    is_active: boolean;
+}>({
     name: '',
     url: '',
     method: 'POST' as WebhookMethod,
@@ -59,11 +65,13 @@ function submit() {
         form.put(route('webhooks.update', props.webhook.id), {
             preserveScroll: true,
             onSuccess: () => handleClose(false),
+            preserveState: false,
         });
     } else {
         form.post(route('webhooks.store'), {
             preserveScroll: true,
             onSuccess: () => handleClose(false),
+            preserveState: false,
         });
     }
 }
@@ -109,17 +117,12 @@ const eventOptions = props.events.map((e) => ({ label: e.label, value: e.value }
 
                 <div class="grid gap-2">
                     <Label>Events</Label>
-                    <MultiSelect
-                        :options="eventOptions"
-                        v-model="form.events"
-                        placeholder="Select events..."
-                        :searchable="true"
-                    />
+                    <MultiSelect :options="eventOptions" v-model="form.events" placeholder="Select events..." :searchable="true" />
                     <InputError :message="form.errors.events" />
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <Switch id="webhook-active" v-model:checked="form.is_active" />
+                    <Switch id="webhook-active" v-model:checked="form.is_active" :model-value="form.is_active" />
                     <Label for="webhook-active">Active</Label>
                 </div>
 
