@@ -34,6 +34,7 @@ final class UpdateBillRequest extends FormRequest
             'recurrence_period' => ['nullable', 'string', 'in:daily,weekly,monthly,yearly'],
             'payment_url' => ['nullable', 'string', 'url'],
             'tags' => ['nullable', 'array'],
+            'notify_me' => ['nullable', 'boolean'],
             'status' => ['sometimes', 'string', 'in:paid,unpaid,pending,cancelled'],
         ];
     }

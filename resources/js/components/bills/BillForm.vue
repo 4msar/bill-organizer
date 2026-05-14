@@ -34,6 +34,7 @@ export type BillData = Pick<
     | 'tags'
 > & {
     id?: number;
+    notify_me?: boolean;
 };
 
 interface Props {
@@ -60,6 +61,7 @@ const form = useForm<BillData>({
     recurrence_period: props.bill.recurrence_period,
     payment_url: props.bill.payment_url,
     tags: props.bill.tags || [],
+    notify_me: props.bill.notify_me !== false,
 });
 
 const formattedDate = computed((): string => {
@@ -383,6 +385,19 @@ function submit(): void {
                         <Textarea v-model="form.description" placeholder="Add any additional details about this bill" rows="3" />
                     </FormControl>
                     <FormMessage :message="form.errors.description" />
+                </FormItem>
+            </FormField>
+
+            <!-- Enable Notifications -->
+            <FormField v-model="form.notify_me" name="notify_me">
+                <FormItem class="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div class="space-y-0.5">
+                        <FormLabel class="text-base">Notifications</FormLabel>
+                        <FormDescription> Receive reminders for this bill </FormDescription>
+                    </div>
+                    <FormControl>
+                        <Switch v-model="form.notify_me" />
+                    </FormControl>
                 </FormItem>
             </FormField>
 

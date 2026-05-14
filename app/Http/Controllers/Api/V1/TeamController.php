@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 
 final class TeamController extends Controller
 {
-    function __construct(
+    public function __construct(
         protected TeamService $teamService
     ) {}
 
@@ -90,8 +90,8 @@ final class TeamController extends Controller
         $user = $request->user();
         $team = $user->activeTeam;
 
-        if ($userId ?? false) {
-            $email = User::find($userId)->email;
+        if ($userId && ! $email) {
+            $email = User::whereId($userId)->value('email');
         }
 
         if ($this->teamService->isMember($team, $email)) {

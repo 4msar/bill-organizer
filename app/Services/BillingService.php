@@ -16,9 +16,16 @@ final class BillingService
      */
     public function createBill(array $data): Bill
     {
-        return Bill::create($data + [
+        $notifyMe = $data['notify_me'] ?? true;
+        unset($data['notify_me']);
+
+        $bill = Bill::create($data + [
             'team_id' => $data['team_id'] ?? active_team_id(),
         ]);
+
+        $bill->setMeta('notify_me', $notifyMe);
+
+        return $bill;
     }
 
     /**
@@ -26,7 +33,11 @@ final class BillingService
      */
     public function updateBill(Bill $bill, array $data): Bill
     {
+        $notifyMe = $data['notify_me'] ?? true;
+        unset($data['notify_me']);
+
         $bill->update($data);
+        $bill->setMeta('notify_me', $notifyMe);
 
         return $bill;
     }

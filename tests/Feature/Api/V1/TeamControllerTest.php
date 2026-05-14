@@ -231,16 +231,22 @@ test('can add member to team', function () {
 });
 
 test('cannot add existing member to team', function () {
+    $members = User::factory(5)->create();
+
+    $membersId = $members->map(fn($user) => $user->id)->toArray();
+
+    /** @var \App\Models\Team $team */
     $team = Team::factory()->create([
-        'user_id' => $this->user->id,
+        'user_id' => $members->first()->id,
     ]);
 
-    $member = User::factory()->create();
-    $team->users()->attach($member);
+    $token = $members->first()->createToken('test')->plainTextToken;
 
-    $response = $this->withToken($this->token)
+    $team->users()->attach($members);
+
+    $response = $this->withToken($token)
         ->postJson("/api/v1/teams/{$team->id}/members", [
-            'user_id' => $member->id,
+            'user_id' => $membersId[1],
         ]);
 
     $response->assertStatus(422)

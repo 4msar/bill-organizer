@@ -167,6 +167,8 @@ final class TeamService
     */
     function isMember(Team $team, string $email): bool
     {
-        return $team->users()->where('users.email', $email)->exists();
+        $emails = $team->users()->pluck('users.email')->toArray();
+
+        return in_array($email, $emails);
     }
 }

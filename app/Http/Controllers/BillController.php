@@ -69,6 +69,9 @@ final class BillController extends Controller
 
     public function edit(Bill $bill)
     {
+        // Add notify_me setting from meta to bill data
+        $bill->notify_me = $bill->getMeta('notify_me', true);
+
         return inertia('Bills/Edit', [
             'bill' => $bill,
             'categories' => Category::all(),

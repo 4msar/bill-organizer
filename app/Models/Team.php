@@ -88,10 +88,10 @@ final class Team extends Model
 
         while (
             self::where($destination, $slug)
-                ->where('user_id', $this->user_id)
-                ->exists()
+            ->where('user_id', $this->user_id)
+            ->exists()
         ) {
-            $slug = $originalSlug.'-'.$counter++.Str::random(6);
+            $slug = $originalSlug . '-' . $counter++ . Str::random(6);
         }
 
         return $slug;
@@ -115,6 +115,11 @@ final class Team extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
+    /**
+     * Relation with users (many-to-many)
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function users()
     {
         return $this->belongsToMany(
