@@ -2,7 +2,7 @@
 import Tooltip from '@/components/shared/Tooltip.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatCurrency, formatDate, getDocumentType, getPaymentMethodName } from '@/lib/utils';
 import { Transaction } from '@/types/model';
 import { Calendar, CreditCard, Download, ExternalLink, FileText, Receipt, Trash2 } from 'lucide-vue-next';
@@ -36,6 +36,7 @@ function openTransactionDetails(transaction: Transaction): void {
 </script>
 
 <template>
+    {{ console.log({ transactions }) }}
     <Card>
         <CardHeader>
             <CardTitle class="flex items-center text-xl">
@@ -155,6 +156,24 @@ function openTransactionDetails(transaction: Transaction): void {
                             </TableCell>
                         </TableRow>
                     </TableBody>
+                    <TableFooter>
+                        <TableRow>
+                            <TableCell colspan="2" class="text-right">
+                                <span class="font-medium" title="Total amount of all transactions on the current page"> Total: </span>
+                            </TableCell>
+                            <TableCell class="text-left">
+                                <span class="font-bold">
+                                    {{
+                                        formatCurrency(
+                                            transactions.reduce((sum, transaction) => sum + Number(transaction.amount), 0),
+                                            $page.props?.team?.current?.currency as string,
+                                        )
+                                    }}
+                                </span>
+                            </TableCell>
+                            <TableCell colspan="3" />
+                        </TableRow>
+                    </TableFooter>
                 </Table>
             </div>
         </CardContent>

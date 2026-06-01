@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency, formatDate, getVariantByStatus } from '@/lib/utils';
 import { PaginationData } from '@/types';
@@ -240,6 +240,24 @@ function markAsPaid(id: string | number) {
                                     </TableCell>
                                 </TableRow>
                             </TableBody>
+                            <TableFooter>
+                                <TableRow>
+                                    <TableCell colspan="2" class="text-right">
+                                        <span class="font-medium" title="Total amount of all bills on the current page"> Total: </span>
+                                    </TableCell>
+                                    <TableCell class="text-left">
+                                        <span class="font-bold">
+                                            {{
+                                                formatCurrency(
+                                                    bills.data.reduce((sum, bill) => sum + bill.amount, 0),
+                                                    $page.props?.team?.current?.currency as string,
+                                                )
+                                            }}
+                                        </span>
+                                    </TableCell>
+                                    <TableCell colspan="3" />
+                                </TableRow>
+                            </TableFooter>
                         </Table>
                     </CardContent>
                 </Card>
