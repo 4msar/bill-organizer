@@ -24,9 +24,9 @@
                     </div>
                 </div>
                 <div v-for="hour in hours" :key="hour.getTime()"
-                    class="relative border-b border-border/70 text-right pr-3 text-sm text-muted-foreground"
+                    class="relative border-b border-border/70 text-right pr-3 text-sm text-muted-foreground flex justify-center items-center"
                     :style="{ height: `${WeekCellsHeight}px` }">
-                    <div class="absolute -top-3 right-3">
+                    <div class="p-1">
                         {{ format(hour, 'h a') }}
                     </div>
                 </div>

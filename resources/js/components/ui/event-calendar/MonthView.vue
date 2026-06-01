@@ -7,11 +7,11 @@
             </div>
         </div>
 
-        <div class="grid flex-1 grid-cols-7 grid-rows-6">
+        <div class="grid flex-1 grid-cols-7 grid-rows-auto-1fr">
             <div v-for="(week, weekIndex) in weeks" :key="weekIndex" class="contents">
                 <div v-for="day in week" :key="day.getTime()"
                     class="relative border-border/70 border-b border-r p-2 last:border-r-0 min-h-12 md:min-h-24" :class="{
-            'bg-muted/30': !isSameMonth(day, currentDate),
+            'bg-muted/30 opacity-50': !isSameMonth(day, currentDate),
             'bg-accent': isToday(day)
           }" @click="handleDayClick(day)">
                     <div class="flex items-center justify-between">

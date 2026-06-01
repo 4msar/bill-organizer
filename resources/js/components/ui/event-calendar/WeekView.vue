@@ -17,9 +17,9 @@
       <div class="flex-shrink-0 w-16 border-r border-border/70">
         <div class="h-10 border-b border-border/70"></div> <!-- Header spacer -->
         <div v-for="hour in hours" :key="hour.getTime()"
-          class="relative border-b border-border/70 text-right pr-2 text-xs text-muted-foreground"
+          class="relative border-b border-border/70 text-right pr-2 text-xs text-muted-foreground flex justify-center items-center"
           :style="{ height: `${WeekCellsHeight}px` }">
-          <div class="absolute -top-2 right-2">
+          <div class="p-1">
             {{ format(hour, 'h a') }}
           </div>
         </div>

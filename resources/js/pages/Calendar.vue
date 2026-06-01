@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import BillForm, { BillData } from '@/components/bills/BillForm.vue';
 import Details from '@/components/bills/Details.vue';
+import CalendarSummary from '@/components/pages/CalendarSummary.vue';
 import HeadingSmall from '@/components/shared/HeadingSmall.vue';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -120,10 +121,11 @@ const handleDialogClose = () => {
                 </HeadingSmall>
 
                 <EventCalendar :events="events" @new-event="handleNewEventClick" @select-event="handleEventSelect" />
+                <CalendarSummary :bills="bills" class="mt-4" />
             </div>
         </div>
         <Dialog :open="Boolean(openNewEventDialog)" @update:open="handleDialogClose">
-            <DialogContent class="max-h-3/4 overflow-y-auto sm:max-w-2xl md:max-h-max">
+            <DialogContent class="max-h-3/4 overflow-y-auto sm:max-w-2xl md:max-h-[90vh]">
                 <template v-if="selectedEvent?.id && bill && !editSelectedEvent">
                     <Details :bill="bill" class="border-none shadow-none">
                         <template #footer>
