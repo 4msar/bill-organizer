@@ -249,7 +249,7 @@ function markAsPaid(id: string | number) {
                                         <span class="font-bold">
                                             {{
                                                 formatCurrency(
-                                                    bills.data.reduce((sum, bill) => sum + bill.amount, 0),
+                                                    bills.data.reduce((sum, bill) => sum + Number(bill.amount), 0),
                                                     $page.props?.team?.current?.currency as string,
                                                 )
                                             }}
