@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatCurrency } from '@/lib/utils';
 import { Bill } from '@/types';
 import { computed } from 'vue';
 
@@ -45,13 +46,6 @@ const summary = computed(() => {
         byCategory,
     };
 });
-
-const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-    }).format(value);
-};
 </script>
 
 <template>
@@ -69,28 +63,34 @@ const formatCurrency = (value: number) => {
                 <div class="space-y-2">
                     <p class="text-muted-foreground text-xs font-medium tracking-wider uppercase">Total Bills</p>
                     <p class="text-2xl font-bold">{{ summary.counts.total }}</p>
-                    <p class="text-muted-foreground text-sm">{{ formatCurrency(summary.totalAmount) }}</p>
+                    <p class="text-muted-foreground text-sm">{{ formatCurrency(summary.totalAmount, $page.props.team.current.currency) }}</p>
                 </div>
 
                 <!-- Paid -->
                 <div class="space-y-2">
                     <p class="text-muted-foreground text-xs font-medium tracking-wider uppercase">Paid</p>
                     <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{{ summary.counts.paid }}</p>
-                    <p class="text-sm text-emerald-600/80 dark:text-emerald-400/80">{{ formatCurrency(summary.paidAmount) }}</p>
+                    <p class="text-sm text-emerald-600/80 dark:text-emerald-400/80">
+                        {{ formatCurrency(summary.paidAmount, $page.props.team.current.currency) }}
+                    </p>
                 </div>
 
                 <!-- Unpaid -->
                 <div class="space-y-2">
                     <p class="text-muted-foreground text-xs font-medium tracking-wider uppercase">Unpaid</p>
                     <p class="text-2xl font-bold text-amber-600 dark:text-amber-400">{{ summary.counts.unpaid }}</p>
-                    <p class="text-sm text-amber-600/80 dark:text-amber-400/80">{{ formatCurrency(summary.unpaidAmount) }}</p>
+                    <p class="text-sm text-amber-600/80 dark:text-amber-400/80">
+                        {{ formatCurrency(summary.unpaidAmount, $page.props.team.current.currency) }}
+                    </p>
                 </div>
 
                 <!-- Overdue -->
                 <div class="space-y-2">
                     <p class="text-muted-foreground text-xs font-medium tracking-wider uppercase">Overdue</p>
                     <p class="text-2xl font-bold text-red-600 dark:text-red-400">{{ summary.counts.overdue }}</p>
-                    <p class="text-sm text-red-600/80 dark:text-red-400/80">{{ formatCurrency(summary.overdueAmount) }}</p>
+                    <p class="text-sm text-red-600/80 dark:text-red-400/80">
+                        {{ formatCurrency(summary.overdueAmount, $page.props.team.current.currency) }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -108,7 +108,7 @@ const formatCurrency = (value: number) => {
                         <p class="font-medium">{{ category }}</p>
                         <p class="text-muted-foreground text-sm">{{ data.count }} {{ data.count === 1 ? 'bill' : 'bills' }}</p>
                     </div>
-                    <p class="font-semibold">{{ formatCurrency(data.amount) }}</p>
+                    <p class="font-semibold">{{ formatCurrency(data.amount, $page.props.team.current.currency) }}</p>
                 </div>
             </div>
         </div>
