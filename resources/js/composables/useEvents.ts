@@ -112,5 +112,13 @@ export function useEvents() {
         return events;
     };
 
-    return { events, bills };
+    const currentMonthBills = computed(() => {
+        const now = new Date();
+        return bills.value.filter((bill) => {
+            const dueDate = new Date(bill.due_date as string);
+            return dueDate.getMonth() === now.getMonth() && dueDate.getFullYear() === now.getFullYear();
+        });
+    });
+
+    return { events, bills, currentMonthBills };
 }

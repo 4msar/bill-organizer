@@ -26,7 +26,7 @@ const selectedEvent = ref<CalendarEvent | null>(null);
 const editSelectedEvent = ref<boolean>(false);
 const selectedDate = ref<Date | null>(null);
 const openNewEventDialog = ref(false);
-const { bills, events } = useEvents();
+const { bills, currentMonthBills, events } = useEvents();
 
 const handleEventSelect = (event: CalendarEvent) => {
     selectedEvent.value = event;
@@ -121,7 +121,7 @@ const handleDialogClose = () => {
                 </HeadingSmall>
 
                 <EventCalendar :events="events" @new-event="handleNewEventClick" @select-event="handleEventSelect" />
-                <CalendarSummary :bills="bills" class="mt-4" />
+                <CalendarSummary :bills="currentMonthBills" class="mt-4" />
             </div>
         </div>
         <Dialog :open="Boolean(openNewEventDialog)" @update:open="handleDialogClose">
