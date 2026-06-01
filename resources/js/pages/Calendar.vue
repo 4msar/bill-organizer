@@ -26,7 +26,12 @@ const selectedEvent = ref<CalendarEvent | null>(null);
 const editSelectedEvent = ref<boolean>(false);
 const selectedDate = ref<Date | null>(null);
 const openNewEventDialog = ref(false);
-const { bills, currentMonthBills, events } = useEvents();
+const currentDate = ref(new Date());
+const { bills, currentMonthBills, events } = useEvents(currentDate);
+
+const currentDateChange = (date: Date) => {
+    currentDate.value = date;
+};
 
 const handleEventSelect = (event: CalendarEvent) => {
     selectedEvent.value = event;
@@ -120,8 +125,14 @@ const handleDialogClose = () => {
                     </Popover>
                 </HeadingSmall>
 
-                <EventCalendar :events="events" @new-event="handleNewEventClick" @select-event="handleEventSelect" />
-                <CalendarSummary :bills="currentMonthBills" class="mt-4" />
+                <EventCalendar
+                    :events="events"
+                    @new-event="handleNewEventClick"
+                    @select-event="handleEventSelect"
+                    :selected-month="currentDate"
+                    @selected-date-change="currentDateChange"
+                />
+                <CalendarSummary :bills="currentMonthBills" :selected-month="currentDate" class="mt-4" />
             </div>
         </div>
         <Dialog :open="Boolean(openNewEventDialog)" @update:open="handleDialogClose">

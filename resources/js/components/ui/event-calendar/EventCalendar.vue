@@ -25,19 +25,22 @@ export interface EventCalendarProps {
   events?: CalendarEvent[]
   className?: string
   initialView?: CalendarView
+  selectedDate?: Date
 }
 
 const props = withDefaults(defineProps<EventCalendarProps>(), {
   events: () => [],
-  initialView: 'month'
+  initialView: 'month',
+  selectedDate: () => new Date(),
 })
 
-defineEmits<{
+const emit = defineEmits<{
   selectEvent: [event: CalendarEvent]
   newEvent: [startTime: Date]
+  selectedDateChange: [date: Date]
 }>()
 
-const currentDate = ref(new Date())
+const currentDate = ref(props.selectedDate)
 const view = ref<CalendarView>(props.initialView)
 
 const handleKeyDown = (e: KeyboardEvent) => {
@@ -86,6 +89,8 @@ const handlePrevious = () => {
     // For agenda view, go back 30 days (a full month)
     currentDate.value = addDays(currentDate.value, -AgendaDaysToShow)
   }
+
+  emit('selectedDateChange', currentDate.value)
 }
 
 const handleNext = () => {
@@ -99,10 +104,13 @@ const handleNext = () => {
     // For agenda view, go forward 30 days (a full month)
     currentDate.value = addDays(currentDate.value, AgendaDaysToShow)
   }
+
+  emit('selectedDateChange', currentDate.value)
 }
 
 const handleToday = () => {
   currentDate.value = new Date()
+  emit('selectedDateChange', currentDate.value)
 }
 
 const setView = (newView: CalendarView) => {

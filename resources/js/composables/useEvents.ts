@@ -1,7 +1,7 @@
 import { CalendarEvent } from '@/components/ui/event-calendar';
 import { Bill, SharedData } from '@/types';
 import { usePage } from '@inertiajs/vue3';
-import { computed, ref, watch } from 'vue';
+import { computed, ref, Ref, watch } from 'vue';
 
 const SevenDaysInMiliseconds = 7 * 24 * 60 * 60 * 1000;
 
@@ -26,9 +26,10 @@ export const eventMapper = (item: Bill): CalendarEvent => ({
     // get random color
     color: getColorByItem(item),
     location: item.payment_url,
+    amount: item.amount,
 });
 
-export function useEvents() {
+export function useEvents(currentDate: Ref<Date> | Date) {
     const { props } = usePage<
         SharedData & {
             bills: Bill[];
@@ -36,6 +37,17 @@ export function useEvents() {
     >();
 
     const bills = ref(props.bills);
+    const now = ref(currentDate instanceof Date ? currentDate : new Date(currentDate.value));
+
+    // Watch for changes in currentDate if it's a ref
+    if (!(currentDate instanceof Date)) {
+        watch(
+            () => currentDate.value,
+            (newDate) => {
+                now.value = newDate;
+            },
+        );
+    }
 
     watch(
         () => usePage<SharedData>().props.bills,
@@ -113,11 +125,18 @@ export function useEvents() {
     };
 
     const currentMonthBills = computed(() => {
-        const now = new Date();
-        return bills.value.filter((bill) => {
-            const dueDate = new Date(bill.due_date as string);
-            return dueDate.getMonth() === now.getMonth() && dueDate.getFullYear() === now.getFullYear();
-        });
+        return events.value.reduce<Bill[]>((acc, bill) => {
+            const dueDate = new Date(bill.start);
+            const isCurrentMonth = dueDate.getMonth() === now.value.getMonth() && dueDate.getFullYear() === now.value.getFullYear();
+            const isNotDuplicate = !acc.some((b) => b.id.toString() === bill.id.toString());
+
+            const item = bills.value.find((b) => b.id.toString() === bill.id.toString());
+            if (isCurrentMonth && isNotDuplicate && item) {
+                acc.push(item);
+            }
+
+            return acc;
+        }, []);
     });
 
     return { events, bills, currentMonthBills };
