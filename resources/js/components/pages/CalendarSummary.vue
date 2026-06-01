@@ -10,10 +10,10 @@ const props = defineProps<{
 const summary = computed(() => {
     const bills = props.bills;
 
-    const totalAmount = bills.reduce((sum, bill) => sum + (bill.amount || 0), 0);
-    const paidAmount = bills.filter((b) => b.status === 'paid').reduce((sum, b) => sum + (b.amount || 0), 0);
-    const unpaidAmount = bills.filter((b) => b.status === 'unpaid').reduce((sum, b) => sum + (b.amount || 0), 0);
-    const overdueAmount = bills.filter((b) => b.status === 'overdue').reduce((sum, b) => sum + (b.amount || 0), 0);
+    const totalAmount = bills.reduce((sum, bill) => sum + Number(bill.amount || 0), 0);
+    const paidAmount = bills.filter((b) => b.status === 'paid').reduce((sum, b) => sum + Number(b.amount || 0), 0);
+    const unpaidAmount = bills.filter((b) => b.status === 'unpaid').reduce((sum, b) => sum + Number(b.amount || 0), 0);
+    const overdueAmount = bills.filter((b) => b.status === 'overdue').reduce((sum, b) => sum + Number(b.amount || 0), 0);
 
     const counts = {
         total: bills.length,
@@ -30,7 +30,7 @@ const summary = computed(() => {
                 acc[categoryName] = { count: 0, amount: 0 };
             }
             acc[categoryName].count++;
-            acc[categoryName].amount += bill.amount || 0;
+            acc[categoryName].amount += Number(bill.amount || 0);
             return acc;
         },
         {} as Record<string, { count: number; amount: number }>,
