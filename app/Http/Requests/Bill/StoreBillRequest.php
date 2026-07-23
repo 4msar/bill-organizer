@@ -35,6 +35,11 @@ final class StoreBillRequest extends FormRequest
             'payment_url' => ['nullable', 'string', 'url'],
             'tags' => ['nullable', 'array'],
             'notify_me' => ['nullable', 'boolean'],
+            'auto_transaction' => ['nullable', 'array'],
+            'auto_transaction.is_enabled' => ['nullable', 'boolean'],
+            'auto_transaction.amount' => ['required_if:auto_transaction.is_enabled,true', 'numeric', 'min:0.01'],
+            'auto_transaction.payment_method' => ['nullable', 'string', 'in:cash,credit_card,debit_card,bank_transfer,paypal,crypto,check,other'],
+            'auto_transaction.notes' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }

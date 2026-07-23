@@ -59,6 +59,7 @@ final class BillController extends Controller
         // Load the bill with its category and transactions
         $bill->load([
             'category',
+            'autoTransaction',
             'transactions' => function ($query) {
                 $query->latest('payment_date');
             },
@@ -69,6 +70,8 @@ final class BillController extends Controller
 
     public function edit(Bill $bill)
     {
+        $bill->load('autoTransaction');
+
         // Add notify_me setting from meta to bill data
         $bill->notify_me = $bill->getMeta('notify_me', true);
 

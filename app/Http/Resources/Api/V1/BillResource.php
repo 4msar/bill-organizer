@@ -32,6 +32,17 @@ final class BillResource extends JsonResource
             'user_id' => $this->user_id,
             'team_id' => $this->team_id,
             'category_id' => $this->category_id,
+            'auto_transaction' => $this->when(
+                $this->relationLoaded('autoTransaction') && $this->autoTransaction,
+                fn () => [
+                    'id' => $this->autoTransaction?->id,
+                    'amount' => (float) $this->autoTransaction?->amount,
+                    'payment_method' => $this->autoTransaction?->payment_method,
+                    'notes' => $this->autoTransaction?->notes,
+                    'is_active' => $this->autoTransaction?->is_active,
+                    'last_processed_date' => $this->autoTransaction?->last_processed_date?->toISOString(),
+                ]
+            ),
             'user' => new UserResource($this->whenLoaded('user')),
             'team' => new TeamResource($this->whenLoaded('team')),
             'category' => new CategoryResource($this->whenLoaded('category')),

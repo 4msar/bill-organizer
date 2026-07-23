@@ -32,7 +32,7 @@ final class BillController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Bill created successfully',
-            'data' => new BillResource($bill->load(['category', 'user', 'team'])),
+            'data' => new BillResource($bill->load(['category', 'user', 'team', 'autoTransaction'])),
         ], 201);
     }
 
@@ -43,7 +43,7 @@ final class BillController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => new BillResource($bill->load(['category', 'user', 'team', 'transactions', 'notes'])),
+            'data' => new BillResource($bill->load(['category', 'user', 'team', 'transactions', 'notes', 'autoTransaction'])),
         ]);
     }
 
@@ -57,7 +57,7 @@ final class BillController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Bill updated successfully',
-            'data' => new BillResource($bill->fresh()->load(['category', 'user', 'team'])),
+            'data' => new BillResource($bill->fresh()->load(['category', 'user', 'team', 'autoTransaction'])),
         ]);
     }
 

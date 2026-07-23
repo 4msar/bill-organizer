@@ -35,6 +35,13 @@ export type BillData = Pick<
 > & {
     id?: number;
     notify_me?: boolean;
+    auto_transaction?: {
+        is_enabled?: boolean;
+        is_active?: boolean;
+        amount: number;
+        payment_method: string | null;
+        notes: string | null;
+    } | null;
 };
 
 interface Props {
@@ -47,6 +54,17 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const paymentMethods: Record<string, string> = {
+    cash: 'Cash',
+    credit_card: 'Credit Card',
+    debit_card: 'Debit Card',
+    bank_transfer: 'Bank Transfer',
+    paypal: 'PayPal',
+    crypto: 'Cryptocurrency',
+    check: 'Check',
+    other: 'Other',
+};
 
 const form = useForm<BillData>({
     title: props.bill.title,
@@ -62,6 +80,19 @@ const form = useForm<BillData>({
     payment_url: props.bill.payment_url,
     tags: props.bill.tags || [],
     notify_me: props.bill.notify_me !== false,
+    auto_transaction: props.bill.auto_transaction
+        ? {
+              is_enabled: props.bill.auto_transaction.is_enabled ?? props.bill.auto_transaction.is_active ?? false,
+              amount: props.bill.auto_transaction.amount,
+              payment_method: props.bill.auto_transaction.payment_method || 'cash',
+              notes: props.bill.auto_transaction.notes || '',
+          }
+        : {
+              is_enabled: false,
+              amount: props.bill.amount || 0,
+              payment_method: 'cash',
+              notes: '',
+          },
 });
 
 const formattedDate = computed((): string => {
@@ -374,6 +405,59 @@ function submit(): void {
                             <FormMessage :message="form.errors.trial_end_date" />
                         </FormItem>
                     </FormField>
+                </div>
+            </div>
+
+            <!-- Auto Transaction -->
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <FormField v-model="form.auto_transaction!.is_enabled" name="auto_transaction.is_enabled">
+                    <FormItem class="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div class="space-y-0.5">
+                            <FormLabel class="text-base">Auto Transaction</FormLabel>
+                            <FormDescription> Automatically create a transaction on the billing date </FormDescription>
+                        </div>
+                        <FormControl>
+                            <Switch v-model="form.auto_transaction!.is_enabled" />
+                        </FormControl>
+                    </FormItem>
+                </FormField>
+
+                <div
+                    v-if="form.auto_transaction?.is_enabled"
+                    class="grid grid-cols-1 gap-4 rounded-lg border p-4"
+                >
+                    <FormItem>
+                        <FormLabel>Auto Transaction Amount</FormLabel>
+                        <FormControl>
+                            <Input v-model="form.auto_transaction!.amount" type="number" min="0.01" step="0.01" />
+                        </FormControl>
+                        <FormMessage :message="form.errors['auto_transaction.amount']" />
+                    </FormItem>
+
+                    <FormItem>
+                        <FormLabel>Payment Method</FormLabel>
+                        <Select v-model="form.auto_transaction!.payment_method">
+                            <FormControl class="w-full">
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select payment method" />
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                <SelectItem v-for="(label, value) in paymentMethods" :key="value" :value="value">
+                                    {{ label }}
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FormMessage :message="form.errors['auto_transaction.payment_method']" />
+                    </FormItem>
+
+                    <FormItem>
+                        <FormLabel>Notes (Optional)</FormLabel>
+                        <FormControl>
+                            <Textarea v-model="form.auto_transaction!.notes" rows="2" placeholder="Auto transaction notes" />
+                        </FormControl>
+                        <FormMessage :message="form.errors['auto_transaction.notes']" />
+                    </FormItem>
                 </div>
             </div>
 

@@ -46,6 +46,18 @@ export interface Bill extends Model {
     category?: Category;
     transactions?: Transaction[];
     notes?: Note[];
+    auto_transaction?: BillAutoTransaction | null;
+}
+
+export interface BillAutoTransaction extends Model {
+    bill_id: number;
+    user_id: number | null;
+    team_id: number;
+    amount: number;
+    payment_method: string | null;
+    notes: string | null;
+    is_active: boolean;
+    last_processed_date: string | null;
 }
 
 export interface Transaction extends Model {
