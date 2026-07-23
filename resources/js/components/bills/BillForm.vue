@@ -36,12 +36,11 @@ export type BillData = Pick<
     id?: number;
     notify_me?: boolean;
     auto_transaction?: {
-        is_enabled?: boolean;
-        is_active?: boolean;
+        is_enabled: boolean;
         amount: number;
-        payment_method: string | null;
-        notes: string | null;
-    } | null;
+        payment_method: string;
+        notes: string;
+    };
 };
 
 interface Props {
@@ -410,33 +409,33 @@ function submit(): void {
 
             <!-- Auto Transaction -->
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <FormField v-model="form.auto_transaction!.is_enabled" name="auto_transaction.is_enabled">
+                <FormField v-model="form.auto_transaction.is_enabled" name="auto_transaction.is_enabled">
                     <FormItem class="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div class="space-y-0.5">
                             <FormLabel class="text-base">Auto Transaction</FormLabel>
                             <FormDescription> Automatically create a transaction on the billing date </FormDescription>
                         </div>
                         <FormControl>
-                            <Switch v-model="form.auto_transaction!.is_enabled" />
+                            <Switch v-model="form.auto_transaction.is_enabled" />
                         </FormControl>
                     </FormItem>
                 </FormField>
 
                 <div
-                    v-if="form.auto_transaction?.is_enabled"
+                    v-if="form.auto_transaction.is_enabled"
                     class="grid grid-cols-1 gap-4 rounded-lg border p-4"
                 >
                     <FormItem>
                         <FormLabel>Auto Transaction Amount</FormLabel>
                         <FormControl>
-                            <Input v-model="form.auto_transaction!.amount" type="number" min="0.01" step="0.01" />
+                            <Input v-model="form.auto_transaction.amount" type="number" min="0.01" step="0.01" />
                         </FormControl>
                         <FormMessage :message="form.errors['auto_transaction.amount']" />
                     </FormItem>
 
                     <FormItem>
                         <FormLabel>Payment Method</FormLabel>
-                        <Select v-model="form.auto_transaction!.payment_method">
+                        <Select v-model="form.auto_transaction.payment_method">
                             <FormControl class="w-full">
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select payment method" />
@@ -454,7 +453,7 @@ function submit(): void {
                     <FormItem>
                         <FormLabel>Notes (Optional)</FormLabel>
                         <FormControl>
-                            <Textarea v-model="form.auto_transaction!.notes" rows="2" placeholder="Auto transaction notes" />
+                            <Textarea v-model="form.auto_transaction.notes" rows="2" placeholder="Auto transaction notes" />
                         </FormControl>
                         <FormMessage :message="form.errors['auto_transaction.notes']" />
                     </FormItem>
