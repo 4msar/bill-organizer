@@ -101,7 +101,8 @@ final class Bill extends Model
      */
     public function resolveRouteBinding($value, $field = null)
     {
-        return $this->where('id', $value)
+        return $this->query()
+            ->where('id', $value)
             ->orWhere('slug', $value)
             ->firstOrFail();
     }
@@ -115,7 +116,8 @@ final class Bill extends Model
         $originalSlug = $slug;
 
         while (
-            self::where($destination, $slug)
+            self::query()
+            ->where($destination, $slug)
             ->where('user_id', $this->user_id)
             ->where('team_id', $this->team_id)
             ->exists()
