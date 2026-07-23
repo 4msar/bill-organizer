@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AutoTransactionDetailsDialog from '@/components/bills/AutoTransactionDetailsDialog.vue';
 import Details from '@/components/bills/Details.vue';
 import PaymentDialog from '@/components/bills/PaymentDialog.vue';
 import Confirm from '@/components/shared/Confirm.vue';
@@ -10,7 +11,7 @@ import { formatDate } from '@/lib/utils';
 import { Bill } from '@/types/model';
 import { Head, Link, router } from '@inertiajs/vue3';
 import axios from 'axios';
-import { Edit, Receipt, Trash2 } from 'lucide-vue-next';
+import { Edit, Receipt, Settings2, Trash2 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 interface Props {
@@ -20,6 +21,7 @@ interface Props {
 const { bill } = defineProps<Props>();
 
 const isPaymentDialogOpen = ref(false);
+const isAutoTransactionDialogOpen = ref(false);
 const paymentMethods = ref<Record<string, string>>({});
 const nextDueDate = ref<string | null>(null);
 const isLoading = ref(false);
@@ -105,6 +107,10 @@ function onPaymentComplete(): void {
                 <!-- Bill Details Card -->
                 <Details :bill="bill">
                     <template #footer>
+                        <Button v-if="bill.auto_transaction" variant="outline" @click="isAutoTransactionDialogOpen = true">
+                            <Settings2 class="mr-2 h-4 w-4" />
+                            Auto Transaction
+                        </Button>
                         <Button @click="openPaymentDialog" :disabled="isLoading">
                             <Receipt class="mr-2 h-4 w-4" />
                             {{ isLoading ? 'Loading...' : 'Record Payment' }}
@@ -124,6 +130,10 @@ function onPaymentComplete(): void {
                     :payment-methods="paymentMethods"
                     :next-due-date="nextDueDate"
                     @payment-complete="onPaymentComplete"
+                />
+                <AutoTransactionDetailsDialog
+                    v-model:isOpen="isAutoTransactionDialogOpen"
+                    :auto-transaction="bill.auto_transaction"
                 />
             </div>
         </div>

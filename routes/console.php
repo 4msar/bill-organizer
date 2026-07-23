@@ -65,6 +65,15 @@ Schedule::command('bills:update-statuses')
     ->runInBackground();
 
 /**
+ * Create transactions for bills with auto transaction enabled.
+ *
+ * Run daily at 12:10 AM.
+ */
+Schedule::command('bills:create-auto-transactions')
+    ->dailyAt('00:10')
+    ->runInBackground();
+
+/**
  * Clear expired API tokens to maintain security and performance.
  *
  * Run daily at 1:00 AM to clean up expired tokens.

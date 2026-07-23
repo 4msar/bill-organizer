@@ -17,13 +17,16 @@ final class BillingService
     public function createBill(array $data): Bill
     {
         $notifyMe = $data['notify_me'] ?? true;
+        $autoTransaction = $data['auto_transaction'] ?? null;
         unset($data['notify_me']);
+        unset($data['auto_transaction']);
 
         $bill = Bill::create($data + [
             'team_id' => $data['team_id'] ?? active_team_id(),
         ]);
 
         $bill->setMeta('notify_me', $notifyMe);
+        $this->syncAutoTransaction($bill, $autoTransaction);
 
         return $bill;
     }
@@ -34,10 +37,13 @@ final class BillingService
     public function updateBill(Bill $bill, array $data): Bill
     {
         $notifyMe = $data['notify_me'] ?? true;
+        $autoTransaction = $data['auto_transaction'] ?? null;
         unset($data['notify_me']);
+        unset($data['auto_transaction']);
 
         $bill->update($data);
         $bill->setMeta('notify_me', $notifyMe);
+        $this->syncAutoTransaction($bill, $autoTransaction);
 
         return $bill;
     }
@@ -100,5 +106,29 @@ final class BillingService
         );
 
         return $query->get();
+    }
+
+    /**
+     * Persist bill auto transaction configuration.
+     */
+    private function syncAutoTransaction(Bill $bill, ?array $autoTransaction): void
+    {
+        if (! is_array($autoTransaction) || ! ($autoTransaction['is_enabled'] ?? false)) {
+            $bill->autoTransaction()?->delete();
+
+            return;
+        }
+
+        $bill->autoTransaction()->updateOrCreate(
+            ['bill_id' => $bill->id],
+            [
+                'team_id' => $bill->team_id,
+                'user_id' => $bill->user_id,
+                'amount' => $autoTransaction['amount'] ?? $bill->amount,
+                'payment_method' => $autoTransaction['payment_method'] ?? 'cash',
+                'notes' => $autoTransaction['notes'] ?? null,
+                'is_active' => true,
+            ]
+        );
     }
 }
