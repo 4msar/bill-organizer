@@ -48,7 +48,12 @@ defineProps<Props>();
                         recurrence_period: null,
                         payment_url: '',
                         tags: [],
-                        auto_transaction: null,
+                        auto_transaction: {
+                            is_enabled: false,
+                            amount: 0,
+                            payment_method: 'cash',
+                            notes: '',
+                        },
                     }"
                     :submit-url="route('bills.store')"
                     submit-method="post"
