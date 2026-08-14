@@ -25,6 +25,9 @@ final class GetBillsQuery implements Query
     public function get(): LengthAwarePaginator
     {
         $query = Bill::with('category')
+            ->when(! $this->shouldIncludeArchived(), function ($query) {
+                $query->whereNull('archived_at');
+            })
             ->when($this->search, function ($query) {
                 $search = $this->search;
 
@@ -43,6 +46,13 @@ final class GetBillsQuery implements Query
 
                     return;
                 }
+
+                if ($this->status === 'archived') {
+                    $query->whereNotNull('archived_at');
+
+                    return;
+                }
+
                 $query->where('status', $this->status);
             })
             ->when($this->categoryId, function ($query) {
@@ -68,5 +78,10 @@ final class GetBillsQuery implements Query
             ->paginate($this->perPage)
             ->onEachSide(1)
             ->withQueryString();
+    }
+
+    private function shouldIncludeArchived(): bool
+    {
+        return in_array($this->status, ['archived', 'cancelled'], true);
     }
 }

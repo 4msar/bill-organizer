@@ -89,6 +89,20 @@ final class BillController extends Controller
     }
 
     /**
+     * Mark bill as cancelled and archived.
+     */
+    public function markAsCancelled(Request $request, Bill $bill, BillingService $billingService)
+    {
+        $billingService->markBillAsCancelled($bill);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Bill marked as cancelled and archived',
+            'data' => new BillResource($bill->fresh()->load(['category', 'user', 'team'])),
+        ]);
+    }
+
+    /**
      * Get upcoming bills.
      */
     public function upcoming(Request $request)
