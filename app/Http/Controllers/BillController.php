@@ -18,10 +18,14 @@ final class BillController extends Controller
         $bills = $billingService->getBillsWithFilters($request->all());
 
         $currentMonthBills = Bill::query()
+            ->whereNull('archived_at')
             ->currentMonth()
             ->get();
 
-        $upcomingCount = Bill::query()->upcoming(7)->count();
+        $upcomingCount = Bill::query()
+            ->whereNull('archived_at')
+            ->upcoming(7)
+            ->count();
 
         return inertia('Bills/Index', [
             'bills' => $bills,
@@ -101,6 +105,13 @@ final class BillController extends Controller
         $billingService->markBillAsPaid($bill);
 
         return redirect()->back()->with('success', 'Bill marked as paid successfully.');
+    }
+
+    public function markAsCancelled(Bill $bill, BillingService $billingService)
+    {
+        $billingService->markBillAsCancelled($bill);
+
+        return redirect()->back()->with('success', 'Bill canceled and archived successfully.');
     }
 
     /**

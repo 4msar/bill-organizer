@@ -41,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Bills
         Route::apiResource('bills', BillController::class);
         Route::patch('bills/{bill}/pay', [BillController::class, 'markAsPaid'])->name('api.v1.bills.pay');
+        Route::patch('bills/{bill}/cancel', [BillController::class, 'markAsCancelled'])->name('api.v1.bills.cancel');
         Route::get('bills/{bill}/upcoming', [BillController::class, 'upcoming'])->name('api.v1.bills.upcoming');
 
         // Categories

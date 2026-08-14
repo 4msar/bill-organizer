@@ -45,6 +45,7 @@ final class Bill extends Model
         'trial_end_date',
         'has_trial',
         'status',
+        'archived_at',
         'is_recurring',
         'recurrence_period',
         'payment_url',
@@ -62,6 +63,7 @@ final class Bill extends Model
         'trial_end_date' => 'date',
         'has_trial' => 'boolean',
         'is_recurring' => 'boolean',
+        'archived_at' => 'datetime',
         'tags' => 'array',
         'recurrence_period' => RecurrencePeriod::class,
     ];
@@ -391,6 +393,17 @@ final class Bill extends Model
     {
         $this->update([
             'status' => 'paid',
+        ]);
+    }
+
+    /**
+     * Mark the bill as cancelled and archived.
+     */
+    public function markAsCancelledAndArchived(): void
+    {
+        $this->update([
+            'status' => 'cancelled',
+            'archived_at' => now(),
         ]);
     }
 
