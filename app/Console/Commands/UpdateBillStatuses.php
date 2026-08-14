@@ -42,6 +42,7 @@ final class UpdateBillStatuses extends Command
 
         // Build the query
         $query = Bill::query()->withoutGlobalScopes();
+        $query->where('status', '!=', 'cancelled');
 
         if (! empty($billIds)) {
             $query->whereIn('id', $billIds);

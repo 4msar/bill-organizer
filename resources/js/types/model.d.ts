@@ -37,7 +37,8 @@ export interface Bill extends Model {
     trial_start_date?: string;
     trial_end_date?: string;
     has_trial: boolean;
-    status: 'paid' | 'unpaid' | 'overdue';
+    status: 'paid' | 'unpaid' | 'overdue' | 'cancelled';
+    archived_at?: string | null;
     is_recurring: boolean;
     recurrence_period: 'weekly' | 'monthly' | 'yearly' | null;
     category_id: number | null;

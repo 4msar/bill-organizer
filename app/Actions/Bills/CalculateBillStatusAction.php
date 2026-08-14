@@ -17,6 +17,10 @@ final class CalculateBillStatusAction
     {
         $currentStatus = $bill->getRawOriginal('status') ?? 'unpaid';
 
+        if ($currentStatus === 'cancelled') {
+            return $currentStatus;
+        }
+
         // For non-recurring bills, just return the current status
         if (! $bill->is_recurring || ! $bill->recurrence_period) {
             return $currentStatus;

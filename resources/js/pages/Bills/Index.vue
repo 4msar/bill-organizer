@@ -15,7 +15,7 @@ import { formatCurrency, formatDate, getVariantByStatus } from '@/lib/utils';
 import { PaginationData } from '@/types';
 import { Bill, Category } from '@/types/model';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { Calendar, CheckCheck, Clock, DollarSign, Edit, Eye, MoreHorizontal, PlusCircle, Trash2 } from 'lucide-vue-next';
+import { Ban, Calendar, CheckCheck, Clock, DollarSign, Edit, Eye, MoreHorizontal, PlusCircle, Trash2 } from 'lucide-vue-next';
 import { capitalize } from 'vue';
 
 defineProps<{
@@ -29,6 +29,10 @@ defineProps<{
 
 function markAsPaid(id: string | number) {
     router.patch(route('bills.pay', id));
+}
+
+function markAsCancelled(id: string | number) {
+    router.patch(route('bills.cancel', id));
 }
 </script>
 
@@ -118,6 +122,8 @@ function markAsPaid(id: string | number) {
                                         <SelectItem value="paid">Paid</SelectItem>
                                         <SelectItem value="unpaid">Unpaid</SelectItem>
                                         <SelectItem value="overdue">Overdue</SelectItem>
+                                        <SelectItem value="cancelled">Cancelled</SelectItem>
+                                        <SelectItem value="archived">Archived</SelectItem>
                                         <SelectItem value="upcoming">Upcoming</SelectItem>
                                     </SelectContent>
                                 </Select>
@@ -183,6 +189,7 @@ function markAsPaid(id: string | number) {
                                                 :class="{
                                                     'text-amber-600': bill.status === 'overdue',
                                                     'text-destructive': bill.status === 'unpaid',
+                                                    'text-muted-foreground': bill.status === 'cancelled',
                                                 }"
                                             >
                                                 {{ formatDate(bill.due_date as string) }}
@@ -196,6 +203,7 @@ function markAsPaid(id: string | number) {
                                         <Badge
                                             :class="{
                                                 'border-amber-300 text-amber-600': bill.status === 'overdue',
+                                                'text-muted-foreground': bill.status === 'cancelled',
                                             }"
                                             :variant="getVariantByStatus<BadgeVariants['variant']>(bill.status)"
                                         >
@@ -228,6 +236,14 @@ function markAsPaid(id: string | number) {
                                                 >
                                                     <CheckCheck class="mr-2 h-4 w-4" />
                                                     Mark as paid
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    v-if="bill.is_recurring && bill.status !== 'cancelled'"
+                                                    @click.stop="markAsCancelled(bill.id)"
+                                                    class="flex items-center"
+                                                >
+                                                    <Ban class="mr-2 h-4 w-4" />
+                                                    Cancel & archive
                                                 </DropdownMenuItem>
                                                 <Confirm :modal="true" title="Are you sure?" :url="route('bills.destroy', bill.slug)">
                                                     <DropdownMenuItem standalone class="text-destructive hover:text-destructive flex items-center">

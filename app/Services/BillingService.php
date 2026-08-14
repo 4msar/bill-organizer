@@ -73,6 +73,22 @@ final class BillingService
     }
 
     /**
+     * Mark a bill as cancelled and archived.
+     */
+    public function markBillAsCancelled(Bill $bill): Bill
+    {
+        $bill->markAsCancelledAndArchived();
+
+        app(WebhookService::class)->dispatch(
+            WebhookEvent::BillingUpdated,
+            $bill->team_id,
+            $bill->fresh()->toArray()
+        );
+
+        return $bill;
+    }
+
+    /**
      * Calculate the status based on recurrence period and transactions
      */
     public function calculateBillStatus(Bill $bill): string

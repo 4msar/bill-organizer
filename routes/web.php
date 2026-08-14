@@ -72,6 +72,7 @@ Route::middleware(['auth', 'verified', 'team'])->group(function () {
         Route::put('/{bill}', 'update')->name('bills.update');
         Route::delete('/{bill}', 'destroy')->name('bills.destroy');
         Route::patch('/{bill}/pay', 'markAsPaid')->name('bills.pay');
+        Route::patch('/{bill}/cancel', 'markAsCancelled')->name('bills.cancel');
         Route::get('/{bill}/invoice', 'showInvoiceForm')->name('bills.invoice');
     });
 

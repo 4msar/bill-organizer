@@ -35,7 +35,7 @@ final class UpdateBillRequest extends FormRequest
             'payment_url' => ['nullable', 'string', 'url'],
             'tags' => ['nullable', 'array'],
             'notify_me' => ['nullable', 'boolean'],
-            'status' => ['sometimes', 'string', 'in:paid,unpaid,pending,cancelled'],
+            'status' => ['sometimes', 'string', 'in:paid,unpaid,overdue,cancelled'],
             'auto_transaction' => ['nullable', 'array'],
             'auto_transaction.is_enabled' => ['nullable', 'boolean'],
             'auto_transaction.amount' => ['exclude_unless:auto_transaction.is_enabled,true', 'numeric', 'min:0.01'],

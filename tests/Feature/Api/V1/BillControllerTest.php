@@ -194,6 +194,75 @@ test('can mark bill as paid', function () {
     ]);
 });
 
+test('can mark recurring bill as cancelled and archived', function () {
+    $bill = Bill::factory()->create([
+        'user_id' => $this->user->id,
+        'team_id' => $this->team->id,
+        'status' => 'unpaid',
+        'is_recurring' => true,
+        'recurrence_period' => 'monthly',
+    ]);
+
+    $response = $this->withToken($this->token)
+        ->patchJson("/api/v1/bills/{$bill->id}/cancel");
+
+    $response->assertOk()
+        ->assertJson([
+            'success' => true,
+            'message' => 'Bill marked as cancelled and archived',
+        ]);
+
+    $this->assertDatabaseHas('bills', [
+        'id' => $bill->id,
+        'status' => 'cancelled',
+    ]);
+
+    expect($bill->fresh()->archived_at)->not()->toBeNull();
+});
+
+test('archived bills are hidden by default and visible with status filters', function () {
+    Bill::factory()->create([
+        'user_id' => $this->user->id,
+        'team_id' => $this->team->id,
+        'title' => 'Active Bill',
+        'status' => 'paid',
+        'is_recurring' => false,
+    ]);
+
+    Bill::factory()->create([
+        'user_id' => $this->user->id,
+        'team_id' => $this->team->id,
+        'title' => 'Cancelled Archived Bill',
+        'status' => 'cancelled',
+        'archived_at' => now(),
+        'is_recurring' => false,
+    ]);
+
+    $defaultResponse = $this->withToken($this->token)
+        ->getJson('/api/v1/bills');
+
+    $defaultResponse->assertOk();
+    expect(collect($defaultResponse->json('data'))->pluck('title'))
+        ->toContain('Active Bill')
+        ->not->toContain('Cancelled Archived Bill');
+
+    $cancelledResponse = $this->withToken($this->token)
+        ->getJson('/api/v1/bills?status=cancelled');
+
+    $cancelledResponse->assertOk();
+    expect(collect($cancelledResponse->json('data'))->pluck('title'))
+        ->toContain('Cancelled Archived Bill')
+        ->not->toContain('Active Bill');
+
+    $archivedResponse = $this->withToken($this->token)
+        ->getJson('/api/v1/bills?status=archived');
+
+    $archivedResponse->assertOk();
+    expect(collect($archivedResponse->json('data'))->pluck('title'))
+        ->toContain('Cancelled Archived Bill')
+        ->not->toContain('Active Bill');
+});
+
 test('cannot access bills without authentication', function () {
     $response = $this->getJson('/api/v1/bills');
 

@@ -25,6 +25,7 @@ final class BillResource extends JsonResource
             'trial_end_date' => $this->trial_end_date?->toISOString(),
             'has_trial' => $this->has_trial,
             'status' => $this->status,
+            'archived_at' => $this->archived_at?->toISOString(),
             'is_recurring' => $this->is_recurring,
             'recurrence_period' => $this->recurrence_period?->value,
             'payment_url' => $this->payment_url,
