@@ -70,7 +70,7 @@ final class NotificationResource extends JsonResource
 
         $params = ['bill' => $slugOrId];
 
-        if ($authUser->currentTeam?->id !== $this->data['team_id']) {
+        if (isset($this->data['team_id']) && $authUser->currentTeam?->id !== $this->data['team_id']) {
             $params['team'] = $this->data['team_id'] ?? $authUser->currentTeam?->id;
             $params['team_token'] = bcrypt($params['team']);
         }
