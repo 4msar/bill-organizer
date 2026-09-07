@@ -30,7 +30,7 @@ final class NotificationResource extends JsonResource
             'title' => $this->getTitle(),
             'description' => $this->getDescription(),
             'created_time' => $this->created_at->diffForHumans(),
-            'url' => $this->getLink(),
+            'url' => $this->getLink($request),
         ];
     }
 
@@ -61,17 +61,17 @@ final class NotificationResource extends JsonResource
     /**
      * Get the link of the notification.
      */
-    public function getLink(): string
+    public function getLink(Request $request): string
     {
         $slugOrId = $this->data['bill_slug'] ?? $this->data['bill_id'] ?? null;
 
         /** @var \App\Models\User */
-        $authUser = Auth::user();
+        $authUser = $request->user();
 
         $params = ['bill' => $slugOrId];
 
-        if ($authUser->currentTeam->id !== $this->data['team_id']) {
-            $params['team'] = $this->data['team_id'] ?? $authUser->currentTeam->id;
+        if ($authUser->currentTeam?->id !== $this->data['team_id']) {
+            $params['team'] = $this->data['team_id'] ?? $authUser->currentTeam?->id;
             $params['team_token'] = bcrypt($params['team']);
         }
 
