@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/vue-starter-kit",
+    "name": "4msar/bill-organizer",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Manage your bills and subscription with ease.",
     "keywords": [
         "laravel",
         "framework"
