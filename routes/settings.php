@@ -12,6 +12,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('settings/sessions', [SessionController::class, 'sessions'])->name('profile.sessions');
+    Route::post('settings/sessions/tokens', [SessionController::class, 'createApiToken'])->name('profile.sessions.tokens.create');
     Route::delete('settings/sessions/revoke', [SessionController::class, 'revoke'])->name('profile.sessions.revoke');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('settings/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

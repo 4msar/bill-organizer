@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\Settings;
 
-use Inertia\Response;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class SessionController extends Controller
 {
-
     public function sessions(Request $request): Response
     {
         $user = $request->user();
@@ -52,6 +51,24 @@ class SessionController extends Controller
             'webSessions' => $webSessions,
             'apiSessions' => $apiSessions,
         ]);
+    }
+
+    public function createApiToken(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'expires_at' => 'nullable|date|after:now',
+        ]);
+
+        $user = $request->user();
+
+        $token = $user->createToken(
+            name: $data['name'],
+            expiresAt: isset($data['expires_at']) ? Carbon::parse($data['expires_at']) : null
+        );
+
+        return back()->with('status', 'API token created successfully.')
+            ->with('token', $token->plainTextToken);
     }
 
     public function revoke(Request $request)

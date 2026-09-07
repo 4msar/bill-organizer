@@ -1,14 +1,19 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 import HeadingSmall from '@/components/shared/HeadingSmall.vue';
 import { type BreadcrumbItem } from '@/types';
 
 import Tooltip from '@/components/shared/Tooltip.vue';
-import { buttonVariants } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { Trash } from 'lucide-vue-next';
+import { type SharedData } from '@/types';
+import { Check, Copy, KeyRound, Trash } from 'lucide-vue-next';
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -32,6 +37,35 @@ const { webSessions, apiSessions } = defineProps<{
         last_activity: string;
     }[];
 }>();
+
+const isCreateTokenDialogOpen = ref(false);
+const createdToken = ref<string | null>(null);
+const tokenCopied = ref(false);
+const page = usePage<SharedData>();
+const form = useForm({
+    name: '',
+    expires_at: '',
+});
+
+function createApiToken() {
+    form.post(route('profile.sessions.tokens.create'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            form.reset();
+            createdToken.value = page.props.flash.token;
+            tokenCopied.value = false;
+        },
+    });
+}
+
+async function copyToken() {
+    if (!createdToken.value) {
+        return;
+    }
+
+    await navigator.clipboard.writeText(createdToken.value);
+    tokenCopied.value = true;
+}
 </script>
 
 <template>
@@ -41,16 +75,64 @@ const { webSessions, apiSessions } = defineProps<{
         <SettingsLayout>
             <div class="space-y-6">
                 <HeadingSmall title="Sessions" description="Manage your active login sessions" class="items-start justify-between">
-                    <Tooltip title="Logout from all sessions/tokens.">
-                        <Link
-                            :href="route('profile.sessions.revoke')"
-                            method="delete"
-                            :data="{ clear_all: 'true' }"
-                            :class="buttonVariants({ variant: 'destructive', size: 'sm' })"
-                        >
-                            <Trash class="inline h-4 w-4" />
-                        </Link>
-                    </Tooltip>
+                    <div class="flex items-center gap-2">
+                        <Dialog v-model:open="isCreateTokenDialogOpen">
+                            <DialogTrigger as-child>
+                                <Button size="sm">
+                                    <KeyRound class="h-4 w-4" />
+                                    Create API token
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent class="sm:max-w-[425px]">
+                                <DialogHeader>
+                                    <DialogTitle>Create API token</DialogTitle>
+                                    <DialogDescription>Give the token a name and optionally set an expiration date.</DialogDescription>
+                                </DialogHeader>
+
+                                <div v-if="createdToken" class="grid gap-3 py-4">
+                                    <p class="text-sm font-medium">Your API token</p>
+                                    <div class="flex gap-2">
+                                        <Input :model-value="createdToken" readonly class="font-mono text-xs" />
+                                        <Button type="button" variant="outline" size="icon" @click="copyToken">
+                                            <Check v-if="tokenCopied" class="h-4 w-4" />
+                                            <Copy v-else class="h-4 w-4" />
+                                            <span class="sr-only">{{ tokenCopied ? 'Token copied' : 'Copy token' }}</span>
+                                        </Button>
+                                    </div>
+                                    <p class="text-muted-foreground text-sm">Copy this token now. It will not be shown again.</p>
+                                </div>
+
+                                <form v-else class="grid gap-4 py-4" @submit.prevent="createApiToken">
+                                    <div class="grid gap-2">
+                                        <Label for="token-name">Name</Label>
+                                        <Input id="token-name" v-model="form.name" required autocomplete="off" placeholder="My device" />
+                                        <p v-if="form.errors.name" class="text-destructive text-sm">{{ form.errors.name }}</p>
+                                    </div>
+
+                                    <div class="grid gap-2">
+                                        <Label for="token-expires-at">Expire at <span class="text-muted-foreground">(optional)</span></Label>
+                                        <Input id="token-expires-at" v-model="form.expires_at" type="datetime-local" />
+                                        <p v-if="form.errors.expires_at" class="text-destructive text-sm">{{ form.errors.expires_at }}</p>
+                                    </div>
+
+                                    <DialogFooter>
+                                        <Button type="submit" :disabled="form.processing">Create token</Button>
+                                    </DialogFooter>
+                                </form>
+                            </DialogContent>
+                        </Dialog>
+
+                        <Tooltip title="Logout from all sessions/tokens.">
+                            <Link
+                                :href="route('profile.sessions.revoke')"
+                                method="delete"
+                                :data="{ clear_all: 'true' }"
+                                :class="buttonVariants({ variant: 'destructive', size: 'sm' })"
+                            >
+                                <Trash class="inline h-4 w-4" />
+                            </Link>
+                        </Tooltip>
+                    </div>
                 </HeadingSmall>
 
                 <div class="space-y-10">

@@ -53,6 +53,7 @@ export interface SharedData extends PageProps {
         error: string | null;
         warning: string | null;
         info: string | null;
+        token: string | null;
     };
 }
 

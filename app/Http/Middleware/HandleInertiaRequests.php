@@ -62,6 +62,7 @@ final class HandleInertiaRequests extends Middleware
                 'error' => $request->session()->pull('error'),
                 'warning' => $request->session()->pull('warning'),
                 'info' => $request->session()->pull('info'),
+                'token' => $request->session()->pull('token'),
             ],
         ];
     }
