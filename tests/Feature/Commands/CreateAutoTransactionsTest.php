@@ -62,7 +62,7 @@ test('it creates a transaction for due bill with auto transaction enabled', func
 
     $this->assertDatabaseHas('bill_auto_transactions', [
         'bill_id' => $bill->id,
-        'last_processed_date' => today()->toDateString(),
+        'last_processed_date' => today()->format('Y-m-d H:i:s'),
     ]);
 });
 

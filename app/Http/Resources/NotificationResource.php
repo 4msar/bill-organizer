@@ -79,7 +79,7 @@ final class NotificationResource extends JsonResource
         return match ($this->type) {
             UpcomingBillNotification::class => route('bills.show', $params),
             TrialEndNotification::class => route('bills.show', $params),
-            default => null
+            default => ""
         };
     }
 }

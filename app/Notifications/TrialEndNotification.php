@@ -43,7 +43,7 @@ final class TrialEndNotification extends Notification
         $amount = $this->bill->amount;
 
         return (new MailMessage())
-            ->subject('Your Trial Period Is Ending Soon : '.$this->bill->title)
+            ->subject('Your Trial Period Is Ending Soon : ' . $this->bill->title)
             ->greeting("Hi {$notifiable->name},")
             ->line('Just a quick reminder! 🌼')
             ->line("Your trial period for **{$this->bill->title}** will end on **{$this->bill->trial_end_date->format('M d, Y')}**.")
@@ -63,6 +63,7 @@ final class TrialEndNotification extends Notification
     {
         return [
             'bill_id' => $this->bill->id,
+            'team_id' => $this->bill->team_id,
             'bill_slug' => $this->bill->slug,
             'title' => $this->bill->title,
             'trial_end_date' => $this->bill->trial_end_date,
@@ -76,7 +77,7 @@ final class TrialEndNotification extends Notification
         $trialEndDate = Carbon::parse($notification->data['trial_end_date'])->format('d M, Y');
         $dueDate = Carbon::parse($notification->data['due_date'])->format('d M, Y');
 
-        return "Trial period for \"{$notification->data['title']}\" ends on {$trialEndDate}. First payment of ".self::getAmount($notification)." due on {$dueDate}.";
+        return "Trial period for \"{$notification->data['title']}\" ends on {$trialEndDate}. First payment of " . self::getAmount($notification) . " due on {$dueDate}.";
     }
 
     public static function getAmount($notification): string
