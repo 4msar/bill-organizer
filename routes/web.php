@@ -11,6 +11,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WebhookController;
+use App\Http\Middleware\SwitchTeam;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -66,7 +67,7 @@ Route::middleware(['auth', 'verified', 'team'])->group(function () {
         Route::get('/', 'index')->name('bills.index');
         Route::get('/create', 'create')->name('bills.create');
         Route::post('/', 'store')->name('bills.store');
-        Route::get('/{bill}', 'show')->name('bills.show');
+        Route::get('/{bill}', 'show')->middleware(SwitchTeam::class)->name('bills.show');
         Route::get('/{bill}/edit', 'edit')->name('bills.edit');
         Route::put('/{bill}', 'update')->name('bills.update');
         Route::delete('/{bill}', 'destroy')->name('bills.destroy');
@@ -104,9 +105,9 @@ Route::get('/visit/bill/{bill}', [BillController::class, 'visit'])
     ->middleware(['auth', 'verified', 'signed'])
     ->name('visit.bill');
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
-require __DIR__.'/debug.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';
+require __DIR__ . '/debug.php';
 
 Route::fallback(function () {
     return Inertia::render('errors/404', [

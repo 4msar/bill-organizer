@@ -7,6 +7,7 @@ use App\Notifications\UpcomingBillNotification;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Support\Facades\Auth;
 
 final class NotificationResource extends JsonResource
 {
@@ -64,9 +65,20 @@ final class NotificationResource extends JsonResource
     {
         $slugOrId = $this->data['bill_slug'] ?? $this->data['bill_id'] ?? null;
 
+        /** @var \App\Models\User */
+        $authUser = Auth::user();
+
+        $params = ['bill' => $slugOrId];
+
+        if ($authUser->currentTeam->id !== $this->data['team_id']) {
+            $params['team'] = $this->data['team_id'] ?? $authUser->currentTeam->id;
+            $params['team_token'] = bcrypt($params['team']);
+        }
+
+
         return match ($this->type) {
-            UpcomingBillNotification::class => route('bills.show', $slugOrId),
-            TrialEndNotification::class => route('bills.show', $slugOrId),
+            UpcomingBillNotification::class => route('bills.show', $params),
+            TrialEndNotification::class => route('bills.show', $params),
             default => null
         };
     }
