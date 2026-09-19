@@ -48,6 +48,7 @@ export interface SharedData extends PageProps {
         unread: number;
         last: NotificationData;
     };
+    webPushPublicKey: string | null;
     flash: {
         success: string | null;
         error: string | null;

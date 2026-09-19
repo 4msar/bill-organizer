@@ -9,6 +9,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\URL;
+use NotificationChannels\WebPush\WebPushMessage;
 
 final class UpcomingBillNotification extends Notification
 {
@@ -27,8 +28,8 @@ final class UpcomingBillNotification extends Notification
 
     /**
      * Get the notification's delivery channels.
-     * 
-     * @param \App\Models\User $notifiable
+     *
+     * @param  \App\Models\User  $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -78,6 +79,21 @@ final class UpcomingBillNotification extends Notification
             'due_date' => $this->bill->due_date,
             'amount' => $this->bill->amount,
         ];
+    }
+
+    /**
+     * Get the web push representation of the notification.
+     */
+    public function toWebPush($notifiable): WebPushMessage
+    {
+        $currency = $this->bill->team?->currency_symbol ?? '$';
+
+        return (new WebPushMessage())
+            ->title('Upcoming Bill Reminder: ' . $this->bill->title)
+            ->body("Due on {$this->bill->due_date->format('M d, Y')} — {$currency}{$this->bill->amount}")
+            ->icon('/logo.png')
+            ->image('/logo.png')
+            ->data(['url' => URL::signedRoute('visit.bill', ['bill' => $this->bill->slug])]);
     }
 
     public static function getDescription($notification): string

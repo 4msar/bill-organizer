@@ -12,6 +12,7 @@
         "php": "^8.3|^8.4|^8.5",
         "inertiajs/inertia-laravel": "^2.0.3",
         "lab404/laravel-impersonate": "^1.7",
+        "laravel-notification-channels/webpush": "^11.0",
         "laravel/framework": "^12.19.3",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",

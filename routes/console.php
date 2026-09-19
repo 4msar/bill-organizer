@@ -32,6 +32,16 @@ Artisan::command('app:update-slugs', function () {
     $this->info('Slugs updated successfully.');
 })->describe('Update slugs for all relevant models');
 
+Artisan::command('app:clear-notifications', function () {
+    $this->comment("Clearing all notifications meta for bills...\n");
+
+    // Clear notifications meta for bills
+    \App\Models\Bill::withoutGlobalScopes()->get()->each(function ($bill) {
+        $bill->clearNotificationsMeta();
+        $this->info('Cleared notifications meta for Bill: ' . $bill->title);
+    });
+})->describe('Clear all notifications meta for bills.');
+
 /**
  * ===============================
  * Scheduler Commands

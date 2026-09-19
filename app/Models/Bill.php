@@ -489,4 +489,16 @@ final class Bill extends Model
             ]));
         }
     }
+
+    /**
+     * Clear all notification meta for the bill.
+     */
+    public function clearNotificationsMeta(): void
+    {
+        $channels = $this->user->getNotificationChannels();
+        foreach ($channels as $channel) {
+            $this->setMeta("{$channel}_notification", []);
+            $this->setMeta("{$channel}_trial_notification", []);
+        }
+    }
 }

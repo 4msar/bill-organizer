@@ -9,7 +9,18 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { useBrowserNotifications } from '@/lib/notifications';
 import { SharedData, type BreadcrumbItem } from '@/types';
+
+const { isSupported: browserNotificationsSupported, permission, subscribed: browserNotificationsEnabled, enable, disable } = useBrowserNotifications();
+
+const toggleBrowserNotifications = async (value: boolean) => {
+    if (value) {
+        await enable();
+    } else {
+        await disable();
+    }
+};
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -86,6 +97,19 @@ const submit = () => {
                             <Checkbox id="web" v-model="form.web_notification" />
                             <span>Web Notification</span>
                         </Label>
+                    </div>
+
+                    <div v-if="browserNotificationsSupported" class="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div class="space-y-0.5">
+                            <Label class="text-base">Browser Notifications</Label>
+                            <p class="text-sm">Show a browser notification on this device when you receive a new notification.</p>
+                            <p v-if="permission === 'denied'" class="text-destructive-foreground text-sm">
+                                Notifications are blocked for this site in your browser. Update your browser's site settings to allow them.
+                            </p>
+                        </div>
+                        <div>
+                            <Switch :model-value="browserNotificationsEnabled" @update:model-value="toggleBrowserNotifications" />
+                        </div>
                     </div>
 
                     <div class="grid gap-2">

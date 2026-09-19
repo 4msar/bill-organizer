@@ -8,6 +8,7 @@
 /storage/*.key
 /storage/pail
 /vendor
+/docs/superpowers
 .env
 .env.backup
 .env.production

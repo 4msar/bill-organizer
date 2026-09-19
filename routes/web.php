@@ -7,6 +7,7 @@ use App\Http\Controllers\ImpersonateController;
 use App\Http\Controllers\LegalController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TransactionController;
@@ -62,6 +63,9 @@ Route::middleware(['auth', 'verified', 'team'])->group(function () {
     Route::delete('/notifications/{id}', [NotificationController::class, 'delete'])->name('notifications.delete');
     Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 
+    Route::post('/push-subscriptions', [PushSubscriptionController::class, 'store'])->name('push-subscriptions.store');
+    Route::delete('/push-subscriptions', [PushSubscriptionController::class, 'destroy'])->name('push-subscriptions.destroy');
+
     // Bill routes
     Route::controller(BillController::class)->prefix('bills')->group(function () {
         Route::get('/', 'index')->name('bills.index');
@@ -106,9 +110,9 @@ Route::get('/visit/bill/{bill}', [BillController::class, 'visit'])
     ->middleware(['auth', 'verified', 'signed'])
     ->name('visit.bill');
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/auth.php';
-require __DIR__ . '/debug.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';
+require __DIR__.'/debug.php';
 
 Route::fallback(function () {
     return Inertia::render('errors/404', [

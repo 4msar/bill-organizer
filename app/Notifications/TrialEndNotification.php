@@ -9,6 +9,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\URL;
+use NotificationChannels\WebPush\WebPushMessage;
 
 final class TrialEndNotification extends Notification
 {
@@ -70,6 +71,21 @@ final class TrialEndNotification extends Notification
             'due_date' => $this->bill->due_date,
             'amount' => $this->bill->amount,
         ];
+    }
+
+    /**
+     * Get the web push representation of the notification.
+     */
+    public function toWebPush($notifiable): WebPushMessage
+    {
+        $currency = $this->bill->team?->currency_symbol ?? '$';
+
+        return (new WebPushMessage())
+            ->title('Trial Ending Soon: ' . $this->bill->title)
+            ->body("Trial ends {$this->bill->trial_end_date->format('M d, Y')} — first payment {$currency}{$this->bill->amount} due {$this->bill->due_date->format('M d, Y')}")
+            ->icon('/logo.png')
+            ->image('/logo.png')
+            ->data(['url' => URL::signedRoute('visit.bill', ['bill' => $this->bill->slug])]);
     }
 
     public static function getDescription($notification): string

@@ -11,12 +11,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Lab404\Impersonate\Models\Impersonate;
 use Laravel\Sanctum\HasApiTokens;
+use NotificationChannels\WebPush\HasPushSubscriptions;
+use NotificationChannels\WebPush\WebPushChannel;
 
 #[ObservedBy([UserObserver::class])]
 final class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, HasMetaData, Notifiable;
+    use HasApiTokens, HasFactory, HasMetaData, HasPushSubscriptions, Notifiable;
 
     use Impersonate;
 
@@ -175,6 +177,9 @@ final class User extends Authenticatable implements MustVerifyEmail
         if ($this?->getMeta('web_notification', false)) {
             $channels[] = 'database';
         }
+        if ($this->pushSubscriptions()->exists()) {
+            $channels[] = WebPushChannel::class;
+        }
 
         return $channels;
     }
@@ -200,7 +205,7 @@ final class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->teams()->withoutGlobalScopes()
             ->whereHas('users', function ($query) use ($targetUser) {
-                $query->where(Team::PivotTableName . '.user_id', $targetUser->id);
+                $query->where(Team::PivotTableName.'.user_id', $targetUser->id);
             })->exists();
     }
 

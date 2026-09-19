@@ -57,6 +57,7 @@ final class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'notifications' => $this->getNotifications($request),
+            'webPushPublicKey' => config('webpush.vapid.public_key'),
             'flash' => [
                 'success' => $request->session()->pull('success'),
                 'error' => $request->session()->pull('error'),
