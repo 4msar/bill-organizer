@@ -27,6 +27,9 @@ final class UpcomingBillNotification extends Notification
 
     /**
      * Get the notification's delivery channels.
+     * 
+     * @param \App\Models\User $notifiable
+     * @return array
      */
     public function via($notifiable)
     {

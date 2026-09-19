@@ -160,6 +160,11 @@ final class User extends Authenticatable implements MustVerifyEmail
         }
     }
 
+    /**
+     * Get the notification channels for the user.
+     *
+     * @return array
+     */
     public function getNotificationChannels()
     {
         $channels = [];
@@ -195,7 +200,7 @@ final class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->teams()->withoutGlobalScopes()
             ->whereHas('users', function ($query) use ($targetUser) {
-                $query->where(Team::PivotTableName.'.user_id', $targetUser->id);
+                $query->where(Team::PivotTableName . '.user_id', $targetUser->id);
             })->exists();
     }
 
